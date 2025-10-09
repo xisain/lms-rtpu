@@ -2,20 +2,16 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\category;
 use Illuminate\Http\Request;
 
-class CategoryController extends Controller
+class UserController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        $category = category::all();
-        return view('', [
-            'category'=> $category,
-        ]);
+        return view('admin.users.index');
     }
 
     /**
@@ -23,7 +19,7 @@ class CategoryController extends Controller
      */
     public function create()
     {
-        return view('admin.category.create');
+       return view('admin.users.create');
     }
 
     /**
@@ -31,15 +27,13 @@ class CategoryController extends Controller
      */
     public function store(Request $request)
     {
-        $request->validate([
-
-        ]);
+        //
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(category $category)
+    public function show(string $id)
     {
         //
     }
@@ -47,15 +41,15 @@ class CategoryController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(category $category)
+    public function edit(string $id)
     {
-        return view('admin.category.edit');
+        //
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, category $category)
+    public function update(Request $request, string $id)
     {
         //
     }
@@ -63,7 +57,7 @@ class CategoryController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(category $category)
+    public function destroy(string $id)
     {
         //
     }

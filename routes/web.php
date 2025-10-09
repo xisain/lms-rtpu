@@ -3,7 +3,8 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\CourseController;
-
+use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\UserController;
 
 Route::middleware('guest')->group(function () {
     Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
@@ -26,15 +27,19 @@ Route::middleware('auth')->group(function () {
     });
     Route::prefix('admin')->group(function (){
         Route::prefix('category')->group(function(){
-
+        Route::get('/',[CategoryController::class, 'index']);
+        Route::get('/create',[CategoryController::class, 'create']);
+        Route::get('/edit/{id}',[CategoryController::class, 'edit']);
         });
         Route::prefix('user')->group(function(){
-
+        Route::get('/',[UserController::class, 'index'])->name('admin.course.index');
+        Route::get('/create',[UserController::class, 'create'])->name('course.create');
+        Route::get('/edit/{id}',[UserController::class, 'edit'])->name('course.edit');
         });
         Route::prefix('course')->group(function(){
-        Route::get('/',[CourseController::class, 'index']);
+        Route::get('/',[CourseController::class, 'index'])->name('admin.course.index');
         Route::get('/create',[CourseController::class, 'create'])->name('course.create');
-        Route::get('/edit/{}',[CourseController::class, 'edit'])->name('course.edit');
+        Route::get('/edit/{id}',[CourseController::class, 'edit'])->name('course.edit');
         Route::post('/{id}',[CourseController::class, 'destroy'])->name('course.destroy');
         });
     });

@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('courses', function (Blueprint $table) {
             $table->id()->index();
             $table->foreignId('category_id')->constrained('categories')->onDelete('cascade');
-            $table->string('nama_course');
+            $table->string('nama_course')->unique();
             $table->string('slugs');
             $table->text('description');
             $table->boolean('isLimitedCourse')->default(0);

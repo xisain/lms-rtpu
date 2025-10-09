@@ -1,4 +1,4 @@
-@extends('layout.layout')
+@extends('layout.navbar')
 
 @section('content')
 <div class="container mx-auto px-4 py-6">
@@ -8,7 +8,16 @@
             <h1 class="text-3xl font-bold text-gray-800">Buat Course Baru</h1>
             <p class="text-gray-600 mt-2">Isi form di bawah untuk membuat course baru beserta materi dan submateri</p>
         </div>
-
+        @if ($errors->any())
+        <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-6">
+        <strong class="font-semibold">Terjadi kesalahan:</strong>
+            <ul class="mt-2 list-disc list-inside text-sm">
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+        @endif
         <!-- Form -->
         <form id="courseForm" action="{{ route('course.store') }}" method="POST" class="bg-white shadow-md rounded-lg p-6">
             @csrf

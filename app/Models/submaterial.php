@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class submaterial extends Model
 {
     protected $fillable = [
+        'material_id',
         'nama_submateri',
         'type',
         'isi_materi',
