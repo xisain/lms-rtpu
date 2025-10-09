@@ -51,15 +51,15 @@
                         <span class="px-2 py-1 bg-yellow-100 text-yellow-700 rounded text-xs">Private</span>
                         @endif
                     </td>
-                    <td class="px-6 py-4 text-center space-x-2">
-                        <a href="{{ route('course.show', $c->slugs) }}" class="text-blue-600 hover:underline">Lihat</a>
-                        <a href="{{ route('course.edit', $c->id) }}" class="text-green-600 hover:underline">Edit</a>
+                    <td class="px-6 py-4 text-center space-x-5">
+                        <a href="{{ route('course.show', $c->slugs) }}" class="text-blue-600 hover:underline" alt="Lihat Course"><i class="fa-solid fa-eye"></i></a>
+                        <a href="{{ route('course.edit', $c->id) }}" class="text-yellow-400 hover:underline" alt="Edit"><i class="fa-solid fa-pen"></i></a>
                         <form action="{{ route('course.destroy', $c->id) }}" method="POST" class="inline">
                             @csrf
                             @method('DELETE')
-                            <button type="submit" class="text-red-600 hover:underline"
+                            <button type="submit" class="text-red-600 hover:underline" alt="Hapus"
                                 onclick="return confirm('Yakin ingin menghapus course ini?')">
-                                Hapus
+                                <i class="fa-solid fa-trash"></i>
                             </button>
                         </form>
                     </td>
