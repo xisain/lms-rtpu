@@ -47,3 +47,8 @@ Route::middleware('auth')->group(function () {
 });
 
 Route::get('/',[CourseController::class, 'showCourse']);
+
+
+Route::get('views/course/view', function () {
+    return view('course/view');
+})->name('view');
