@@ -25,7 +25,7 @@
 
             <!-- Main Navigation -->
             <div class="flex items-center space-x-8">
-                <a href="{{ route('course.index') }}" 
+                <a href="{{ route('home') }}" 
                    class="text-base font-medium text-gray-700 hover:text-blue-800">
                    Home 
                 </a>

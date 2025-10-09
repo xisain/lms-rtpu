@@ -4,7 +4,6 @@
 <div class="min-h-screen bg-gray-100">
     <div class="flex">
         <!-- Sidebar -->
-
         <!-- Main Content Area -->
         <div class="flex-1 p-8">
             <div class="flex gap-8 max-w-7xl">
