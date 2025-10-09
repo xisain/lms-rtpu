@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('nama_course');
             $table->string('slugs');
             $table->text('description');
-            $table->boolean('isLimitedCourse');
+            $table->boolean('isLimitedCourse')->default(0);
             $table->date('start_date')->nullable();
             $table->date('end_date')->nullable();
             $table->integer('maxEnrollment')->nullable();
