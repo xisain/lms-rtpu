@@ -9,6 +9,7 @@ class course extends Model
     protected $fillable = [
         'category_id',
         'nama_course',
+        'image_link',
         'slugs',
         'description',
         'isLimitedCourse',

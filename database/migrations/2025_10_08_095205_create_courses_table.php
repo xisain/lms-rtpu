@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id()->index();
             $table->foreignId('category_id')->constrained('categories')->onDelete('cascade');
             $table->string('nama_course')->unique();
+            $table->string('image_link');
             $table->string('slugs');
             $table->text('description');
             $table->boolean('isLimitedCourse')->default(0);

@@ -17,15 +17,20 @@
                     <p class="text-gray-600 text-sm mb-4 line-clamp-3">{{ $item->description }}</p>
 
                     <div class="space-y-1 text-sm text-gray-700">
+                        @if ($item->start_date)
+                        <p><span class="font-semibold text-gray-800">Course Terbatas</span></p>
                         <p><span class="font-semibold text-gray-800">Mulai:</span> {{ $item->start_date }}</p>
                         <p><span class="font-semibold text-gray-800">Selesai:</span> {{ $item->end_date }}</p>
-                        <p>
-                        </p>
+                        @else
+                        <p><span class="font-semibold text-gray-800">Self Pace Class</span></p>
+                        @endif
+
+
                     </div>
                 </div>
 
                 {{-- Tombol aksi --}}
-                <div class="flex justify-center items-center">  
+                <div class="flex justify-center items-center">
                     <a href="{{ route('course.show', $item->slugs) }}"
                        class="flex justify-center items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 mt-3 w-full">
                        Lihat Kelas

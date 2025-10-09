@@ -26,6 +26,9 @@ Route::middleware('auth')->group(function () {
         Route::post('/',[CourseController::class,'store'])->name('course.store');
     });
     Route::prefix('admin')->group(function (){
+        Route::get('/', function() {
+            return view('admin.admin');
+        });
         Route::prefix('category')->group(function(){
         Route::get('/',[CategoryController::class, 'index']);
         Route::get('/create',[CategoryController::class, 'create']);
