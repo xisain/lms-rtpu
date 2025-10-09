@@ -108,6 +108,7 @@
         </aside>
     </div>
 </div>
+@endsection
 
 @push('scripts')
 <script>
