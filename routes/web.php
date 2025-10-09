@@ -5,6 +5,7 @@ use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\CourseController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\EnrollmentController;
 
 Route::middleware('guest')->group(function () {
     Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
@@ -20,10 +21,9 @@ Route::middleware('auth')->group(function () {
     Route::prefix('course')->group(function (){
         Route::get('/', [CourseController::class, 'showCourse'])->name('course.index');
         Route::get('{slug}', [CourseController::class, 'show'])->name('course.show');
-        Route::post('{slug}/enroll' , function ($slug){
-            return "Enroll course: " . $slug;
-        })->name('course.enroll');
-        Route::post('/',[CourseController::class,'store'])->name('course.store');
+        Route::get('{slug}/{material?}/{submaterial?}', [CourseController::class, 'mulai'])->name('course.mulai');
+        Route::post('{slug}/enroll', [EnrollmentController::class, 'store'])->name('course.enroll');
+
     });
     Route::prefix('admin')->group(function (){
         Route::get('/', function() {
@@ -42,6 +42,7 @@ Route::middleware('auth')->group(function () {
         Route::prefix('course')->group(function(){
         Route::get('/',[CourseController::class, 'index'])->name('admin.course.index');
         Route::get('/create',[CourseController::class, 'create'])->name('course.create');
+        Route::post('/',[CourseController::class,'store'])->name('course.store');
         Route::get('/edit/{id}',[CourseController::class, 'edit'])->name('course.edit');
         Route::post('/{id}',[CourseController::class, 'destroy'])->name('course.destroy');
         });

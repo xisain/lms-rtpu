@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\material;
 use App\Models\submaterial;
 use Illuminate\Support\Str;
+use App\Models\enrollment;
 
 class CourseController extends Controller
 {
@@ -17,8 +18,8 @@ class CourseController extends Controller
      */
     public function index()
     {
-        $course = course::with('material','material.submaterial')->get();
-        return view('admin.course.index', ['course'=> $course]);
+        $course = course::with('material', 'material.submaterial')->get();
+        return view('admin.course.index', ['course' => $course]);
     }
 
     /**
@@ -27,8 +28,8 @@ class CourseController extends Controller
     public function create()
     {
         $category = category::all();
-        return view('admin.course.create',[
-            'categories'=> $category,
+        return view('admin.course.create', [
+            'categories' => $category,
         ]);
     }
 
@@ -39,25 +40,25 @@ class CourseController extends Controller
     {
 
         $validated = $request->validate([
-        'category_id' => 'required|exists:categories,id',
-        'nama_course' => 'required|string|max:255',
-        'description' => 'required|string',
-        'isLimitedCourse' => 'boolean', // tidak wajib di isi
-        'start_date' => 'nullable|required_if:isLimitedCourse,1|date',
-        'end_date' => 'nullable|required_if:isLimitedCourse,1|date|after:start_date',
-        'maxEnrollment' => 'nullable|required_if:isLimitedCourse,1|integer|min:1',
-        'public' => 'boolean',
+            'category_id' => 'required|exists:categories,id',
+            'nama_course' => 'required|string|max:255',
+            'description' => 'required|string',
+            'isLimitedCourse' => 'boolean', // tidak wajib di isi
+            'start_date' => 'nullable|required_if:isLimitedCourse,1|date',
+            'end_date' => 'nullable|required_if:isLimitedCourse,1|date|after:start_date',
+            'maxEnrollment' => 'nullable|required_if:isLimitedCourse,1|integer|min:1',
+            'public' => 'boolean',
 
-        // Validasi materials
-        'materials' => 'required|array|min:1',
-        'materials.*.nama_materi' => 'required|string|max:255',
+            // Validasi materials
+            'materials' => 'required|array|min:1',
+            'materials.*.nama_materi' => 'required|string|max:255',
 
-        // Validasi submaterials
-        'materials.*.submaterials' => 'required|array|min:1',
-        'materials.*.submaterials.*.nama_submateri' => 'required|string|max:255',
-        'materials.*.submaterials.*.type' => 'required|in:text,video,pdf',
-        'materials.*.submaterials.*.isi_materi' => 'required|string',
-    ]);
+            // Validasi submaterials
+            'materials.*.submaterials' => 'required|array|min:1',
+            'materials.*.submaterials.*.nama_submateri' => 'required|string|max:255',
+            'materials.*.submaterials.*.type' => 'required|in:text,video,pdf',
+            'materials.*.submaterials.*.isi_materi' => 'required|string',
+        ]);
         $course = course::create([
             'category_id' => $validated['category_id'],
             'nama_course' => $validated['nama_course'],
@@ -97,7 +98,20 @@ class CourseController extends Controller
     public function show($slug)
     {
         $course = course::where('slugs', $slug)->with('material')->first();
-        return view('course.show', ['courseData'=>$course]);
+        $isEnrolled = false;
+
+        if (Auth::check()) {
+            $isEnrolled = enrollment::where('user_id', Auth::id())
+                ->where('course_id', $course->id)
+                ->exists();
+        }
+        $firstMaterial = $course->material->first();
+        $firstSubmaterial = $firstMaterial?->submaterial->first();
+        return view('course.show', [
+            'courseData' => $course,
+            'isEnrolled' => $isEnrolled,
+            'firstMaterial'=>$firstMaterial,
+            'firstSubmaterial'=>$firstSubmaterial]);
     }
 
     /**
@@ -105,8 +119,8 @@ class CourseController extends Controller
      */
     public function edit($id)
     {
-        $course = course::with('material','category', 'material.submaterial')->findOrFail($id);
-        return view('admin.course.edit',['course'=>$course]);
+        $course = course::with('material', 'category', 'material.submaterial')->findOrFail($id);
+        return view('admin.course.edit', ['course' => $course]);
     }
 
     /**
@@ -124,10 +138,38 @@ class CourseController extends Controller
     {
         //
     }
-    public function showCourse(){
+    public function showCourse()
+    {
         $course = course::where('public', true)->get();
-        return view('course.index',[
+        return view('course.index', [
             'course' => $course,
         ]);
+    }
+    public function mulai($slug, $material = null, $submaterial = null)
+    {
+        $course = course::with('material.submaterial')
+            ->where('slugs', $slug)
+            ->firstOrFail();
+
+        // Ambil materi
+        $materi = $material
+            ? material::where('id', $material)
+            ->where('course_id', $course->id)
+            ->firstOrFail()
+            : $course->material->first();
+
+        // Ambil submateri
+        $submateri = $submaterial
+            ? submaterial::where('id', $submaterial)
+            ->where('material_id', $materi->id)
+            ->firstOrFail()
+            : ($materi ? $materi->submaterial->first() : null);
+
+        if (!$materi || !$submateri) {
+            return redirect()->route('course.show', $slug)
+                ->with('message', 'Materi atau submateri belum tersedia.');
+        }
+
+        return view('course.view', compact('course', 'materi', 'submateri'));
     }
 }

@@ -2,6 +2,7 @@
 
 @section('content')
 <div class="min-h-screen bg-gray-100">
+
     <div class="flex">
         <!-- Sidebar -->
         <!-- Main Content Area -->
@@ -24,6 +25,15 @@
 
                         <!-- Enroll Button -->
                         <div class="px-6 pt-4 pb-2">
+                            @if($isEnrolled)
+                            @if($firstMaterial && $firstSubmaterial)
+                            <a href="{{ route('course.mulai', ['slug' => $courseData->slugs,'material' => $firstMaterial->id,'submaterial' => $firstSubmaterial->id]) }}" class="w-full block text-center bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-4 rounded-lg transition duration-200 shadow-md">
+                                Mulai
+                            </a>
+                            @else
+                            <p class="text-gray-500 text-center">Belum ada materi.</p>
+                            @endif
+                            @else
                             <form action="{{ route('course.enroll', $courseData->slugs) }}" method="POST">
                                 @csrf
                                 <button type="submit"
@@ -31,6 +41,7 @@
                                     Enroll In Course
                                 </button>
                             </form>
+                            @endif
                         </div>
 
                         <!-- Course Modules -->
@@ -71,7 +82,7 @@
                                 {{ $courseData->description }}
                             </p>
                         </div>
-
+                        @if(!$isEnrolled)
                         <!-- Enrollment Notice -->
                         <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded-lg">
                             <div class="flex items-start">
@@ -89,7 +100,7 @@
                                 </div>
                             </div>
                         </div>
-
+                        @endif
                         @if($courseData->isLimitedCourse)
                         <!-- Course Period Info -->
                         <div class="mt-4 bg-blue-50 border-l-4 border-blue-400 p-4 rounded-lg">
