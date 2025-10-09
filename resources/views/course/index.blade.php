@@ -8,6 +8,10 @@
         @foreach($course as $item)
         <div class="bg-white rounded-2xl shadow-md hover:shadow-lg transition duration-300 overflow-hidden">
             <div class="p-5 flex flex-col justify-between h-full">
+                <div class="relative bg-white p-8">
+                    <img src="{{ asset('storage/images/course-test.png') }}"
+                    alt="{{ $item->nama_course }}" class="w-full h-auto object-contain">
+                </div>
                 <div>
                     <h3 class="text-xl font-bold text-gray-800 mb-2">{{ $item->nama_course }}</h3>
                     <p class="text-gray-600 text-sm mb-4 line-clamp-3">{{ $item->description }}</p>
@@ -21,9 +25,9 @@
                 </div>
 
                 {{-- Tombol aksi --}}
-                <div class="flex justify-center items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 mt-2">  
+                <div class="flex justify-center items-center">  
                     <a href="{{ route('course.show', $item->slugs) }}"
-                       class="flex justify-center items-center ">
+                       class="flex justify-center items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 mt-3 w-full">
                        Lihat Kelas
                     </a>
                 </div>
