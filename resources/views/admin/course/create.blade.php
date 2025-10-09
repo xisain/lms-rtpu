@@ -109,7 +109,7 @@
                 <div class="flex justify-between items-center mb-4 border-b pb-2">
                     <h2 class="text-xl font-semibold text-gray-800">Materi Course</h2>
                     <button type="button" id="addMaterial"
-                        class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">
+                        class="text-white hover:bg-[#0f5757] font-medium bg-[#009999] w-11/11 max-w-lg rounded-[10px] border border-gray-300 p-2 shadow-lg transition">
                         + Tambah Materi
                     </button>
                 </div>
@@ -126,7 +126,7 @@
                     Batal
                 </a>
                 <button type="submit"
-                    class="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition">
+                    class="text-white hover:bg-[#0f5757] font-medium bg-[#009999] w-11/11 max-w-lg rounded-[10px] border border-gray-300 p-2 shadow-lg transition">
                     Simpan Course
                 </button>
             </div>
@@ -182,7 +182,7 @@ document.getElementById('addMaterial').addEventListener('click', function() {
             <div class="mb-3">
                 <div class="flex justify-between items-center mb-2">
                     <label class="text-sm font-medium text-gray-700">Submateri</label>
-                    <button type="button" class="add-submaterial px-3 py-1 bg-green-600 text-white text-sm rounded hover:bg-green-700 transition"
+                    <button type="button" class="add-submaterial text-white hover:bg-[#0f5757] font-small bg-[#009999] w-11/11 max-w-lg rounded-[10px] border border-gray-300 p-2 shadow-lg transition"
                         data-material-index="${materialIndex}">
                         + Tambah Submateri
                     </button>

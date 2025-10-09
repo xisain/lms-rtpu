@@ -6,6 +6,7 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>{{ config('app.name', 'LMS RTPU') }} - @yield('title')</title>
     <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+    <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -43,7 +44,7 @@
                 <!-- Menu Utama (Desktop) -->
                 <div class="hidden lg:flex items-center space-x-8">
                     <a href="{{ route('home') }}" class="text-base font-medium text-gray-700 hover:text-[#0f5757]">Home</a>
-                    <a href="{{ route('course.index') }}" class="text-base font-medium text-gray-700 hover:text-[#0f5757]">Dashboard</a>
+                    <a href="{{ route(name: 'course.index') }}" class="text-base font-medium text-gray-700 hover:text-[#0f5757]">Dashboard</a>
 
                     <!-- Dropdown: Kelas -->
                     <div class="relative" x-data="{ openDropdown: false }">
@@ -92,6 +93,7 @@
                                  x-transition
                                  @click.away="userOpen = false"
                                  class="absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5">
+                                <a href="{{ route('admin.course.index') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Admin Dashboard</a>
                                 <form method="POST" action="{{ route('logout') }}">
                                     @csrf
                                     <button type="submit"
@@ -129,7 +131,6 @@
             </div>
 
             <a href="{{ route('course.index') }}" class="block text-gray-700 hover:text-[#0f5757]">Event</a>
-
             @auth
                 <form method="POST" action="{{ route('logout') }}">
                     @csrf
@@ -141,7 +142,7 @@
         </div>
     </nav>
     @yield("content")
-
+    @stack('scripts')
     <!-- Footer -->
     <footer class="bg-white border-t border-gray-200 mt-8">
         <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">

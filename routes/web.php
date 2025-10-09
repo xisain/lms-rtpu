@@ -35,15 +35,15 @@ Route::middleware('auth')->group(function () {
         Route::get('/edit/{id}',[CategoryController::class, 'edit']);
         });
         Route::prefix('user')->group(function(){
-        Route::get('/',[UserController::class, 'index'])->name('admin.course.index');
-        Route::get('/create',[UserController::class, 'create'])->name('course.create');
-        Route::get('/edit/{id}',[UserController::class, 'edit'])->name('course.edit');
+            Route::get('/', [UserController::class, 'index'])->name('admin.user.index');
+            Route::get('/create', [UserController::class, 'create'])->name('admin.user.create');
+            Route::get('/edit/{id}', [UserController::class, 'edit'])->name('admin.user.edit');
         });
         Route::prefix('course')->group(function(){
-        Route::get('/',[CourseController::class, 'index'])->name('admin.course.index');
-        Route::get('/create',[CourseController::class, 'create'])->name('course.create');
-        Route::get('/edit/{id}',[CourseController::class, 'edit'])->name('course.edit');
-        Route::post('/{id}',[CourseController::class, 'destroy'])->name('course.destroy');
+            Route::get('/', [CourseController::class, 'index'])->name('admin.course.index');
+            Route::get('/create', [CourseController::class, 'create'])->name('course.create');
+            Route::get('/edit/{id}', [CourseController::class, 'edit'])->name('course.edit');
+            Route::post('/{id}', [CourseController::class, 'destroy'])->name('course.destroy');
         });
     });
 

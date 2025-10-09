@@ -4,7 +4,7 @@
 <div class="container mx-auto mt-10">
     <div class="flex justify-between items-center mb-6">
         <h1 class="text-2xl font-bold">Daftar Course</h1>
-        <a href="{{ route('course.create') }}" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+        <a href="{{ route('course.create') }}" class="text-white hover:bg-[#0f5757] font-medium bg-[#009999] w-11/11 max-w-lg rounded-[10px] border border-gray-300 p-2 shadow-lg">
             + Tambah Course
         </a>
     </div>
@@ -13,7 +13,7 @@
         <table class="min-w-full text-sm text-left text-gray-600">
             <thead class="bg-gray-100 text-gray-700 uppercase text-xs">
                 <tr>
-                    <th class="px-6 py-3">#</th>
+                    <th class="px-6 py-3">No.</th>
                     <th class="px-6 py-3">Nama Course</th>
                     <th class="px-6 py-3">Deskripsi</th>
                     <th class="px-6 py-3">Periode</th>

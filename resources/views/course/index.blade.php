@@ -32,7 +32,7 @@
                 {{-- Tombol aksi --}}
                 <div class="flex justify-center items-center">
                     <a href="{{ route('course.show', $item->slugs) }}"
-                       class="flex justify-center items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 mt-3 w-full">
+                       class="flex justify-center items-center px-4 py-2 text-white rounded-md hover:bg-[#0f5757] font-medium bg-[#009999] mt-3 w-full">
                        Lihat Kelas
                     </a>
                 </div>

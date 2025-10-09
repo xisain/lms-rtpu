@@ -27,7 +27,7 @@
                             <form action="{{ route('course.enroll', $courseData->slugs) }}" method="POST">
                                 @csrf
                                 <button type="submit"
-                                    class="w-full bg-blue-700 hover:bg-blue-800 text-white font-semibold py-3 px-4 rounded-lg transition duration-200 shadow-md">
+                                    class="w-full  hover:bg-[#0f5757] bg-[#009999] text-white font-semibold py-3 px-4 rounded-lg transition duration-200 shadow-md">
                                     Enroll In Course
                                 </button>
                             </form>
