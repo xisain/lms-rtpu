@@ -27,7 +27,7 @@
             <div class="flex items-center space-x-8">
                 <a href="{{ route('course.show', $item->slugs) }}" 
                    class="text-base font-medium text-gray-700 hover:text-blue-800">
-                   Home
+                   Home 
                 </a>
                 <a href="{{ route('course.show', $item->slugs) }}" 
                    class="text-base font-medium text-gray-700 hover:text-blue-800">
