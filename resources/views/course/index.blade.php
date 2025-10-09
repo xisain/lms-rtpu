@@ -1,4 +1,4 @@
-@extends('layout.layout')
+@extends('layout.navbar')
 
 @section('content')
 <div class="p-6">
@@ -21,10 +21,11 @@
                 </div>
 
                 {{-- Tombol aksi --}}
-                <div class="mt-4 flex justify-between items-center">
+                <div class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 mt-2">
+                    
                     <a href="{{ route('course.show', $item->slugs) }}"
-                       class="text-sm text-blue-600 hover:text-blue-800 font-medium">
-                       Lihat Detail →
+                       class="px-4 py-2">
+                       Lihat Kelas
                     </a>
                 </div>
             </div>
