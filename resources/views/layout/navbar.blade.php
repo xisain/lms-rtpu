@@ -27,7 +27,7 @@
 
                 <!-- Tombol Mobile Menu -->
                 <div class="flex lg:hidden">
-                    <button @click="open = !open" class="text-gray-700 hover:text-gray-900 focus:outline-none">
+                    <button @click="open = !open" class="text-gray-700 hover:text-[#0f5757] focus:outline-none">
                         <svg x-show="!open" class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none"
                              viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -43,13 +43,13 @@
 
                 <!-- Menu Utama (Desktop) -->
                 <div class="hidden lg:flex items-center space-x-8">
-                    <a href="{{ route('home') }}" class="text-base font-medium text-gray-700 hover:text-blue-800">Home</a>
-                    <a href="{{ route('course.index') }}" class="text-base font-medium text-gray-700 hover:text-blue-800">Dashboard</a>
+                    <a href="{{ route('home') }}" class="text-base font-medium text-gray-700 hover:text-[#0f5757]">Home</a>
+                    <a href="{{ route('course.index') }}" class="text-base font-medium text-gray-700 hover:text-[#0f5757]">Dashboard</a>
 
                     <!-- Dropdown: Kelas -->
                     <div class="relative" x-data="{ openDropdown: false }">
                         <button @click="openDropdown = !openDropdown"
-                                class="flex items-center text-base font-medium text-gray-700 hover:text-blue-800 focus:outline-none">
+                                class="flex items-center text-base font-medium text-gray-700 hover:text-[#0f5757] focus:outline-none">
                             Kelas Ku
                             <svg class="w-4 h-4 ml-1 mt-1" fill="currentColor" viewBox="0 0 20 20">
                                 <path fill-rule="evenodd"
@@ -73,14 +73,14 @@
                         </div>
                     </div>
 
-                    <a href="{{ route('course.index') }}" class="text-base font-medium text-gray-700 hover:text-blue-800">Event</a>
+                    <a href="{{ route('course.index') }}" class="text-base font-medium text-gray-700 hover:text-[#0f5757]">Event</a>
                 </div>
 
                 <!-- User Section -->
                 <div class="hidden lg:flex items-center space-x-4">
                     @auth
                         <div class="relative" x-data="{ userOpen: false }">
-                            <button @click="userOpen = !userOpen" class="flex items-center text-gray-700 hover:text-gray-900 focus:outline-none">
+                            <button @click="userOpen = !userOpen" class="flex items-center text-gray-700 hover:text-[#0f5757] focus:outline-none">
                                 <span class="mr-2 font-medium">{{ auth()->user()->name }}</span>
                                 <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
                                     <path fill-rule="evenodd"
@@ -103,7 +103,7 @@
                             </div>
                         </div>
                     @else
-                        <a href="{{ route('login') }}" class="text-gray-700 hover:text-gray-900 font-medium">Login</a>
+                        <a href="{{ route('login') }}" class="text-white hover:bg-[#0f5757] font-medium bg-[#009999] w-11/11 max-w-lg rounded-[10px] border border-gray-300 p-2 shadow-lg">Login</a>
                     @endauth
                 </div>
             </div>
@@ -119,33 +119,29 @@
              x-transition:leave-end="opacity-0 -translate-y-3"
              class="lg:hidden px-4 pb-4 space-y-2 bg-white border-t border-gray-200">
 
-            <a href="{{ route('home') }}" class="block text-gray-700 hover:text-blue-800">Home</a>
-            <a href="{{ route('course.index') }}" class="block text-gray-700 hover:text-blue-800">Dashboard</a>
+            <a href="{{ route('home') }}" class="block text-gray-700 hover:text-[#0f5757]">Home</a>
+            <a href="{{ route('course.index') }}" class="block text-gray-700 hover:text-[#0f5757]">Dashboard</a>
 
             <div class="border-t border-gray-100 pt-2">
                 <p class="text-sm font-semibold text-gray-500 mb-1">Kelas Ku</p>
-                <a href="{{ route('course.index') }}" class="block text-gray-700 hover:text-blue-800">Kelas Pemula</a>
-                <a href="{{ route('course.index') }}" class="block text-gray-700 hover:text-blue-800">Kelas Menengah</a>
-                <a href="{{ route('course.index') }}" class="block text-gray-700 hover:text-blue-800">Kelas Lanjutan</a>
+                <a href="{{ route('course.index') }}" class="block text-gray-700 hover:text-[#0f5757]">Kelas Pemula</a>
+                <a href="{{ route('course.index') }}" class="block text-gray-700 hover:text-[#0f5757]">Kelas Menengah</a>
+                <a href="{{ route('course.index') }}" class="block text-gray-700 hover:text-[#0f5757]">Kelas Lanjutan</a>
             </div>
 
-            <a href="{{ route('course.index') }}" class="block text-gray-700 hover:text-blue-800">Event</a>
+            <a href="{{ route('course.index') }}" class="block text-gray-700 hover:text-[#0f5757]">Event</a>
 
             @auth
                 <form method="POST" action="{{ route('logout') }}">
                     @csrf
-                    <button type="submit" class="block w-full text-left text-gray-700 hover:text-blue-800">Logout</button>
+                    <button type="submit" class="block w-full text-left text-gray-700 hover:text-[#0f5757]">Logout</button>
                 </form>
             @else
-                <a href="{{ route('login') }}" class="block text-gray-700 hover:text-blue-800">Login</a>
+                <a href="{{ route('login') }}" class="block text-gray-700 hover:text-[#0f5757]">Login</a>
             @endauth
         </div>
     </nav>
-
-    <!-- Konten Halaman -->
     @yield("content")
-
-    <!-- Footer -->
     <footer class="bg-white border-t border-gray-200 mt-8">
         <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
             <p class="text-center text-sm text-gray-500">
