@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\material;
 use App\Models\submaterial;
+use Illuminate\Support\Str;
 
 class CourseController extends Controller
 {
@@ -36,12 +37,12 @@ class CourseController extends Controller
      */
     public function store(Request $request)
     {
-        dd($request);
+
         $validated = $request->validate([
         'category_id' => 'required|exists:categories,id',
         'nama_course' => 'required|string|max:255',
         'description' => 'required|string',
-        'isLimitedCourse' => 'required|boolean',
+        'isLimitedCourse' => 'boolean', // tidak wajib di isi
         'start_date' => 'nullable|required_if:isLimitedCourse,1|date',
         'end_date' => 'nullable|required_if:isLimitedCourse,1|date|after:start_date',
         'maxEnrollment' => 'nullable|required_if:isLimitedCourse,1|integer|min:1',
@@ -57,7 +58,37 @@ class CourseController extends Controller
         'materials.*.submaterials.*.type' => 'required|in:text,video,pdf',
         'materials.*.submaterials.*.isi_materi' => 'required|string',
     ]);
-    // dd($validated);
+        $course = course::create([
+            'category_id' => $validated['category_id'],
+            'nama_course' => $validated['nama_course'],
+            'slugs' => Str::slug($validated['nama_course']),
+            'description' => $validated['description'],
+            'isLimitedCourse' => $validated['isLimitedCourse'] ?? false,
+            'start_date' => $validated['start_date'] ?? null,
+            'end_date' => $validated['end_date'] ?? null,
+            'maxEnrollment' => $validated['maxEnrollment'] ?? null,
+            'public' => $validated['public'] ?? false,
+        ]);
+
+
+        foreach ($validated['materials'] as $mat) {
+            $material = material::create([
+                'course_id' => $course->id,
+                'nama_materi' => $mat['nama_materi'],
+            ]);
+
+            foreach ($mat['submaterials'] as $sub) {
+                submaterial::create([
+                    'material_id' => $material->id,
+                    'nama_submateri' => $sub['nama_submateri'],
+                    'type' => $sub['type'],
+                    'isi_materi' => $sub['isi_materi'],
+                ]);
+            }
+        }
+
+        return redirect()->route('admin.course.index')
+            ->with('success', 'Course berhasil dibuat beserta material dan submaterialnya!');
     }
 
     /**
@@ -72,9 +103,10 @@ class CourseController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(course $course)
+    public function edit($id)
     {
-        //
+        $course = course::with('material','category', 'material.submaterial')->findOrFail($id);
+        return view('admin.course.edit',['course'=>$course]);
     }
 
     /**
