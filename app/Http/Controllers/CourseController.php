@@ -2,9 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\category;
 use App\Models\course;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use App\Models\material;
+use App\Models\submaterial;
 
 class CourseController extends Controller
 {
@@ -13,7 +16,8 @@ class CourseController extends Controller
      */
     public function index()
     {
-
+        $course = course::with('material','material.submaterial')->get();
+        return view('admin.course.index', ['course'=> $course]);
     }
 
     /**
@@ -21,7 +25,10 @@ class CourseController extends Controller
      */
     public function create()
     {
-        //
+        $category = category::all();
+        return view('admin.course.create',[
+            'categories'=> $category,
+        ]);
     }
 
     /**
@@ -29,7 +36,28 @@ class CourseController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        dd($request);
+        $validated = $request->validate([
+        'category_id' => 'required|exists:categories,id',
+        'nama_course' => 'required|string|max:255',
+        'description' => 'required|string',
+        'isLimitedCourse' => 'required|boolean',
+        'start_date' => 'nullable|required_if:isLimitedCourse,1|date',
+        'end_date' => 'nullable|required_if:isLimitedCourse,1|date|after:start_date',
+        'maxEnrollment' => 'nullable|required_if:isLimitedCourse,1|integer|min:1',
+        'public' => 'boolean',
+
+        // Validasi materials
+        'materials' => 'required|array|min:1',
+        'materials.*.nama_materi' => 'required|string|max:255',
+
+        // Validasi submaterials
+        'materials.*.submaterials' => 'required|array|min:1',
+        'materials.*.submaterials.*.nama_submateri' => 'required|string|max:255',
+        'materials.*.submaterials.*.type' => 'required|in:text,video,pdf',
+        'materials.*.submaterials.*.isi_materi' => 'required|string',
+    ]);
+    // dd($validated);
     }
 
     /**
