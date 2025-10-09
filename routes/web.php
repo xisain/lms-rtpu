@@ -4,9 +4,6 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\CourseController;
 
-Route::get('/landingpage', function () {
-    return view('index');
-});
 
 Route::middleware('guest')->group(function () {
     Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
@@ -50,7 +47,9 @@ Route::middleware('auth')->group(function () {
 
 });
 
-Route::get('/',[CourseController::class, 'showCourse']);
+Route::get('/', function() {
+    return view('index');
+})->name('home');
 
 
 Route::get('views/course/view', function () {
