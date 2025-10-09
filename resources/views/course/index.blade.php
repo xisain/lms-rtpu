@@ -21,10 +21,9 @@
                 </div>
 
                 {{-- Tombol aksi --}}
-                <div class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 mt-2">
-                    
+                <div class="flex justify-center items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 mt-2">  
                     <a href="{{ route('course.show', $item->slugs) }}"
-                       class="px-4 py-2">
+                       class="flex justify-center items-center ">
                        Lihat Kelas
                     </a>
                 </div>
