@@ -136,7 +136,7 @@
                 <form method="POST" action="{{ route('logout') }}">
                     @csrf
                     <button type="submit" class="block w-full text-left text-gray-700 hover:text-[#0f5757]">Logout</button>
-                </form>
+                </form> 
             @else
                 <a href="{{ route('login') }}" class="block text-gray-700 hover:text-[#0f5757]">Login</a>
             @endauth
