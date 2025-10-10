@@ -43,6 +43,7 @@ class CourseController extends Controller
             'category_id' => 'required|exists:categories,id',
             'nama_course' => 'required|string|max:255',
             'description' => 'required|string',
+            'image_link' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
             'isLimitedCourse' => 'boolean', // tidak wajib di isi
             'start_date' => 'nullable|required_if:isLimitedCourse,1|date',
             'end_date' => 'nullable|required_if:isLimitedCourse,1|date|after:start_date',
@@ -59,6 +60,13 @@ class CourseController extends Controller
             'materials.*.submaterials.*.type' => 'required|in:text,video,pdf',
             'materials.*.submaterials.*.isi_materi' => 'required|string',
         ]);
+
+        $imagePath = null;
+        if ($request->hasFile('image_link')) {
+            // Simpan ke storage/app/public/course_images
+            $imagePath = $request->file('image_link')->store('course/images', 'public');
+        }
+
         $course = course::create([
             'category_id' => $validated['category_id'],
             'nama_course' => $validated['nama_course'],
@@ -69,6 +77,7 @@ class CourseController extends Controller
             'end_date' => $validated['end_date'] ?? null,
             'maxEnrollment' => $validated['maxEnrollment'] ?? null,
             'public' => $validated['public'] ?? false,
+            'image_link' => $imagePath, // tambahkan ini
         ]);
 
 
@@ -110,8 +119,9 @@ class CourseController extends Controller
         return view('course.show', [
             'courseData' => $course,
             'isEnrolled' => $isEnrolled,
-            'firstMaterial'=>$firstMaterial,
-            'firstSubmaterial'=>$firstSubmaterial]);
+            'firstMaterial' => $firstMaterial,
+            'firstSubmaterial' => $firstSubmaterial
+        ]);
     }
 
     /**

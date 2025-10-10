@@ -14,7 +14,7 @@
                         class="bg-gradient-to-br from-gray-50 to-gray-100 rounded-3xl shadow-xl overflow-hidden border border-gray-200">
                         <!-- Course Image -->
                         <div class="relative bg-white p-8">
-                            <img src="{{ asset('storage/images/course-test.png') }}"
+                            <img src="{{ asset('storage/'.$courseData->image_link) }}"
                                 alt="{{ $courseData->nama_course }}" class="w-full h-auto object-contain">
                         </div>
 

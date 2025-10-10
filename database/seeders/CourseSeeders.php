@@ -18,6 +18,7 @@ class CourseSeeders extends Seeder
         course::create([
             'category_id' => $category,
             'nama_course' => 'Course testing',
+            'image_link'=> 'storage\course\images\course-test.png',
             'description' => 'test description',
             'slugs' => 'course-testing',
             'isLimitedCourse' => 1,

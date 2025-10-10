@@ -3,14 +3,15 @@
 @section('content')
 <div class="p-6">
 
-        {{-- Search + Filter Tengah --}}
+    {{-- Search + Filter Tengah --}}
     <div class="flex flex-col sm:flex-row items-center justify-center mb-6 gap-4">
         {{-- Search Bar --}}
         <div class="w-full sm:max-w-md">
             <div class="relative">
-                <input type="text" placeholder="Cari course..." 
+                <input type="text" placeholder="Cari course..."
                     class="w-full px-4 py-2 rounded-[70px] border border-[#009999] focus:outline-none focus:ring-2 focus:ring-[#009999] focus:border-transparent">
-                <button type="button" class="absolute right-2 top-1/2 -translate-y-1/2 text-[#009999] px-3 py-1 rounded-md hover:text-[#0f5757]">
+                <button type="button"
+                    class="absolute right-2 top-1/2 -translate-y-1/2 text-[#009999] px-3 py-1 rounded-md hover:text-[#0f5757]">
                     <i class="fa-solid fa-magnifying-glass"></i>
                 </button>
             </div>
@@ -19,15 +20,12 @@
         {{-- Filter Button --}}
         <div x-data="{ open: false }" class="relative">
             {{-- Tombol Filter --}}
-            <button @click="open = !open" 
-                class="px-4 py-2">
+            <button @click="open = !open" class="px-4 py-2">
                 <i class="fa-solid fa-sliders fa-lg" style="color: #099999;"></i>
             </button>
 
             {{-- Form filter --}}
-            <div x-show="open" 
-                @click.away="open = false"
-                x-transition:enter="transition ease-out duration-300"
+            <div x-show="open" @click.away="open = false" x-transition:enter="transition ease-out duration-300"
                 x-transition:enter-start="opacity-0 transform scale-95"
                 x-transition:enter-end="opacity-100 transform scale-100"
                 x-transition:leave="transition ease-in duration-200"
@@ -46,7 +44,8 @@
                 </div>
 
                 {{-- Select Category --}}
-                <select class="w-full px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#009999]">
+                <select
+                    class="w-full px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#009999]">
                     <option>Semua Kategori</option>
                     <option>Kategori 1</option>
                     <option>Kategori 2</option>
@@ -56,11 +55,13 @@
                 <div class="flex gap-4 mt-4">
                     <div class="flex-1">
                         <h4 class="font-bold mb-1">Tanggal Mulai</h4>
-                        <input type="date" class="w-full px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#009999]">
+                        <input type="date"
+                            class="w-full px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#009999]">
                     </div>
                     <div class="flex-1">
                         <h4 class="font-bold mb-1">Tanggal Selesai</h4>
-                        <input type="date" class="w-full px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#009999]">
+                        <input type="date"
+                            class="w-full px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#009999]">
                     </div>
                 </div>
 
@@ -79,8 +80,8 @@
         <div class="bg-white rounded-2xl shadow-md hover:shadow-lg transition duration-300 overflow-hidden">
             <div class="p-5 flex flex-col justify-between h-full">
                 <div class="relative bg-white p-8">
-                    <img src="{{ asset('storage/images/course-test.png') }}"
-                    alt="{{ $item->nama_course }}" class="w-full h-auto object-contain">
+                    <img src="{{ asset('storage/'.$item->image_link) }}" alt="{{ $item->nama_course }}"
+                        class="w-full h-48 object-cover rounded-lg">
                 </div>
                 <div>
                     <h3 class="text-xl font-bold text-gray-800 mb-2">{{ $item->nama_course }}</h3>
@@ -102,8 +103,8 @@
                 {{-- Tombol aksi --}}
                 <div class="flex justify-center items-center">
                     <a href="{{ route('course.show', $item->slugs) }}"
-                       class="flex justify-center items-center px-4 py-2 text-white rounded-md hover:bg-[#0f5757] font-medium bg-[#009999] mt-3 w-full">
-                       Lihat Kelas
+                        class="flex justify-center items-center px-4 py-2 text-white rounded-md hover:bg-[#0f5757] font-medium bg-[#009999] mt-3 w-full">
+                        Lihat Kelas
                     </a>
                 </div>
             </div>

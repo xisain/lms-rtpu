@@ -10,16 +10,16 @@
         </div>
         @if ($errors->any())
         <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-6">
-        <strong class="font-semibold">Terjadi kesalahan:</strong>
+            <strong class="font-semibold">Terjadi kesalahan:</strong>
             <ul class="mt-2 list-disc list-inside text-sm">
                 @foreach ($errors->all() as $error)
-                    <li>{{ $error }}</li>
+                <li>{{ $error }}</li>
                 @endforeach
             </ul>
         </div>
         @endif
         <!-- Form -->
-        <form id="courseForm" action="{{ route('course.store') }}" method="POST" class="bg-white shadow-md rounded-lg p-6">
+        <form id="courseForm" action="{{ route('course.store') }}" method="POST" class="bg-white shadow-md rounded-lg p-6" enctype="multipart/form-data">
             @csrf
 
             <!-- Course Information -->
@@ -34,59 +34,73 @@
                             class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
                             <option value="">Pilih Kategori</option>
                             @foreach($categories as $category)
-                                <option value="{{ $category->id }}">{{ $category->category }}</option>
+                            <option value="{{ $category->id }}">{{ $category->category }}</option>
                             @endforeach
                         </select>
                         @error('category_id')
-                            <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                        <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
                         @enderror
                     </div>
 
                     <!-- Nama Course -->
                     <div class="col-span-2">
-                        <label for="nama_course" class="block text-sm font-medium text-gray-700 mb-2">Nama Course *</label>
+                        <label for="nama_course" class="block text-sm font-medium text-gray-700 mb-2">Nama Course
+                            *</label>
                         <input type="text" name="nama_course" id="nama_course" required
                             class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                             placeholder="Contoh: Laravel Advanced Course">
                         @error('nama_course')
-                            <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                        <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
                         @enderror
                     </div>
 
                     <!-- Description -->
                     <div class="col-span-2">
-                        <label for="description" class="block text-sm font-medium text-gray-700 mb-2">Deskripsi *</label>
+                        <label for="description" class="block text-sm font-medium text-gray-700 mb-2">Deskripsi
+                            *</label>
                         <textarea name="description" id="description" rows="4" required
                             class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                             placeholder="Jelaskan tentang course ini..."></textarea>
                         @error('description')
-                            <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                        <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
                         @enderror
                     </div>
-
+                    <div class="col-span-2">
+                        <label for="image_link" class="block text-sm font-medium text-gray-700 mb-2">Gambar Course
+                            (opsional)</label>
+                        <input type="file" name="image_link" id="image_link" accept="image/*"
+                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                        @error('image_link')
+                        <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                        @enderror
+                    </div>
                     <!-- Is Limited Course -->
                     <div class="col-span-2">
                         <label class="flex items-center cursor-pointer">
                             <input type="checkbox" name="isLimitedCourse" id="isLimitedCourse" value="1"
                                 class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
-                            <span class="ml-2 text-sm font-medium text-gray-700">Course dengan Batasan Waktu & Kuota</span>
+                            <span class="ml-2 text-sm font-medium text-gray-700">Course dengan Batasan Waktu &
+                                Kuota</span>
                         </label>
                     </div>
 
                     <!-- Limited Course Fields -->
                     <div id="limitedFields" class="col-span-2 grid grid-cols-1 md:grid-cols-3 gap-4 hidden">
                         <div>
-                            <label for="start_date" class="block text-sm font-medium text-gray-700 mb-2">Tanggal Mulai</label>
+                            <label for="start_date" class="block text-sm font-medium text-gray-700 mb-2">Tanggal
+                                Mulai</label>
                             <input type="date" name="start_date" id="start_date"
                                 class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
                         </div>
                         <div>
-                            <label for="end_date" class="block text-sm font-medium text-gray-700 mb-2">Tanggal Selesai</label>
+                            <label for="end_date" class="block text-sm font-medium text-gray-700 mb-2">Tanggal
+                                Selesai</label>
                             <input type="date" name="end_date" id="end_date"
                                 class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
                         </div>
                         <div>
-                            <label for="maxEnrollment" class="block text-sm font-medium text-gray-700 mb-2">Max Peserta</label>
+                            <label for="maxEnrollment" class="block text-sm font-medium text-gray-700 mb-2">Max
+                                Peserta</label>
                             <input type="number" name="maxEnrollment" id="maxEnrollment" min="1"
                                 class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                                 placeholder="50">
@@ -136,7 +150,7 @@
 
 @push('scripts')
 <script>
-let materialCount = 0;
+    let materialCount = 0;
 let submaterialCounters = {};
 
 // Toggle limited course fields
