@@ -1,10 +1,10 @@
-@extends('layout.navbar')
+@extends('layout.sidebar')
 
 @section('content')
 <div class="container mx-auto px-4 py-6">
     <!-- Header -->
     <div class="mb-8">
-        <h1 class="text-3xl font-bold text-gray-800">Dashboard LMS</h1>
+        <h1 class="text-3xl font-bold text-gray-800 -mt-9">Dashboard LMS</h1>
         <p class="text-gray-600 mt-1">Selamat datang kembali, {{ Auth::user()->name }}</p>
     </div>
 

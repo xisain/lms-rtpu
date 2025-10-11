@@ -1,4 +1,4 @@
-@extends('layout.navbar')
+@extends('layout.sidebar')
 
 @section('content')
 <div class="container mx-auto mt-10">

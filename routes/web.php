@@ -70,3 +70,4 @@ Route::get('/', function () {
 Route::get('views/course/view', function () {
     return view('course/view');
 })->name('view');
+
