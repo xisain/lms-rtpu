@@ -25,23 +25,30 @@
 
                         <!-- Enroll Button -->
                         <div class="px-6 pt-4 pb-2">
+                        @if (auth()->user()->roles_id !== 1)
+
                             @if($isEnrolled)
-                            @if($firstMaterial && $firstSubmaterial)
-                            <a href="{{ route('course.mulai', ['slug' => $courseData->slugs,'material' => $firstMaterial->id,'submaterial' => $firstSubmaterial->id]) }}" class="w-full block text-center bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-4 rounded-lg transition duration-200 shadow-md">
-                                Mulai
-                            </a>
-                            @else
-                            <p class="text-gray-500 text-center">Belum ada materi.</p>
-                            @endif
+                                @if($firstMaterial && $firstSubmaterial)
+                                    <a href="{{ route('course.mulai', ['slug' => $courseData->slugs,'material' => $firstMaterial->id,'submaterial' => $firstSubmaterial->id]) }}" class="w-full block text-center bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-4 rounded-lg transition duration-200 shadow-md">
+                                        Mulai
+                                    </a>
+                                @else
+                                <p class="text-gray-500 text-center">Belum ada materi.</p>
+                                @endif
                             @else
                             <form action="{{ route('course.enroll', $courseData->slugs) }}" method="POST">
                                 @csrf
-                                <button type="submit"
-                                    class="w-full  hover:bg-[#0f5757] bg-[#009999] text-white font-semibold py-3 px-4 rounded-lg transition duration-200 shadow-md">
-                                    Enroll In Course
+                                <button type="submit" class="w-full  hover:bg-[#0f5757] bg-[#009999] text-white font-semibold py-3 px-4 rounded-lg transition duration-200 shadow-md">
+                                Enroll In Course
                                 </button>
                             </form>
                             @endif
+                        @else
+                        <a href="{{ route('admin.course.index')}}" class="w-full block text-center bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-4 rounded-lg transition duration-200 shadow-md">
+                                        Lihat di Panel
+                                    </a>
+                        @endif
+
                         </div>
 
                         <!-- Course Modules -->

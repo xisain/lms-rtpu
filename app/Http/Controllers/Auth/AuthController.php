@@ -24,7 +24,14 @@ class AuthController extends Controller
 
         if (Auth::attempt($credentials)) {
             $request->session()->regenerate();
-            return redirect()->intended('/');
+            $user = Auth::user();
+                if(!$user->isActive){
+                    Auth::logout();
+                return back()->withErrors([
+                    'email'=>'Akun Anda tidak aktif. Silakan hubungi administrator.'
+                ])->onlyInput('email');
+                }
+                return redirect()->intended('/');
         }
 
         return back()->withErrors([
@@ -50,12 +57,11 @@ class AuthController extends Controller
             'email' => $validated['email'],
             'password' => Hash::make($validated['password']),
             'category_id'=> 1,
-            'roles_id' => 2, // Default role for new users (assuming 2 is for regular users)
+            'roles_id' => 3,
         ]);
 
-        Auth::login($user);
 
-        return redirect('/');
+        return redirect()->route('login')->with('success', 'Akun berhasil didaftarkan. Silakan tunggu aktivasi dari administrator.');
     }
 
     public function logout(Request $request)

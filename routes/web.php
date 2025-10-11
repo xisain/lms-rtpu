@@ -7,12 +7,15 @@ use App\Http\Controllers\CourseController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\EnrollmentController;
+use App\Http\Middleware\adminMiddleware;
+use App\Http\Middleware\dosenMiddleware;
 
 Route::middleware('guest')->group(function () {
     Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
     Route::post('/login', [AuthController::class, 'login']);
     Route::get('/register', [AuthController::class, 'showRegister'])->name('register');
     Route::post('/register', [AuthController::class, 'register']);
+    Route::get('/daftar-kelas',[CourseController::class,'guestDaftarKelas'])->name('list.kelas');
 });
 
 Route::middleware('auth')->group(function () {
@@ -26,7 +29,7 @@ Route::middleware('auth')->group(function () {
         Route::post('{slug}/enroll', [EnrollmentController::class, 'store'])->name('course.enroll');
     });
 
-    Route::prefix('admin')->group(function () {
+    Route::prefix('admin')->middleware('admin')->group(function () {
         Route::get('/', [adminController::class, 'index'])->name('admin.home');
 
         Route::prefix('category')->group(function () {
@@ -53,7 +56,7 @@ Route::middleware('auth')->group(function () {
         });
     });
 
-    Route::prefix('dosen')->group(function () {
+    Route::prefix('dosen')->middleware(dosenMiddleware::class)->group(function () {
         Route::prefix('course')->group(function () {
             Route::get('/', [CourseController::class, 'index'])->name('admin.course.index');
             Route::post('/', [CourseController::class, 'store'])->name('course.store');

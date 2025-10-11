@@ -8,8 +8,10 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\material;
 use App\Models\submaterial;
+use App\Models\progress;
 use Illuminate\Support\Str;
 use App\Models\enrollment;
+
 
 class CourseController extends Controller
 {
@@ -155,11 +157,26 @@ class CourseController extends Controller
             'course' => $course,
         ]);
     }
+    public function guestDaftarKelas()
+    {
+        $course = course::where('public', true)->get();
+        return view('course.index', [
+            'course' => $course,
+        ]);
+    }
     public function mulai($slug, $material = null, $submaterial = null)
     {
         $course = course::with('material.submaterial')
             ->where('slugs', $slug)
             ->firstOrFail();
+
+        // Cek apakah user sudah enroll di course ini
+        if (!enrollment::where('user_id', Auth::id())
+            ->where('course_id', $course->id)
+            ->exists()) {
+            return redirect()->route('course.show', $slug)
+                ->with('error', 'Anda harus enroll terlebih dahulu untuk mengakses materi.');
+        }
 
         // Ambil materi
         $materi = $material
@@ -177,8 +194,23 @@ class CourseController extends Controller
 
         if (!$materi || !$submateri) {
             return redirect()->route('course.show', $slug)
-                ->with('message', 'Materi atau submateri belum tersedia.');
+                ->with('error', 'Materi atau submateri belum tersedia.');
         }
+
+        // Cek apakah user bisa mengakses submateri ini (sudah selesai materi sebelumnya)
+        if (!progress::canAccess(Auth::id(), $submateri->id)) {
+            return redirect()->route('course.show', $slug)
+                ->with('error', 'Anda harus menyelesaikan materi sebelumnya terlebih dahulu.');
+        }
+
+        // Track progress otomatis saat mengakses
+        progress::updateOrCreate(
+            [
+                'user_id' => Auth::id(),
+                'submaterial_id' => $submateri->id
+            ],
+            ['status' => 'completed']
+        );
 
         return view('course.view', compact('course', 'materi', 'submateri'));
     }
