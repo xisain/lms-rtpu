@@ -1,7 +1,7 @@
 @extends('layout.sidebar')
 
 @section('content')
-<div class="container mx-auto px-4 py-8">
+<div class="container mx-auto px-4 py-1 -mt-4">
     <h1 class="text-3xl font-bold text-gray-800 mb-6">Daftar Pengguna</h1>
 
     <div class="overflow-x-auto bg-white rounded-xl shadow-md">

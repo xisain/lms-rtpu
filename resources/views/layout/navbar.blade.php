@@ -43,20 +43,22 @@
                     </button>
                 </div>
 
-                <!-- Menu Utama (Desktop) -->
+                <!-- Menu Desktop -->
+                @guest
+                <!-- Guest: menu di tengah -->
+                <div class="hidden lg:flex items-center space-x-8 absolute left-1/2 transform -translate-x-1/2">
+                    <a href="{{ route('home') }}" class="text-base font-medium text-gray-700 hover:text-[#0f5757]">Home</a>
+                    <a href="{{ route('list.kelas') }}" class="text-base font-medium text-gray-700 hover:text-[#0f5757]">Course</a>
+                </div>
+                @endguest
+
+                @auth
+                <!-- Auth: menu kiri -->
                 <div class="hidden lg:flex items-center space-x-8">
-                    <a href="{{ route('home') }}"
-                        class="text-base font-medium text-gray-700 hover:text-[#0f5757]">Home</a>
-                    @guest
-                    <a href="{{ route(name: 'list.kelas') }}"
-                        class="text-base font-medium text-gray-700 hover:text-[#0f5757]">Course</a>
-                    @endguest
-                    @auth
-                    <a href="{{ route(name: 'course.index') }}"
-                        class="text-base font-medium text-gray-700 hover:text-[#0f5757]">Dashboard</a>
+                    <a href="{{ route('home') }}" class="text-base font-medium text-gray-700 hover:text-[#0f5757]">Home</a>
+                    <a href="{{ route('course.index') }}" class="text-base font-medium text-gray-700 hover:text-[#0f5757]">Dashboard</a>
 
-
-                    <!-- Dropdown: Kelas -->
+                    <!-- Dropdown Kelas -->
                     <div class="relative" x-data="{ openDropdown: false }">
                         <button @click="openDropdown = !openDropdown"
                             class="flex items-center text-base font-medium text-gray-700 hover:text-[#0f5757] focus:outline-none">
@@ -75,71 +77,62 @@
                             x-transition:leave-start="opacity-100 translate-y-0"
                             x-transition:leave-end="opacity-0 -translate-y-2" @click.away="openDropdown = false"
                             class="absolute left-0 mt-2 w-48 bg-white rounded-md shadow-lg ring-1 ring-black ring-opacity-5">
-                            @auth
                             @php
                             $enrollments = auth()->user()->enrollment()->with('course')->get();
                             @endphp
 
                             @if($enrollments->count() > 0)
-                            <div class="enrolled-courses">
-                                @foreach($enrollments as $enrollment)
-                                <div class="course-item">
-                                    <a href="{{ route('course.show', $enrollment->course->slugs) }}"
-                                        class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                                        {{ $enrollment->course->nama_course }}
-                                    </a>
-                                </div>
-                                @endforeach
-                            </div>
+                            @foreach($enrollments as $enrollment)
+                            <a href="{{ route('course.show', $enrollment->course->slugs) }}"
+                                class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                {{ $enrollment->course->nama_course }}
+                            </a>
+                            @endforeach
                             @else
-                            <p>Belum ada course yang di-enroll.</p>
+                            <p class="px-4 py-2 text-sm text-gray-700">Belum ada course yang di-enroll.</p>
                             @endif
-                            @endauth
                         </div>
                     </div>
 
-                    <a href="{{ route('course.index') }}"
-                        class="text-base font-medium text-gray-700 hover:text-[#0f5757]">Event</a>
+                    <a href="{{ route('course.index') }}" class="text-base font-medium text-gray-700 hover:text-[#0f5757]">Event</a>
                 </div>
                 @endauth
 
-                <!-- User Section -->
-                <div class="hidden lg:flex items-center space-x-4">
-                    @auth
-                    <div class="relative" x-data="{ userOpen: false }">
-                        <button @click="userOpen = !userOpen"
-                            class="flex items-center text-gray-700 hover:text-[#0f5757] focus:outline-none">
-                            <span class="mr-2 font-medium">{{ auth()->user()->name }}</span>
-                            <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
-                                <path fill-rule="evenodd"
-                                    d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
-                                    clip-rule="evenodd" />
-                            </svg>
-                        </button>
+        <!-- User/Login section kanan -->
+        <div class="hidden lg:flex items-center space-x-4">
+            @auth
+            <div class="relative" x-data="{ userOpen: false }">
+                <button @click="userOpen = !userOpen"
+                    class="flex items-center text-gray-700 hover:text-[#0f5757] focus:outline-none">
+                    <span class="mr-2 font-medium">{{ auth()->user()->name }}</span>
+                    <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd"
+                            d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                            clip-rule="evenodd" />
+                    </svg>
+                </button>
 
-                        <div x-show="userOpen" x-transition @click.away="userOpen = false"
-                            class="absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5">
-                            @if(auth()->user()->role->name == "admin")
-                            <a href="{{ route('admin.home') }}"
-                                class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Admin Dashboard</a>
-                            @endif
-                            <a href="{{ route('home') }}"
-                                class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Profile</a>
-                            <form method="POST" action="{{ route('logout') }}">
-                                @csrf
-                                <button type="submit"
-                                    class="block w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100">
-                                    Logout
-                                </button>
-                            </form>
-                        </div>
-                    </div>
-                    @else
-                    <a href="{{ route('login') }}"
-                        class="text-white hover:bg-[#0f5757] font-medium bg-[#009999] w-11/11 max-w-lg rounded-[10px] border border-gray-300 p-2 shadow-lg">Login</a>
-                    @endauth
+                <div x-show="userOpen" x-transition @click.away="userOpen = false"
+                    class="absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5">
+                    @if(auth()->user()->role->name == "admin")
+                    <a href="{{ route('admin.home') }}"
+                        class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Admin Dashboard</a>
+                    @endif
+                    <a href="{{ route('home') }}"
+                        class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Profile</a>
+                    <form method="POST" action="{{ route('logout') }}">
+                        @csrf
+                        <button type="submit"
+                            class="block w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100">
+                            Logout
+                        </button>
+                    </form>
                 </div>
             </div>
+            @else
+            <a href="{{ route('login') }}"
+                class="text-white hover:bg-[#0f5757] font-medium bg-[#009999] max-w-lg rounded-[10px] border border-gray-300 p-2 shadow-lg">Login</a>
+            @endauth
         </div>
 
         <!-- Menu Mobile (Dropdown) -->
@@ -148,7 +141,6 @@
             x-transition:leave="transition ease-in duration-200 transform"
             x-transition:leave-start="opacity-100 translate-y-0" x-transition:leave-end="opacity-0 -translate-y-3"
             class="lg:hidden px-4 pb-4 space-y-2 bg-white border-t border-gray-200">
-
             <a href="{{ route('home') }}" class="block text-gray-700 hover:text-[#0f5757]">Home</a>
             <a href="{{ route('course.index') }}" class="block text-gray-700 hover:text-[#0f5757]">Dashboard</a>
 
