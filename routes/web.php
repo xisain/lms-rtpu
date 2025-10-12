@@ -27,6 +27,10 @@ Route::middleware('auth')->group(function () {
         Route::get('{slug}', [CourseController::class, 'show'])->name('course.show');
         Route::get('{slug}/{material?}/{submaterial?}', [CourseController::class, 'mulai'])->name('course.mulai');
         Route::post('{slug}/enroll', [EnrollmentController::class, 'store'])->name('course.enroll');
+        // Buat quiz nanti jangan di apa apain 
+        Route::post('{slug}/{material}/quiz/submit',function(){
+            return "test";
+        });
     });
 
     Route::prefix('admin')->middleware('admin')->group(function () {
@@ -43,9 +47,10 @@ Route::middleware('auth')->group(function () {
 
         Route::prefix('user')->group(function () {
             Route::get('/', [UserController::class, 'index'])->name('admin.user.index');
-            Route::post('/{id}', [UserController::class, 'destroy'])->name('admin.user.destroy');
+            Route::delete('/{id}', [UserController::class, 'destroy'])->name('admin.user.destroy');
             Route::get('/create', [UserController::class, 'create'])->name('admin.user.create');
-            Route::get('/edit/{id}', [UserController::class, 'edit'])->name('admin.user.edit');
+            Route::get('/edit/{user}', [UserController::class, 'edit'])->name('admin.user.edit');
+            Route::put('/edit/{user}/update', [UserController::class, 'update'])->name('admin.user.update');
         });
         Route::prefix('course')->group(function () {
             Route::get('/', [CourseController::class, 'index'])->name('admin.course.index');

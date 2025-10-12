@@ -12,6 +12,7 @@
     <!-- Alpine.js -->
     <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <style>
         .sidebar-transition {
@@ -32,6 +33,7 @@
          <div class="flex flex-col items-center py-4">
             <img src="/images/logo.png" alt="Logo" class="w-12 h-12" />
         </div>
+    </aside>
 
             <!-- NAVIGATION -->
             <nav class="px-4 py-2 space-y-2">
@@ -45,6 +47,34 @@
                     </span>
                 </a>
 
+            <a href="{{ route('admin.course.index') }}"
+               class="block px-4 py-2 rounded {{ request()->routeIs('admin.course.index') ? 'bg-gray-700 font-semibold rounded-xl' : 'hover:bg-gray-700 rounded-xl' }}">
+                <i class="fa-solid fa-plus"></i> Buat Course
+            </a>
+
+            <!-- <div class="relative">
+                <button
+                    @click="dropdownOpen = !dropdownOpen"
+                    class="flex items-center justify-between w-full px-4 py-2 rounded hover:bg-gray-700 {{ request()->routeIs('admin.category.*') || request()->routeIs('admin.course.*') ? 'bg-gray-700 font-semibold' : '' }}">
+                    <span>Kelas Ku</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 transition-transform"
+                         :class="{ 'rotate-180': dropdownOpen }" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                              d="M19 9l-7 7-7-7" />
+                    </svg>
+                </button>
+
+                <div x-show="dropdownOpen" x-transition class="mt-2 space-y-1 bg-gray-700 rounded-md shadow-md">
+                    <a href="{{ route('admin.category.index') }}"
+                       class="block px-4 py-2 hover:bg-gray-600 {{ request()->routeIs('admin.category.*') ? 'bg-gray-600' : '' }}">
+                        Kategori
+                    </a>
+                    @if(Route::has('admin.course.index'))
+                    <a href="{{ route('admin.course.index') }}"
+                       class="block px-4 py-2 hover:bg-gray-600 {{ request()->routeIs('admin.course.*') ? 'bg-gray-600' : '' }}">
+                        Kursus
+                    </a>
+                    @endif
                 <a href="{{ route('admin.course.index') }}" 
                    class="flex items-center px-3 py-2 rounded-xl transition-all duration-200 {{ request()->routeIs('admin.course.index') ? 'bg-[#009999] font-semibold' : 'text-gray-900 hover:bg-gray-100' }}"
                    :class="{ 'justify-center': !sidebarOpen, 'justify-start': sidebarOpen }">
@@ -81,6 +111,17 @@
                         {{ auth()->user()->name ?? 'Pengguna' }}
                     </span>
                 </div>
+
+            </div> -->
+
+            @if(Route::has('admin.user.index'))
+            <a href="{{ route('admin.user.index') }}"
+               class="block px-4 py-2 rounded {{ request()->routeIs('admin.user.*') ? 'bg-gray-700 font-semibold rounded-xl' : 'hover:bg-gray-700 rounded-xl' }}">
+                <i class="fa-solid fa-user"></i> Pengguna
+            </a>
+            @endif
+
+        </nav>
                 <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 transition-all duration-200"
                      :class="{ 'rotate-180': userOpen, 'opacity-0 hidden': !sidebarOpen, 'opacity-100': sidebarOpen }" 
                      fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -128,7 +169,6 @@
         </main>
     </div>
 
-    @stack('scripts')
     @include('sweetalert2::index')
     @stack('scripts')
 </body>
