@@ -203,7 +203,10 @@
                             </svg>
                         </div>
                         <div class="flex-1">
-                            <p class="text-xs text-gray-600">{{ $activity->description }}</p>
+                                <span class="font-semibold">{{ $activity->user->name }}</span>
+                                mendaftar pada kursus
+                                <span class="text-blue-600 font-medium">{{ $activity->course->nama_course }}</span>
+                            </p>
                             <p class="text-xs text-gray-400">{{ $activity->created_at->diffForHumans() }}</p>
                         </div>
                     </div>
@@ -273,7 +276,7 @@
                                 {{ ucfirst($user->role->name ?? 'student') }}
                             </span>
                         </td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">{{ $user->enrollments_count ?? 0
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">{{ $user->enrollment_count ?? 0
                             }} courses</td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">{{ $user->created_at->format('d M
                             Y') }}</td>

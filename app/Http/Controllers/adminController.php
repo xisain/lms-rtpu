@@ -35,9 +35,7 @@ class adminController extends Controller
 
         $totalEnrollments = Enrollment::count();
 
-
-
-
+        $recentActivities = Enrollment::with(['user', 'course'])->latest()->take(10)->get();
 
         $popularCourses = Course::withCount('enrollment')
                                 ->with('category')
@@ -67,6 +65,7 @@ class adminController extends Controller
             'activeCourses',
             'totalCategories',
             'categoriesWithCourses',
+            'recentActivities',
             'totalEnrollments',
             'popularCourses',
             'topCategories',
