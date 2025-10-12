@@ -1,6 +1,25 @@
 <!DOCTYPE html>
-<html lang="id" class="h-full bg-gray-100" 
-      x-data="{ sidebarOpen: true, dropdownOpen: {{ request()->routeIs('admin.category.*') || request()->routeIs('admin.course.*') ? 'true' : 'false' }}, userOpen: false }">
+<html lang="id" class="h-full bg-gray-100"
+      x-data="{
+          sidebarOpen: localStorage.getItem('sidebar_open') !== null ? localStorage.getItem('sidebar_open') === 'true' : true,
+          dropdownOpen: {{ request()->routeIs('admin.category.*') || request()->routeIs('admin.course.*') ? 'true' : 'false' }},
+          userOpen: false,
+
+          toggleSidebar() {
+              this.sidebarOpen = !this.sidebarOpen;
+              localStorage.setItem('sidebar_open', this.sidebarOpen);
+
+              // Sync ke server
+              fetch('{{ route('sidebar.toggle') }}', {
+                  method: 'POST',
+                  headers: {
+                      'Content-Type': 'application/json',
+                      'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                  },
+                  body: JSON.stringify({ open: this.sidebarOpen })
+              });
+          }
+      }">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -24,7 +43,7 @@
 <body class="h-full flex bg-gray-100">
 
     <!-- SIDEBAR -->
-    <aside 
+    <aside
         class="fixed inset-y-0 left-0 bg-white text-white z-40 sidebar-transition flex flex-col justify-between rounded-r-2xl shadow-xl border border-r-gray-200"
         :class="sidebarOpen ? 'w-64' : 'w-20'">
 
@@ -40,7 +59,7 @@
 
             <!-- NAVIGATION -->
             <nav class="px-4 py-2 space-y-2">
-                <a href="{{ route('admin.home') }}" 
+                <a href="{{ route('admin.home') }}"
                    class="flex items-center px-3 py-2 rounded-xl transition-all duration-200 {{ request()->routeIs('admin.home') ? 'bg-[#009999] font-semibold' : 'text-gray-900 hover:bg-gray-100' }}"
                    :class="{ 'justify-center': !sidebarOpen, 'justify-start': sidebarOpen }">
                     <i class="fa-solid fa-house" :class="{ 'text-lg': !sidebarOpen }"></i>
@@ -50,7 +69,7 @@
                     </span>
                 </a>
 
-                <a href="{{ route('admin.category.index') }}" 
+                <a href="{{ route('admin.category.index') }}"
                    class="flex items-center px-3 py-2 rounded-xl transition-all duration-200 {{ request()->routeIs('admin.category.index') ? 'bg-[#009999] font-semibold' : 'text-gray-900 hover:bg-gray-100' }}"
                    :class="{ 'justify-center': !sidebarOpen, 'justify-start': sidebarOpen }">
                     <i class="fa-solid fa-list" :class="{ 'text-lg': !sidebarOpen }"></i>
@@ -60,7 +79,7 @@
                     </span>
                 </a>
 
-                <a href="{{ route('admin.course.index') }}" 
+                <a href="{{ route('admin.course.index') }}"
                    class="flex items-center px-3 py-2 rounded-xl transition-all duration-200 {{ request()->routeIs('admin.course.index') ? 'bg-[#009999] font-semibold' : 'text-gray-900 hover:bg-gray-100' }}"
                    :class="{ 'justify-center': !sidebarOpen, 'justify-start': sidebarOpen }">
                     <i class="fa-solid fa-plus" :class="{ 'text-lg': !sidebarOpen }"></i>
@@ -70,7 +89,7 @@
                     </span>
                 </a>
                 @if(Route::has('admin.user.index'))
-                <a href="{{ route('admin.user.index') }}" 
+                <a href="{{ route('admin.user.index') }}"
                    class="flex items-center px-3 py-2 rounded-xl transition-all duration-200 {{ request()->routeIs('admin.user.*') ? 'bg-[#009999] font-semibold' : 'text-gray-900 hover:bg-gray-100' }}"
                    :class="{ 'justify-center': !sidebarOpen, 'justify-start': sidebarOpen }">
                     <i class="fa-solid fa-user" :class="{ 'text-lg': !sidebarOpen }"></i>
@@ -96,9 +115,9 @@
                     </span>
                 </div>
                 <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 transition-all duration-200"
-                     :class="{ 'rotate-180': userOpen, 'opacity-0 hidden': !sidebarOpen, 'opacity-100': sidebarOpen }" 
+                     :class="{ 'rotate-180': userOpen, 'opacity-0 hidden': !sidebarOpen, 'opacity-100': sidebarOpen }"
                      fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" 
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3"
                           d="M19 9l-7 7-7-7" />
                 </svg>
             </button>
@@ -126,12 +145,12 @@
     </aside>
 
     <!-- MAIN CONTENT -->
-    <div class="flex-1 flex flex-col min-h-screen sidebar-transition" 
+    <div class="flex-1 flex flex-col min-h-screen sidebar-transition"
          :class="sidebarOpen ? 'lg:ml-64' : 'ml-20'">
 
         <!-- NAVBAR -->
         <header class="flex items-center justify-between px-6 py-4 relative z-30">
-            <button @click="sidebarOpen = !sidebarOpen" class="text-gray-700 text-xl focus:outline-none">
+            <button @click="toggleSidebar()" class="text-gray-700 text-xl focus:outline-none">
                 <i class="fa-solid fa-bars" style="color: #000000;"></i>
             </button>
         </header>

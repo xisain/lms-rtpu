@@ -34,6 +34,10 @@ Route::middleware('auth')->group(function () {
     });
 
     Route::prefix('admin')->middleware('admin')->group(function () {
+        Route::post('/sidebar/toggle', function(Illuminate\Http\Request $request) {
+    $request->session()->put('sidebar_open', $request->input('open'));
+    return response()->json(['success' => true]);
+})->name('sidebar.toggle');
         Route::get('/', [adminController::class, 'index'])->name('admin.home');
 
         Route::prefix('category')->group(function () {
