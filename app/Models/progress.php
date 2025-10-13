@@ -36,10 +36,42 @@ class progress extends Model
     // Cek apakah user bisa mengakses suatu submateri
     public static function canAccess(int $userId, int $submaterialId): bool
     {
-        // Ambil submaterial target dengan materialnya
-        $submaterial = submaterial::with('material')->findOrFail($submaterialId);
+        // Ambil submaterial target dengan materialnya dan relasi material->course
+        $submaterial = submaterial::with(['material' => function ($q) {
+            $q->with('course');
+        }])->findOrFail($submaterialId);
         $material = $submaterial->material;
 
+        // --- Module-level dependency: require previous material completion ---
+        // Ambil semua material untuk course ini, urutkan berdasarkan id (asumsi urutan id mewakili urutan modul)
+        $materials = $material->course->material()->orderBy('id', 'asc')->get();
+
+        // Jika material bukan yang pertama, pastikan material sebelumnya sudah selesai
+        $materialIndex = $materials->search(function ($m) use ($material) {
+            return $m->id === $material->id;
+        });
+
+        if ($materialIndex !== false && $materialIndex > 0) {
+            $previousMaterial = $materials[$materialIndex - 1];
+
+            // Cek apakah semua submateri di material sebelumnya selesai
+            $allSubmaterialCompleted = $previousMaterial->submaterial()->get()->every(function ($s) use ($userId) {
+                return static::isCompleted($userId, $s->id);
+            });
+
+            // Cek apakah quiz di material sebelumnya selesai (jika ada dan required)
+            $quizCompleted = true;
+            if ($previousMaterial->quiz) {
+                // gunakan method model quiz::isCompleted
+                $quizCompleted = $previousMaterial->quiz->isCompleted($userId);
+            }
+
+            if (! $allSubmaterialCompleted || ! $quizCompleted) {
+                return false;
+            }
+        }
+
+        // --- Within-material sequential check (existing behavior) ---
         // Ambil semua submaterial dalam material yang sama, urutkan berdasar ID
         $submaterials = $material->submaterial()
             ->orderBy('id', 'asc')

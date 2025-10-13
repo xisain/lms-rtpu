@@ -22,7 +22,7 @@ class DatabaseSeeder extends Seeder
             CourseSeeders::class,
             MaterialSeeders::class,
             SubMaterialSeeders::class,
-            // quizSeeder::class
+            quizSeeder::class
         ]);
         User::factory()->create([
             'name' => 'admin',

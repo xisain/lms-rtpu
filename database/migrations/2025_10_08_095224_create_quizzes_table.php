@@ -39,6 +39,7 @@ return new class extends Migration
             $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
             $table->foreignId('quiz_id')->constrained('quizzes')->onDelete('cascade');
             $table->integer('score')->nullable();
+            $table->json('answers')->nullable();
             $table->enum('status', ['not_started', 'in_progress', 'completed'])->default('not_started');
             $table->timestamps();
          });

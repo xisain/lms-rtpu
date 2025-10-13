@@ -25,29 +25,32 @@
 
                         <!-- Enroll Button -->
                         <div class="px-6 pt-4 pb-2">
-                        @if (auth()->user()->roles_id !== 1)
+                            @if (auth()->user()->roles_id !== 1)
 
                             @if($isEnrolled)
-                                @if($firstMaterial && $firstSubmaterial)
-                                    <a href="{{ route('course.mulai', ['slug' => $courseData->slugs,'material' => $firstMaterial->id,'submaterial' => $firstSubmaterial->id]) }}" class="w-full block text-center bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-4 rounded-lg transition duration-200 shadow-md">
-                                        Mulai
-                                    </a>
-                                @else
-                                <p class="text-gray-500 text-center">Belum ada materi.</p>
-                                @endif
+                            @if($firstMaterial && $firstSubmaterial)
+                            <a href="{{ route('course.mulai', ['slug' => $courseData->slugs,'material' => $firstMaterial->id,'submaterial' => $firstSubmaterial->id]) }}"
+                                class="w-full block text-center bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-4 rounded-lg transition duration-200 shadow-md">
+                                Mulai
+                            </a>
+                            @else
+                            <p class="text-gray-500 text-center">Belum ada materi.</p>
+                            @endif
                             @else
                             <form action="{{ route('course.enroll', $courseData->slugs) }}" method="POST">
                                 @csrf
-                                <button type="submit" class="w-full  hover:bg-[#0f5757] bg-[#009999] text-white font-semibold py-3 px-4 rounded-lg transition duration-200 shadow-md">
-                                Enroll In Course
+                                <button type="submit"
+                                    class="w-full  hover:bg-[#0f5757] bg-[#009999] text-white font-semibold py-3 px-4 rounded-lg transition duration-200 shadow-md">
+                                    Enroll In Course
                                 </button>
                             </form>
                             @endif
-                        @else
-                        <a href="{{ route('admin.course.index')}}" class="w-full block text-center bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-4 rounded-lg transition duration-200 shadow-md">
-                                        Lihat di Panel
-                                    </a>
-                        @endif
+                            @else
+                            <a href="{{ route('admin.course.index')}}"
+                                class="w-full block text-center bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-4 rounded-lg transition duration-200 shadow-md">
+                                Lihat di Panel
+                            </a>
+                            @endif
 
                         </div>
 
@@ -68,6 +71,37 @@
                                     </span>
                                 </div>
                                 @endforeach
+
+                                @if($material->quiz)
+                                <div
+                                    class="mt-2 flex justify-between items-center py-1.5 text-xs border-t border-gray-100 pt-2">
+                                    <span class="text-gray-500">{{ $material->quiz->judul_quiz }}</span>
+                                    @auth
+                                    @if($isEnrolled)
+                                    @php
+                                    $lastAttempt = $material->quiz->getLastAttempt(auth()->id());
+                                    @endphp
+
+                                    @if($lastAttempt && $lastAttempt->status === 'completed')
+                                    <span
+                                        class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                        Nilai: {{ $lastAttempt->score }}
+                                    </span>
+                                    @elseif($material->isAllSubmaterialCompleted(auth()->id()))
+                                    <a href="{{ route('course.mulai', ['slug' => $courseData->slugs, 'material' => $material->id, 'submaterial' => 'quiz']) }}"
+                                        class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800 hover:bg-blue-200">
+                                        Mulai Quiz
+                                    </a>
+                                    @else
+                                    <span
+                                        class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-600">
+                                        Selesaikan Materi
+                                    </span>
+                                    @endif
+                                    @endif
+                                    @endauth
+                                </div>
+                                @endif
                                 @else
                                 <p class="text-gray-400 text-xs italic">Pendahuluan</p>
                                 <p class="text-gray-400 text-xs italic">Materi Lengkap</p>
@@ -89,6 +123,60 @@
                                 {{ $courseData->description }}
                             </p>
                         </div>
+                        @if(!$isEnrolled && $previewSubmaterial)
+                        <!-- Preview Section -->
+                        <div
+                            class="mt-6 bg-gradient-to-br from-teal-50 to-cyan-50 border-2 border-teal-200 rounded-2xl p-6 relative overflow-hidden mb-3">
+                            <!-- Preview Badge -->
+                            <div class="absolute top-4 right-4">
+                                <span
+                                    class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-teal-600 text-white shadow-md">
+                                    <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                        <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
+                                        <path fill-rule="evenodd"
+                                            d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z"
+                                            clip-rule="evenodd" />
+                                    </svg>
+                                    Preview
+                                </span>
+                            </div>
+
+                            <h3 class="text-xl font-bold text-gray-800 mb-2 pr-20">
+                                {{ $previewSubmaterial->nama_submateri }}
+                            </h3>
+                            <p class="text-xs text-gray-500 mb-4">Materi dari: {{
+                                $previewSubmaterial->material->nama_materi }}</p>
+
+                            <!-- Preview Content with Gradient Fade -->
+                            <div class="relative">
+                                <div class="prose prose-sm max-w-none text-gray-700 leading-relaxed">
+                                    {!! Str::limit(strip_tags($previewSubmaterial->content), 500) !!}
+                                </div>
+
+                                <!-- Gradient Overlay -->
+                                <div
+                                    class="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-teal-50 to-transparent">
+                                </div>
+                            </div>
+
+                            <!-- CTA -->
+                            <div class="mt-6 pt-4 border-t border-teal-200">
+                                <div class="flex items-center justify-between">
+                                    <p class="text-sm text-gray-600">
+                                        <span class="font-semibold text-teal-700">Ingin melihat lebih banyak?</span>
+                                        <br>Enroll untuk akses penuh ke semua materi!
+                                    </p>
+                                    <form action="{{ route('course.enroll', $courseData->slugs) }}" method="POST">
+                                        @csrf
+                                        <button type="submit"
+                                            class="bg-teal-600 hover:bg-teal-700 text-white font-semibold py-2 px-6 rounded-lg transition duration-200 shadow-md whitespace-nowrap">
+                                            Enroll Sekarang
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                        @endif
                         @if(!$isEnrolled)
                         <!-- Enrollment Notice -->
                         <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded-lg">

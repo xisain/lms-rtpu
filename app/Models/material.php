@@ -20,4 +20,16 @@ class material extends Model
     public function progress() {
         return $this->hasMany(progress::class);
     }
+    public function quiz() {
+        return $this->hasOne(quiz::class);
+    }
+
+    public function isAllSubmaterialCompleted(int $userId): bool
+    {
+        $totalSubmaterials = $this->submaterial()->count();
+        $completedCount = progress::where('user_id', $userId)
+        ->whereIn('submaterial_id', $this->submaterial->pluck('id'))
+        ->where('status','completed')->count();
+        return $totalSubmaterials > 0 && $completedCount === $totalSubmaterials;
+    }
 }

@@ -7,6 +7,7 @@ use App\Http\Controllers\CourseController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\EnrollmentController;
+use App\Http\Controllers\QuizController;
 use App\Http\Middleware\adminMiddleware;
 use App\Http\Middleware\dosenMiddleware;
 
@@ -27,10 +28,8 @@ Route::middleware('auth')->group(function () {
         Route::get('{slug}', [CourseController::class, 'show'])->name('course.show');
         Route::get('{slug}/{material?}/{submaterial?}', [CourseController::class, 'mulai'])->name('course.mulai');
         Route::post('{slug}/enroll', [EnrollmentController::class, 'store'])->name('course.enroll');
-        // Buat quiz nanti jangan di apa apain 
-        Route::post('{slug}/{material}/quiz/submit',function(){
-            return "test";
-        });
+        // Buat quiz nanti jangan di apa apain
+        Route::post('{slug}/{material}/quiz/submit',[CourseController::class, 'quizSubmit'])->name('quiz.submit');
     });
 
     Route::prefix('admin')->middleware('admin')->group(function () {

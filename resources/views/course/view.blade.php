@@ -1,34 +1,35 @@
 @extends('layout.navbar')
 
 @section('content')
-<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+<div class="mx-auto px-4 sm:px-6 lg:px-8 py-8">
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <!-- Main Content -->
         <main class="lg:col-span-2">
             <div class="bg-white rounded-xl shadow-md p-8">
-                <h1 class="text-3xl font-bold text-gray-900 mb-6">{{ $submateri->nama_submateri }}</h1>
 
-                @php
-                $type = $submateri->type ?? 'text';
-                @endphp
+                    <h1 class="text-3xl font-bold text-gray-900 mb-6">{{ $submateri->nama_submateri }}</h1>
 
-                @if($type === 'text')
-                    <div class="prose max-w-none">
-                        {!! nl2br(e($submateri->isi_materi)) !!}
-                    </div>
-                @elseif($type === 'pdf')
-                    <iframe src="{{ asset('storage/' . $submateri->isi_materi) }}"
-                        class="w-full h-[600px] rounded-lg border"></iframe>
-                @elseif($type === 'video')
                     @php
-                    $youtubeId = str_replace('https://www.youtube.com/watch?v=', '', $submateri->isi_materi);
+                    $type = $submateri->type ?? 'text';
                     @endphp
-                    <div class="aspect-w-16 aspect-h-9">
-                        <iframe src="https://www.youtube.com/embed/{{ $youtubeId }}"
-                            class="w-full h-full rounded-lg border"
-                            allowfullscreen></iframe>
-                    </div>
-                @endif
+
+                    @if($type === 'text')
+                        <div class="prose max-w-none">
+                            {!! nl2br(e($submateri->isi_materi)) !!}
+                        </div>
+                    @elseif($type === 'pdf')
+                        <iframe src="{{ asset('storage/' . $submateri->isi_materi) }}"
+                            class="w-full h-[600px] rounded-lg border"></iframe>
+                    @elseif($type === 'video')
+                        @php
+                        $youtubeId = str_replace('https://www.youtube.com/watch?v=', '', $submateri->isi_materi);
+                        @endphp
+                        <div class="aspect-w-16 aspect-h-9">
+                            <iframe src="https://www.youtube.com/embed/{{ $youtubeId }}"
+                                class="w-full h-full"
+                                allowfullscreen></iframe>
+                        </div>
+                    @endif
             </div>
         </main>
 
@@ -99,6 +100,50 @@
                                             </a>
                                         </div>
                                     @endforeach
+
+                                    @if($module->quiz)
+                                        @php
+                                            $isQuizActive = isset($quiz) && $quiz->id === $module->quiz->id;
+                                            $isQuizCompleted = $module->quiz->isCompleted(auth()->id());
+                                            $canAccessQuiz = $module->isAllSubmaterialCompleted(auth()->id());
+                                            $lastAttempt = $module->quiz->getLastAttempt(auth()->id());
+                                        @endphp
+                                        <div class="{{ !$canAccessQuiz ? 'opacity-60' : '' }} mt-2">
+                                            <a href="{{ $canAccessQuiz ? route('course.mulai', ['slug' => $course->slugs, 'material' => $module->id, 'submaterial' => 'quiz']) : '#' }}"
+                                                class="submodule-item flex items-center gap-3 px-4 py-3 bg-white rounded-lg transition-all border-l-4
+                                                {{ $isQuizActive ? 'border-purple-600' : ($isQuizCompleted ? 'border-green-500' : 'border-transparent') }}
+                                                {{ $canAccessQuiz ? 'cursor-pointer hover:shadow-md' : 'cursor-not-allowed' }}"
+                                                @if(!$canAccessQuiz)
+                                                    title="Selesaikan semua materi terlebih dahulu"
+                                                @endif
+                                            >
+                                                <div class="checkbox w-5 h-5 rounded-full border-2
+                                                    {{ $isQuizCompleted ? 'border-green-500 bg-green-500' : ($isQuizActive ? 'border-purple-600 bg-purple-600' : 'border-gray-300') }}
+                                                    flex items-center justify-center transition-all">
+                                                    @if($isQuizCompleted)
+                                                        <svg class="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"/>
+                                                        </svg>
+                                                    @endif
+                                                </div>
+                                                <div class="flex-1">
+                                                    <div class="flex items-center gap-2">
+                                                        <span class="text-sm {{ $isQuizCompleted ? 'text-green-700 font-medium' : 'text-gray-700' }}">
+                                                            {{ $module->quiz->judul_quiz }}
+                                                        </span>
+                                                        @if($lastAttempt && $lastAttempt->status === 'completed')
+                                                            <span class="text-xs px-2 py-0.5 bg-green-100 text-green-800 rounded-full">
+                                                                Nilai: {{ $lastAttempt->score }}
+                                                            </span>
+                                                        @endif
+                                                    </div>
+                                                    @if(!$canAccessQuiz)
+                                                        <p class="text-xs text-red-500">Selesaikan semua materi terlebih dahulu</p>
+                                                    @endif
+                                                </div>
+                                            </a>
+                                        </div>
+                                    @endif
 
                                     <!-- Progress bar untuk material ini -->
                                     <div class="mt-4">

@@ -193,6 +193,40 @@ document.getElementById('addMaterial').addEventListener('click', function() {
                     placeholder="Contoh: Pengenalan Laravel">
             </div>
 
+            <!-- Quiz Section -->
+            <div class="mb-4 border-t pt-4">
+                <div class="flex items-center justify-between mb-3">
+                    <label class="block text-sm font-medium text-gray-700">Quiz untuk Materi Ini</label>
+                    <label class="inline-flex items-center">
+                        <input type="checkbox" class="toggle-quiz w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                            data-material-index="${materialIndex}">
+                        <span class="ml-2 text-sm text-gray-600">Tambahkan Quiz</span>
+                    </label>
+                </div>
+
+                <div class="quiz-section hidden" data-material-index="${materialIndex}">
+                    <div class="bg-white border border-gray-200 rounded-lg p-4 mb-4">
+                        <div class="mb-3">
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Judul Quiz *</label>
+                            <input type="text" name="materials[${materialIndex}][quiz][judul_quiz]"
+                                class="quiz-input w-full px-3 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500"
+                                placeholder="Contoh: Quiz Pengenalan Laravel">
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Pertanyaan</label>
+                            <div class="questions-container space-y-4" data-material-index="${materialIndex}">
+                                <!-- Questions will be added here -->
+                            </div>
+                            <button type="button" class="add-question mt-3 text-sm bg-gray-100 hover:bg-gray-200 text-gray-600 py-2 px-4 rounded"
+                                data-material-index="${materialIndex}">
+                                + Tambah Pertanyaan
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <div class="mb-3">
                 <div class="flex justify-between items-center mb-2">
                     <label class="text-sm font-medium text-gray-700">Submateri</label>
@@ -298,6 +332,180 @@ document.getElementById('courseForm').addEventListener('submit', function(e) {
         alert('Setiap materi harus memiliki minimal 1 submateri!');
         return false;
     }
+});
+
+// Quiz functionality
+let questionCounters = {};
+
+// Toggle quiz section
+document.addEventListener('change', function(e) {
+    if (e.target.classList.contains('toggle-quiz')) {
+        const materialIndex = e.target.dataset.materialIndex;
+        const quizSection = document.querySelector(`.quiz-section[data-material-index="${materialIndex}"]`);
+        const quizInputs = quizSection.querySelectorAll('.quiz-input');
+
+        if (e.target.checked) {
+            quizSection.classList.remove('hidden');
+            // HAPUS required = true karena quiz opsional
+            if (!questionCounters[materialIndex]) {
+                questionCounters[materialIndex] = 0;
+                addQuestion(materialIndex);
+            }
+        } else {
+            quizSection.classList.add('hidden');
+            // Clear quiz data ketika di-uncheck
+            quizSection.querySelectorAll('input, textarea').forEach(input => input.value = '');
+            quizSection.querySelectorAll('input[type="radio"]').forEach(radio => radio.checked = false);
+        }
+    }
+});
+
+// Add Question
+document.addEventListener('click', function(e) {
+    if (e.target.classList.contains('add-question')) {
+        const materialIndex = e.target.dataset.materialIndex;
+        addQuestion(materialIndex);
+    }
+});
+
+function addQuestion(materialIndex) {
+    const questionIndex = questionCounters[materialIndex]++;
+    const container = document.querySelector(`.questions-container[data-material-index="${materialIndex}"]`);
+
+    const questionHtml = `
+        <div class="question-item bg-gray-50 border border-gray-200 rounded p-3">
+            <div class="flex justify-between items-start mb-2">
+                <label class="block text-sm font-medium text-gray-700">Pertanyaan #${questionIndex + 1}</label>
+                <button type="button" class="remove-question text-red-600 hover:text-red-800">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+
+            <div class="mb-3">
+                <input type="text" name="materials[${materialIndex}][quiz][questions][${questionIndex}][pertanyaan]"
+                    class="quiz-input w-full px-3 py-2 text-sm border border-gray-300 rounded"
+                    placeholder="Tulis pertanyaan di sini...">
+            </div>
+
+            <div class="space-y-2">
+                <p class="text-sm font-medium text-gray-700 mb-1">Pilihan Jawaban:</p>
+                <div class="grid grid-cols-1 gap-2">
+                    <div class="flex items-center gap-2">
+                        <input type="radio" name="materials[${materialIndex}][quiz][questions][${questionIndex}][correct_option]"
+                            value="0" class="quiz-input">
+                        <input type="text" name="materials[${materialIndex}][quiz][questions][${questionIndex}][options][]"
+                            class="quiz-input flex-1 px-3 py-1.5 text-sm border border-gray-300 rounded"
+                            placeholder="Pilihan A">
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <input type="radio" name="materials[${materialIndex}][quiz][questions][${questionIndex}][correct_option]"
+                            value="1" class="quiz-input">
+                        <input type="text" name="materials[${materialIndex}][quiz][questions][${questionIndex}][options][]"
+                            class="quiz-input flex-1 px-3 py-1.5 text-sm border border-gray-300 rounded"
+                            placeholder="Pilihan B">
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <input type="radio" name="materials[${materialIndex}][quiz][questions][${questionIndex}][correct_option]"
+                            value="2" class="quiz-input">
+                        <input type="text" name="materials[${materialIndex}][quiz][questions][${questionIndex}][options][]"
+                            class="quiz-input flex-1 px-3 py-1.5 text-sm border border-gray-300 rounded"
+                            placeholder="Pilihan C">
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <input type="radio" name="materials[${materialIndex}][quiz][questions][${questionIndex}][correct_option]"
+                            value="3" class="quiz-input">
+                        <input type="text" name="materials[${materialIndex}][quiz][questions][${questionIndex}][options][]"
+                            class="quiz-input flex-1 px-3 py-1.5 text-sm border border-gray-300 rounded"
+                            placeholder="Pilihan D">
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+
+    container.insertAdjacentHTML('beforeend', questionHtml);
+}
+
+// Remove Question
+document.addEventListener('click', function(e) {
+    if (e.target.closest('.remove-question')) {
+        const questionItem = e.target.closest('.question-item');
+        const materialIndex = questionItem.closest('.questions-container').dataset.materialIndex;
+        const questionsContainer = questionItem.closest('.questions-container');
+
+        questionItem.remove();
+
+        // If no questions left and quiz is enabled, add one question
+        if (questionsContainer.children.length === 0 &&
+            !questionsContainer.closest('.quiz-section').classList.contains('hidden')) {
+            addQuestion(materialIndex);
+        }
+    }
+});
+
+// Add validation for quiz
+document.getElementById('courseForm').addEventListener('submit', function(e) {
+    const materials = document.querySelectorAll('.material-item');
+    if (materials.length === 0) {
+        e.preventDefault();
+        alert('Minimal harus ada 1 materi!');
+        return false;
+    }
+
+    let hasSubmaterial = false;
+    materials.forEach(material => {
+        const submaterials = material.querySelectorAll('.submaterial-item');
+        if (submaterials.length > 0) {
+            hasSubmaterial = true;
+        }
+    });
+
+    if (!hasSubmaterial) {
+        e.preventDefault();
+        alert('Setiap materi harus memiliki minimal 1 submateri!');
+        return false;
+    }
+
+    // Validasi quiz HANYA jika quiz di-enable
+    let quizError = false;
+    materials.forEach(material => {
+        const quizToggle = material.querySelector('.toggle-quiz');
+        if (quizToggle && quizToggle.checked) {
+            const materialIndex = quizToggle.dataset.materialIndex;
+            const quizSection = document.querySelector(`.quiz-section[data-material-index="${materialIndex}"]`);
+
+            // Cek judul quiz
+            const judulQuiz = quizSection.querySelector('input[name*="[judul_quiz]"]');
+            if (!judulQuiz.value.trim()) {
+                e.preventDefault();
+                alert('Judul quiz tidak boleh kosong!');
+                quizError = true;
+                return false;
+            }
+
+            const questions = material.querySelectorAll('.question-item');
+            if (questions.length === 0) {
+                e.preventDefault();
+                alert('Quiz harus memiliki minimal 1 pertanyaan!');
+                quizError = true;
+                return false;
+            }
+
+            questions.forEach(question => {
+                const correctOption = question.querySelector('input[type="radio"]:checked');
+                if (!correctOption) {
+                    e.preventDefault();
+                    alert('Setiap pertanyaan harus memiliki jawaban yang benar!');
+                    quizError = true;
+                    return false;
+                }
+            });
+        }
+    });
+
+    if (quizError) return false;
 });
 
 // Add first material by default
