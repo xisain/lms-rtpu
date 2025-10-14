@@ -25,7 +25,8 @@ class CourseSeeders extends Seeder
             'start_date' => Carbon::now(),
             'end_date' => Carbon::now(),
             'maxEnrollment'=> 100,
-            'public'=> 1
+            'public'=> 1,
+            'teacher_id'=> 1
         ]);
     }
 }

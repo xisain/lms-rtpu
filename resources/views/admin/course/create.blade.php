@@ -74,6 +74,20 @@
                         <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
                         @enderror
                     </div>
+
+                    <div class="col-span-2">
+                        <label for="teacher_id" class="block text-sm font-medium text-gray-700 mb-2">Teacher *</label>
+                        <select name="teacher_id" id="teacher_id" required
+                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                            <option value="">Pilih Teacher/PIC</option>
+                            @foreach($teachers as $teacher)
+                            <option value="{{ $teacher->id }}">{{ $teacher->name }}</option>
+                            @endforeach
+                        </select>
+                        @error('teacher_id')
+                        <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                        @enderror
+                    </div>
                     <!-- Is Limited Course -->
                     <div class="col-span-2">
                         <label class="flex items-center cursor-pointer">
@@ -261,7 +275,7 @@ document.addEventListener('click', function(e) {
         const container = document.querySelector(`.submaterials-container[data-material-index="${materialIndex}"]`);
 
         const submaterialHtml = `
-            <div class="submaterial-item border border-gray-200 rounded-lg p-3 bg-white">
+            <div class="submaterial-item border border-gray-200 rounded-lg p-3 bg-white" data-submaterial-index="${submaterialIndex}">
                 <div class="flex justify-between items-center mb-3">
                     <h4 class="text-sm font-semibold text-gray-700">Submateri #${submaterialIndex + 1}</h4>
                     <button type="button" class="remove-submaterial text-red-600 hover:text-red-800">
@@ -276,30 +290,65 @@ document.addEventListener('click', function(e) {
                         <label class="block text-xs font-medium text-gray-700 mb-1">Nama Submateri *</label>
                         <input type="text" name="materials[${materialIndex}][submaterials][${submaterialIndex}][nama_submateri]" required
                             class="w-full px-3 py-2 text-sm border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                            placeholder="Contoh: Video Pengenalan">
+                            placeholder="Contoh: Pengenalan Laravel">
                     </div>
                     <div>
                         <label class="block text-xs font-medium text-gray-700 mb-1">Tipe *</label>
-                        <select name="materials[${materialIndex}][submaterials][${submaterialIndex}][type]" required
-                            class="w-full px-3 py-2 text-sm border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                        <select name="materials[${materialIndex}][submaterials][${submaterialIndex}][type]"
+                                class="sub-type w-full px-3 py-2 text-sm border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                data-material-index="${materialIndex}"
+                                data-submaterial-index="${submaterialIndex}" required>
                             <option value="">Pilih Tipe</option>
                             <option value="text">Text</option>
-                            <option value="video">Video</option>
+                            <option value="video">Video (YouTube)</option>
                             <option value="pdf">PDF</option>
                         </select>
                     </div>
                 </div>
 
-                <div>
-                    <label class="block text-xs font-medium text-gray-700 mb-1">Isi Materi *</label>
-                    <textarea name="materials[${materialIndex}][submaterials][${submaterialIndex}][isi_materi]" rows="3" required
-                        class="w-full px-3 py-2 text-sm border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                        placeholder="URL video, konten text, atau link PDF..."></textarea>
+                <div class="sub-content">
+                    <!-- Isi Materi akan muncul di sini berdasarkan tipe -->
                 </div>
             </div>
         `;
 
         container.insertAdjacentHTML('beforeend', submaterialHtml);
+    }
+});
+
+// Handle perubahan tipe submateri
+document.addEventListener('change', function(e) {
+    if (e.target.classList.contains('sub-type')) {
+        const typeSelect = e.target;
+        const materialIndex = typeSelect.dataset.materialIndex;
+        const submaterialIndex = typeSelect.dataset.submaterialIndex;
+        const parent = typeSelect.closest('.submaterial-item').querySelector('.sub-content');
+
+        // Reset isi konten
+        parent.innerHTML = '';
+
+        if (typeSelect.value === 'text') {
+            parent.innerHTML = `
+                <label class="block text-xs font-medium text-gray-700 mb-1">Isi Materi (Teks) *</label>
+                <textarea name="materials[${materialIndex}][submaterials][${submaterialIndex}][isi_materi]" rows="4" required
+                    class="w-full px-3 py-2 text-sm border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    placeholder="Tulis isi materi di sini..."></textarea>
+            `;
+        } else if (typeSelect.value === 'video') {
+            parent.innerHTML = `
+                <label class="block text-xs font-medium text-gray-700 mb-1">Link YouTube *</label>
+                <input type="text" name="materials[${materialIndex}][submaterials][${submaterialIndex}][isi_materi]" required
+                    class="w-full px-3 py-2 text-sm border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    placeholder="https://www.youtube.com/watch?v=...">
+            `;
+        } else if (typeSelect.value === 'pdf') {
+            parent.innerHTML = `
+                <label class="block text-xs font-medium text-gray-700 mb-1">Upload File PDF *</label>
+                <input type="file" name="materials[${materialIndex}][submaterials][${submaterialIndex}][isi_materi]"
+                    accept="application/pdf" required
+                    class="w-full px-3 py-2 text-sm border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+            `;
+        }
     }
 });
 

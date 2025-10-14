@@ -11,7 +11,7 @@ class User extends Authenticatable
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable;
-
+    protected $with = ['role'];
     /**
      * The attributes that are mass assignable.
      *
@@ -33,6 +33,7 @@ class User extends Authenticatable
     protected $hidden = [
         'password',
         'remember_token',
+        'roles_id',
     ];
 
     /**
@@ -52,5 +53,8 @@ class User extends Authenticatable
     }
     public function role() {
         return $this->belongsTo(role::class, 'roles_id');
+    }
+    public function teacher(){
+        return $this->hasMany(course::class);
     }
 }

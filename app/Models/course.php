@@ -16,7 +16,8 @@ class course extends Model
         'start_date',
         'end_date',
         'maxEnrollment',
-        'public'
+        'public',
+        'teacher_id',
     ];
 
     public function category() {
@@ -27,5 +28,8 @@ class course extends Model
     }
     public function enrollment() {
         return $this->hasMany(enrollment::class);
+    }
+    public function teacher(){
+        return $this->belongsTo(User::class, 'teacher_id');
     }
 }
