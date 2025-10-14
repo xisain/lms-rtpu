@@ -18,36 +18,41 @@ class quizSeeder extends Seeder
     public function run(): void
     {
 
-        $quiz = Quiz::create([
-            'material_id' => material::get()->first()->id,
-            'judul_quiz' => 'Materi Laravel 1',
-            'is_required' => true,
-        ]);
+        $materialIds = [1, 2, 3]; // daftar material_id yang ingin dibuatkan quiz
 
-        // Buat 10 pertanyaan
-        for ($i = 1; $i <= 10; $i++) {
-            $question = quiz_question::create([
-                'quiz_id' => $quiz->id,
-                'pertanyaan' => "Pertanyaan ke-$i: Apa itu Laravel?",
+        foreach ($materialIds as $materialId) {
+            // Buat quiz untuk tiap material
+            $quiz = Quiz::create([
+                'material_id' => $materialId,
+                'judul_quiz' => "Materi Laravel $materialId",
+                'is_required' => true,
             ]);
 
-            // Buat 4 pilihan jawaban
-            $options = [
-                'Framework PHP',
-                'Bahasa pemrograman',
-                'Database',
-                'Editor teks',
-            ];
-
-            // Tentukan jawaban benar secara acak
-            $correctIndex = array_rand($options);
-
-            foreach ($options as $index => $optionText) {
-                quiz_option::create([
-                    'quiz_question_id' => $question->id,
-                    'teks_pilihan' => $optionText,
-                    'is_correct' => $index === $correctIndex,
+            // Buat 10 pertanyaan untuk tiap quiz
+            for ($i = 1; $i <= 10; $i++) {
+                $question = quiz_question::create([
+                    'quiz_id' => $quiz->id,
+                    'pertanyaan' => "Pertanyaan ke-$i untuk material $materialId: Apa itu Laravel?",
                 ]);
+
+                // Pilihan jawaban
+                $options = [
+                    'Framework PHP',
+                    'Bahasa pemrograman',
+                    'Database',
+                    'Editor teks',
+                ];
+
+                // Pilih jawaban benar secara acak
+                $correctIndex = array_rand($options);
+
+                foreach ($options as $index => $optionText) {
+                    quiz_option::create([
+                        'quiz_question_id' => $question->id,
+                        'teks_pilihan' => $optionText,
+                        'is_correct' => $index === $correctIndex,
+                    ]);
+                }
             }
         }
     }
