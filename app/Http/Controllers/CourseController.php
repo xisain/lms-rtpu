@@ -18,6 +18,7 @@ use App\Models\quiz_question;
 use App\Models\QuizAttempt;
 use App\Models\QuizOption;
 use Illuminate\Support\Facades\DB;
+use App\Models\User;
 
 
 class CourseController extends Controller
@@ -37,8 +38,12 @@ class CourseController extends Controller
     public function create()
     {
         $category = category::all();
+        $teacher = User::with('role')->whereHas('role', function ($q) {
+            $q->where('id', 2);
+        })->get();
         return view('admin.course.create', [
             'categories' => $category,
+            'teachers' => $teacher
         ]);
     }
 
@@ -47,17 +52,17 @@ class CourseController extends Controller
      */
     public function store(Request $request)
     {
-
         $validated = $request->validate([
             'category_id' => 'required|exists:categories,id',
             'nama_course' => 'required|string|max:255',
             'description' => 'required|string',
             'image_link' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
-            'isLimitedCourse' => 'boolean', // tidak wajib di isi
+            'isLimitedCourse' => 'boolean',
             'start_date' => 'nullable|required_if:isLimitedCourse,1|date',
             'end_date' => 'nullable|required_if:isLimitedCourse,1|date|after:start_date',
             'maxEnrollment' => 'nullable|required_if:isLimitedCourse,1|integer|min:1',
             'public' => 'boolean',
+            'teacher_id' => 'required|exists:users,id',
 
             // Validasi materials
             'materials' => 'required|array|min:1',
@@ -67,16 +72,16 @@ class CourseController extends Controller
             'materials.*.quiz.questions.*.pertanyaan' => 'nullable|string',
             'materials.*.quiz.questions.*.options' => 'nullable|array',
             'materials.*.quiz.questions.*.correct_option' => 'nullable|integer|min:0|max:3',
-            // Validasi submaterials
+
+            // Validasi submaterials - PERBAIKAN DI SINI
             'materials.*.submaterials' => 'required|array|min:1',
             'materials.*.submaterials.*.nama_submateri' => 'required|string|max:255',
             'materials.*.submaterials.*.type' => 'required|in:text,video,pdf',
-            'materials.*.submaterials.*.isi_materi' => 'required|string',
+            'materials.*.submaterials.*.isi_materi' => 'required_if:materials.*.submaterials.*.type,text,video|nullable',
         ]);
 
         $imagePath = null;
         if ($request->hasFile('image_link')) {
-            // Simpan ke storage/app/public/course_images
             $imagePath = $request->file('image_link')->store('course/images', 'public');
         }
 
@@ -90,31 +95,52 @@ class CourseController extends Controller
             'end_date' => $validated['end_date'] ?? null,
             'maxEnrollment' => $validated['maxEnrollment'] ?? null,
             'public' => $validated['public'] ?? false,
-            'image_link' => $imagePath, // tambahkan ini
+            'image_link' => $imagePath,
+            'teacher_id' => $validated['teacher_id'],
         ]);
 
-
-        foreach ($validated['materials'] as $mat) {
+        foreach ($validated['materials'] as $materialIndex => $mat) {
             $material = material::create([
                 'course_id' => $course->id,
                 'nama_materi' => $mat['nama_materi'],
             ]);
 
-            foreach ($mat['submaterials'] as $sub) {
-                submaterial::create([
-                    'material_id' => $material->id,
-                    'nama_submateri' => $sub['nama_submateri'],
-                    'type' => $sub['type'],
-                    'isi_materi' => $sub['isi_materi'],
-                ]);
+            // PERBAIKAN: Cek apakah submaterials ada
+            if (isset($mat['submaterials']) && is_array($mat['submaterials'])) {
+                foreach ($mat['submaterials'] as $submaterialIndex => $sub) {
+                    $content = null;
+
+                    // Tentukan isi_materi berdasarkan tipe
+                    if ($sub['type'] === 'text') {
+                        $content = $sub['isi_materi'] ?? '';
+                    } elseif ($sub['type'] === 'video') {
+                        $content = $sub['isi_materi'] ?? '';
+                    } elseif ($sub['type'] === 'pdf') {
+                        // PERBAIKAN: Gunakan Request untuk mengakses file
+                        $fileKey = "materials.{$materialIndex}.submaterials.{$submaterialIndex}.isi_materi";
+
+                        if ($request->hasFile($fileKey)) {
+                            $pdfPath = $request->file($fileKey)->store('course/pdf', 'public');
+                            $content = $pdfPath;
+                        }
+                    }
+
+                    submaterial::create([
+                        'material_id' => $material->id,
+                        'nama_submateri' => $sub['nama_submateri'],
+                        'type' => $sub['type'],
+                        'isi_materi' => $content,
+                    ]);
+                }
             }
+
+            // Handle Quiz (tetap sama)
             if (
                 isset($mat['quiz']['judul_quiz']) &&
                 !empty($mat['quiz']['judul_quiz']) &&
                 isset($mat['quiz']['questions']) &&
                 count($mat['quiz']['questions']) > 0
             ) {
-
                 $quiz = quiz::create([
                     'material_id' => $material->id,
                     'judul_quiz' => $mat['quiz']['judul_quiz'],
@@ -122,7 +148,6 @@ class CourseController extends Controller
                 ]);
 
                 foreach ($mat['quiz']['questions'] as $q) {
-                    // Skip jika pertanyaan kosong
                     if (empty($q['pertanyaan'])) continue;
 
                     $question = quiz_question::create([
@@ -132,7 +157,6 @@ class CourseController extends Controller
 
                     if (isset($q['options']) && is_array($q['options'])) {
                         foreach ($q['options'] as $index => $optionText) {
-                            // Skip opsi yang kosong
                             if (empty($optionText)) continue;
 
                             quiz_option::create([

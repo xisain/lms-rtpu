@@ -23,6 +23,7 @@ return new class extends Migration
             $table->date('end_date')->nullable();
             $table->integer('maxEnrollment')->nullable();
             $table->boolean('public')->default(0);
+            $table->foreignId('teacher_id')->constrained('users')->onDelete('cascade');
             $table->timestamps();
         });
     }
