@@ -32,7 +32,7 @@
     <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
+    @vite(['resources/css/app.css','resources/js/app.js'])
     <style>
         .sidebar-transition {
             transition: all 0.25s ease-in-out;
@@ -56,8 +56,7 @@
                 LMS RTPU
             </span>
         </div>
-
-            <!-- NAVIGATION -->
+        @if (auth()->user()->role->name == "admin")
             <nav class="px-4 py-2 space-y-2">
                 <a href="{{ route('admin.home') }}"
                    class="flex items-center px-3 py-2 rounded-xl transition-all duration-200 {{ request()->routeIs('admin.home') ? 'bg-[#009999] font-semibold' : 'text-gray-900 hover:bg-gray-100' }}"
@@ -100,6 +99,19 @@
                 </a>
                 @endif
             </nav>
+        @else
+        <a href="{{ route('dosen.course.index') }}"
+                   class="flex items-center px-3 py-2 rounded-xl transition-all duration-200 {{ request()->routeIs('dosen.course.index') ? 'bg-[#009999] font-semibold' : 'text-gray-900 hover:bg-gray-100' }}"
+                   :class="{ 'justify-center': !sidebarOpen, 'justify-start': sidebarOpen }">
+                    <i class="fa-solid fa-plus" :class="{ 'text-lg': !sidebarOpen }"></i>
+                    <span class="ml-3 transition-opacity duration-200"
+                          :class="{ 'opacity-0 hidden': !sidebarOpen, 'opacity-100': sidebarOpen }">
+                        Buat Course
+                    </span>
+                </a>
+        @endif)
+            <!-- NAVIGATION -->
+
         </div>
 
         <!-- USER MENU DROPDOWN (bagian bawah sidebar) -->
@@ -163,6 +175,5 @@
 
     @stack('scripts')
     @include('sweetalert2::index')
-    @stack('scripts')
 </body>
 </html>
