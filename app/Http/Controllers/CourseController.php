@@ -28,8 +28,14 @@ class CourseController extends Controller
      */
     public function index()
     {
-        $course = course::with('material', 'material.submaterial')->get();
-        return view('admin.course.index', ['course' => $course]);
+        if(Auth::user()->role->name == "admin") {
+            $course = course::with('material', 'material.submaterial')->get();
+            return view('admin.course.index', ['course' => $course]);
+        }
+        else {
+            $course = course::with('material', 'material.submaterial')->where('teacher_id','=', Auth::user()->id)->get();
+            return view('dosen.course.index', ['course' => $course]);
+        }
     }
 
     /**
@@ -221,8 +227,14 @@ class CourseController extends Controller
      */
     public function edit($id)
     {
-        $course = course::with('material', 'category', 'material.submaterial')->findOrFail($id);
-        return view('admin.course.edit', ['course' => $course]);
+        $course = Course::with('material.submaterial', 'material.quiz.questions.options')->findOrFail($id);
+        $category = Category::all();
+        $teachers = User::whereHas('role', fn($q) => $q->where('name', 'dosen'))->get();
+        return view('admin.course.edit', [
+            'course' => $course,
+            'categories'=>$category,
+            'teachers'=> $teachers
+        ]);
     }
 
     /**

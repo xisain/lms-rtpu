@@ -16,7 +16,7 @@ Route::middleware('guest')->group(function () {
     Route::post('/login', [AuthController::class, 'login']);
     Route::get('/register', [AuthController::class, 'showRegister'])->name('register');
     Route::post('/register', [AuthController::class, 'register']);
-    Route::get('/daftar-kelas',[CourseController::class,'guestDaftarKelas'])->name('list.kelas');
+    Route::get('/daftar-kelas', [CourseController::class, 'guestDaftarKelas'])->name('list.kelas');
 });
 
 Route::middleware('auth')->group(function () {
@@ -29,14 +29,14 @@ Route::middleware('auth')->group(function () {
         Route::get('{slug}/{material?}/{submaterial?}', [CourseController::class, 'mulai'])->name('course.mulai');
         Route::post('{slug}/enroll', [EnrollmentController::class, 'store'])->name('course.enroll');
         // Buat quiz nanti jangan di apa apain
-        Route::post('{slug}/{material}/quiz/submit',[CourseController::class, 'quizSubmit'])->name('quiz.submit');
+        Route::post('{slug}/{material}/quiz/submit', [CourseController::class, 'quizSubmit'])->name('quiz.submit');
     });
 
     Route::prefix('admin')->middleware('admin')->group(function () {
-        Route::post('/sidebar/toggle', function(Illuminate\Http\Request $request) {
-    $request->session()->put('sidebar_open', $request->input('open'));
-    return response()->json(['success' => true]);
-})->name('sidebar.toggle');
+        Route::post('/sidebar/toggle', function (Illuminate\Http\Request $request) {
+            $request->session()->put('sidebar_open', $request->input('open'));
+            return response()->json(['success' => true]);
+        })->name('sidebar.toggle');
         Route::get('/', [adminController::class, 'index'])->name('admin.home');
 
         Route::prefix('category')->group(function () {
@@ -59,16 +59,20 @@ Route::middleware('auth')->group(function () {
             Route::get('/', [CourseController::class, 'index'])->name('admin.course.index');
             Route::get('/create', [CourseController::class, 'create'])->name('course.create');
             Route::post('/', [CourseController::class, 'store'])->name('course.store');
+            Route::post('/edit/{id}/update', [CourseController::class, 'store'])->name('course.update');
             Route::get('/edit/{id}', [CourseController::class, 'edit'])->name('course.edit');
             Route::post('/{id}', [CourseController::class, 'destroy'])->name('course.destroy');
         });
     });
 
     Route::prefix('dosen')->middleware(dosenMiddleware::class)->group(function () {
+        Route::get('/', function () {
+            return view('dosen.dosen');
+        })->name('dosen.home');
         Route::prefix('course')->group(function () {
-            Route::get('/', [CourseController::class, 'index'])->name('admin.course.index');
-            Route::post('/', [CourseController::class, 'store'])->name('course.store');
-            Route::get('/edit/{id}', [CourseController::class, 'edit'])->name('course.edit');
+            Route::get('/', [CourseController::class, 'index'])->name('dosen.course.index');
+            Route::post('edit/{id}/update', [CourseController::class, 'update'])->name('dosen.course.update');
+            Route::get('/edit/{id}', [CourseController::class, 'edit'])->name('dosen.course.edit');
         });
     });
 });
@@ -81,4 +85,3 @@ Route::get('/', function () {
 Route::get('views/course/view', function () {
     return view('course/view');
 })->name('view');
-
