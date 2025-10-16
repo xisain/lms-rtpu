@@ -117,6 +117,9 @@
                     @if(auth()->user()->role->name == "admin")
                     <a href="{{ route('admin.home') }}"
                         class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Admin Dashboard</a>
+                    @elseif(auth()->user()->role->name == "dosen")
+                    <a href="{{ route('dosen.home') }}"
+                        class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Dosen Dashboard</a>
                     @endif
                     <a href="{{ route('home') }}"
                         class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Profile</a>
