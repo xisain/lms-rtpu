@@ -37,10 +37,12 @@
         .sidebar-transition {
             transition: all 0.25s ease-in-out;
         }
+
+        [x-cloak] { display: none !important; }
     </style>
 </head>
 
-<body class="h-full flex bg-gray-100">
+<body class="h-full flex bg-gray-100" x-cloak>
 
     <!-- SIDEBAR -->
     <aside
@@ -107,7 +109,7 @@
             <button @click="userOpen = !userOpen"
                     class="flex items-center justify-between w-full px-4 py-2 text-gray-900 rounded-md"
                     :class="{ 'justify-center px-2': !sidebarOpen }">
-                <div class="flex items-center" :class="{ 'justify-center': !sidebarOpen }">
+                <div class="flex items-center -ml-[5px]" :class="{ 'justify-center': !sidebarOpen }">
                     <i class="fa-solid fa-user-circle" :class="{ 'text-2xl': !sidebarOpen, 'text-2xl mr-4': sidebarOpen }"></i>
                     <span class="text-dark transition-opacity duration-200"
                           :class="{ 'opacity-0 hidden': !sidebarOpen, 'opacity-100': sidebarOpen }">
