@@ -6,6 +6,19 @@
         <h1 class="text-3xl font-bold">Daftar Course</h1>
     </div>
 
+    {{-- 🔹 Flash Message --}}
+    @if (session('success'))
+        <div class="mb-4 p-4 text-green-800 bg-green-100 rounded-lg border border-green-200">
+            {{ session('success') }}
+        </div>
+    @endif
+
+    @if (session('error'))
+        <div class="mb-4 p-4 text-red-800 bg-red-100 rounded-lg border border-red-200">
+            {{ session('error') }}
+        </div>
+    @endif
+
     <div class="bg-white shadow rounded-lg overflow-hidden">
         <table class="min-w-full text-sm text-left text-gray-600">
             <thead class="bg-gray-100 text-gray-700 uppercase text-xs">
@@ -31,7 +44,6 @@
                     </td>
                     <td class="px-6 py-4">
                         @php
-                        // Hitung jumlah material dan total submateri
                         $totalMaterial = $c->material->count();
                         $totalSubmaterial = $c->material->sum(fn($m) => $m->submaterial->count());
                         @endphp

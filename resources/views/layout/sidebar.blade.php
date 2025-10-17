@@ -111,7 +111,7 @@
                         Buat Course
                     </span>
                 </a>
-        @endif)
+        @endif
             <!-- NAVIGATION -->
 
         </div>

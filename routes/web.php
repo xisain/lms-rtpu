@@ -59,9 +59,9 @@ Route::middleware('auth')->group(function () {
             Route::get('/', [CourseController::class, 'index'])->name('admin.course.index');
             Route::get('/create', [CourseController::class, 'create'])->name('course.create');
             Route::post('/', [CourseController::class, 'store'])->name('course.store');
-            Route::post('/edit/{id}/update', [CourseController::class, 'store'])->name('course.update');
+            Route::put('/edit/{id}/update', [CourseController::class, 'update'])->name('course.update');
             Route::get('/edit/{id}', [CourseController::class, 'edit'])->name('course.edit');
-            Route::post('/{id}', [CourseController::class, 'destroy'])->name('course.destroy');
+            Route::delete('/{id}', [CourseController::class, 'destroy'])->name('course.destroy');
         });
     });
 
@@ -71,7 +71,7 @@ Route::middleware('auth')->group(function () {
         })->name('dosen.home');
         Route::prefix('course')->group(function () {
             Route::get('/', [CourseController::class, 'index'])->name('dosen.course.index');
-            Route::post('edit/{id}/update', [CourseController::class, 'update'])->name('dosen.course.update');
+            Route::put('edit/{id}/update', [CourseController::class, 'update'])->name('dosen.course.update');
             Route::get('/edit/{id}', [CourseController::class, 'edit'])->name('dosen.course.edit');
         });
     });

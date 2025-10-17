@@ -1,4 +1,4 @@
-import "./libs/trix";
-import './bootstrap';
 import Swal from 'sweetalert2';
 window.Swal = Swal;
+
+export default Swal

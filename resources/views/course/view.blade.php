@@ -14,8 +14,8 @@
                 @endphp
 
                 @if($type === 'text')
-                <div class="prose max-w-none">
-                    {!! nl2br(e($submateri->isi_materi)) !!}
+                <div class="prose max-w-none trix-content">
+                    {!! ($submateri->isi_materi) !!}
                 </div>
                 @elseif($type === 'pdf')
                 <iframe src="{{ asset('storage/' . $submateri->isi_materi) }}"

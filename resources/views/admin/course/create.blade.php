@@ -1,5 +1,5 @@
-@extends('layout.navbar')
-
+@extends('layout.sidebar')
+{{-- create.blade.php --}}
 @section('content')
 <div class="container mx-auto px-4 py-6">
     <div class="max-w-4xl mx-auto">
@@ -164,7 +164,7 @@
 
 @push('scripts')
 <script>
-    let materialCount = 0;
+let materialCount = 0;
 let submaterialCounters = {};
 
 // Toggle limited course fields
@@ -324,15 +324,20 @@ document.addEventListener('change', function(e) {
         const submaterialIndex = typeSelect.dataset.submaterialIndex;
         const parent = typeSelect.closest('.submaterial-item').querySelector('.sub-content');
 
-        // Reset isi konten
         parent.innerHTML = '';
 
         if (typeSelect.value === 'text') {
+            // Rich Text Editor
+            const trixId = `trix-${materialIndex}-${submaterialIndex}`;
             parent.innerHTML = `
                 <label class="block text-xs font-medium text-gray-700 mb-1">Isi Materi (Teks) *</label>
-                <textarea name="materials[${materialIndex}][submaterials][${submaterialIndex}][isi_materi]" rows="4" required
-                    class="w-full px-3 py-2 text-sm border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    placeholder="Tulis isi materi di sini..."></textarea>
+                <input id="${trixId}" type="hidden"
+                    name="materials[${materialIndex}][submaterials][${submaterialIndex}][isi_materi]"
+                    required>
+                <trix-editor input="${trixId}"
+                    class="trix-content border border-gray-300 rounded-lg min-h-[200px]"
+                    placeholder="Tulis isi materi di sini...">
+                </trix-editor>
             `;
         } else if (typeSelect.value === 'video') {
             parent.innerHTML = `
@@ -352,6 +357,36 @@ document.addEventListener('change', function(e) {
     }
 });
 
+// Optional: Custom styling dan konfigurasi Trix
+document.addEventListener('trix-initialize', function(event) {
+    const editor = event.target;
+
+    // Konfigurasi toolbar jika perlu
+    // Contoh: menghilangkan button tertentu
+    const toolbar = editor.toolbarElement;
+    // Hide file attachment button (karena kita handle PDF terpisah)
+    const fileTools = toolbar.querySelector('[data-trix-button-group="file-tools"]',);
+    if (fileTools) {
+        fileTools.style.display = 'none';
+    }
+    const linkButton = toolbar.querySelector('[data-trix-action="link"]');
+    if (linkButton) {
+        linkButton.style.display = 'none';
+    }
+});
+
+// Prevent file attachment di Trix (karena kita handle upload terpisah)
+document.addEventListener('trix-file-accept', function(event) {
+    event.preventDefault();
+    Swal.fire({
+        title: 'Perhatian!',
+        text: 'Untuk upload file PDF, gunakan opsi "PDF" pada tipe submateri.',
+        icon: 'info',
+        confirmButtonText: 'OK',
+        confirmButtonColor: '#009999'
+    });
+});
+
 // Remove Submaterial
 document.addEventListener('click', function(e) {
     if (e.target.closest('.remove-submaterial')) {
@@ -364,7 +399,13 @@ document.getElementById('courseForm').addEventListener('submit', function(e) {
     const materials = document.querySelectorAll('.material-item');
     if (materials.length === 0) {
         e.preventDefault();
-        alert('Minimal harus ada 1 materi!');
+        Swal.fire({
+            title: 'Gagal!',
+            text: 'Minimal harus ada 1 materi!',
+            icon: 'warning',
+            confirmButtonText: 'OK',
+            confirmButtonColor: '#009999'
+        });
         return false;
     }
 
@@ -378,7 +419,13 @@ document.getElementById('courseForm').addEventListener('submit', function(e) {
 
     if (!hasSubmaterial) {
         e.preventDefault();
-        alert('Setiap materi harus memiliki minimal 1 submateri!');
+        Swal.fire({
+            title: 'Gagal!',
+            text: 'Setiap materi harus memiliki minimal 1 submateri!',
+            icon: 'warning',
+            confirmButtonText: 'OK',
+            confirmButtonColor: '#009999'
+        });
         return false;
     }
 });
@@ -499,7 +546,13 @@ document.getElementById('courseForm').addEventListener('submit', function(e) {
     const materials = document.querySelectorAll('.material-item');
     if (materials.length === 0) {
         e.preventDefault();
-        alert('Minimal harus ada 1 materi!');
+        Swal.fire({
+            title: 'Gagal!',
+            text: 'Minimal harus ada 1 materi!',
+            icon: 'warning',
+            confirmButtonText: 'OK',
+            confirmButtonColor: '#009999'
+        });
         return false;
     }
 
@@ -513,12 +566,20 @@ document.getElementById('courseForm').addEventListener('submit', function(e) {
 
     if (!hasSubmaterial) {
         e.preventDefault();
-        alert('Setiap materi harus memiliki minimal 1 submateri!');
+        Swal.fire({
+            title: 'Gagal!',
+            text: 'Setiap materi harus memiliki minimal 1 submateri!',
+            icon: 'warning',
+            confirmButtonText: 'OK',
+            confirmButtonColor: '#009999'
+        });
         return false;
     }
 
     // Validasi quiz HANYA jika quiz di-enable
     let quizError = false;
+    let quizErrorMessage = '';
+
     materials.forEach(material => {
         const quizToggle = material.querySelector('.toggle-quiz');
         if (quizToggle && quizToggle.checked) {
@@ -528,33 +589,40 @@ document.getElementById('courseForm').addEventListener('submit', function(e) {
             // Cek judul quiz
             const judulQuiz = quizSection.querySelector('input[name*="[judul_quiz]"]');
             if (!judulQuiz.value.trim()) {
-                e.preventDefault();
-                alert('Judul quiz tidak boleh kosong!');
                 quizError = true;
+                quizErrorMessage = 'Judul quiz tidak boleh kosong!';
                 return false;
             }
 
             const questions = material.querySelectorAll('.question-item');
             if (questions.length === 0) {
-                e.preventDefault();
-                alert('Quiz harus memiliki minimal 1 pertanyaan!');
                 quizError = true;
+                quizErrorMessage = 'Quiz harus memiliki minimal 1 pertanyaan!';
                 return false;
             }
 
             questions.forEach(question => {
                 const correctOption = question.querySelector('input[type="radio"]:checked');
                 if (!correctOption) {
-                    e.preventDefault();
-                    alert('Setiap pertanyaan harus memiliki jawaban yang benar!');
                     quizError = true;
+                    quizErrorMessage = 'Setiap pertanyaan harus memiliki jawaban yang benar!';
                     return false;
                 }
             });
         }
     });
 
-    if (quizError) return false;
+    if (quizError) {
+        e.preventDefault();
+        Swal.fire({
+            title: 'Gagal!',
+            text: quizErrorMessage,
+            icon: 'warning',
+            confirmButtonText: 'OK',
+            confirmButtonColor: '#009999'
+        });
+        return false;
+    }
 });
 
 // Add first material by default
