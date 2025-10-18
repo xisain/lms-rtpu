@@ -36,7 +36,7 @@
         <aside class="lg:col-span-1">
             <div class="sticky top-8">
                 <div class="bg-white rounded-xl shadow-md overflow-hidden">
-                    <div class="bg-gradient-to-r from-purple-500 to-purple-700 text-white px-6 py-4">
+                    <div class="bg-gradient-to-r from-teal-700 to-teal-900 text-white px-6 py-4">
                         <h2 class="text-xl font-semibold">Course Module</h2>
                     </div>
 
@@ -44,12 +44,12 @@
                     <div class="module-item" aria-labelledby="module-button-{{ $index }}">
                         <button id="module-button-{{ $index }}" onclick="toggleModule({{ $index }})"
                             aria-expanded="false"
-                            class="w-full px-6 py-4 flex justify-between items-center hover:bg-purple-50 transition-colors group">
-                            <span class="font-medium text-gray-800 group-hover:text-purple-600 transition">
+                            class="w-full px-6 py-4 flex justify-between items-center hover:bg-teal-50 transition-colors group">
+                            <span class="font-medium text-gray-800 group-hover:text-teal-600 transition">
                                 {{ $module->nama_materi }}
                             </span>
                             <svg id="icon-{{ $index }}"
-                                class="w-5 h-5 text-gray-500 group-hover:text-purple-600 transition-all duration-300"
+                                class="w-5 h-5 text-gray-500 group-hover:text-teal-600 transition-all duration-300"
                                 fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M9 5l7 7-7 7" />
@@ -57,7 +57,7 @@
                         </button>
 
                         <div id="module-{{ $index }}" role="region" aria-hidden="true"
-                            class="module-content bg-purple-50 max-h-0 overflow-hidden transition-all duration-400">
+                            class="module-content bg-teal-50 max-h-0 overflow-hidden transition-all duration-400">
                             <div class="px-6 py-3 space-y-2">
                                 @foreach($module->submaterial as $sub)
                                 @php
@@ -68,11 +68,11 @@
                                 <div class="{{ !$canAccess ? 'opacity-60' : '' }}">
                                     <a href="{{ $canAccess ? route('course.mulai', ['slug' => $course->slugs, 'material' => $module->id, 'submaterial' => $sub->id]) : '#' }}"
                                         class="submodule-item flex items-center gap-3 px-4 py-3 bg-white rounded-lg transition-all border-l-4
-                                                {{ $isActive ? 'border-purple-600' : ($isCompleted ? 'border-green-500' : 'border-transparent') }}
+                                                {{ $isActive ? 'border-teal-600' : ($isCompleted ? 'border-green-500' : 'border-transparent') }}
                                                 {{ $canAccess ? 'cursor-pointer hover:shadow-md' : 'cursor-not-allowed' }}"
                                         @if(!$canAccess) title="Selesaikan materi sebelumnya terlebih dahulu" @endif>
                                         <div class="checkbox w-5 h-5 rounded-full border-2
-                                                    {{ $isCompleted ? 'border-green-500 bg-green-500' : ($isActive ? 'border-purple-600 bg-purple-600' : 'border-gray-300') }}
+                                                    {{ $isCompleted ? 'border-green-500 bg-green-500' : ($isActive ? 'border-teal-600 bg-teal-600' : 'border-gray-300') }}
                                                     flex items-center justify-center transition-all">
                                             @if($isCompleted || $isActive)
                                             <svg class="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
@@ -111,11 +111,11 @@
                                 <div class="{{ !$canAccessQuiz ? 'opacity-60' : '' }} mt-2">
                                     <a href="{{ $canAccessQuiz ? route('course.mulai', ['slug' => $course->slugs, 'material' => $module->id, 'submaterial' => 'quiz']) : '#' }}"
                                         class="submodule-item flex items-center gap-3 px-4 py-3 bg-white rounded-lg transition-all border-l-4
-                                                {{ $isQuizActive ? 'border-purple-600' : ($isQuizCompleted ? 'border-green-500' : 'border-transparent') }}
+                                                {{ $isQuizActive ? 'border-teal-600' : ($isQuizCompleted ? 'border-green-500' : 'border-transparent') }}
                                                 {{ $canAccessQuiz ? 'cursor-pointer hover:shadow-md' : 'cursor-not-allowed' }}"
                                         @if(!$canAccessQuiz) title="Selesaikan semua materi terlebih dahulu" @endif>
                                         <div class="checkbox w-5 h-5 rounded-full border-2
-                                                    {{ $isQuizCompleted ? 'border-green-500 bg-green-500' : ($isQuizActive ? 'border-purple-600 bg-purple-600' : 'border-gray-300') }}
+                                                    {{ $isQuizCompleted ? 'border-green-500 bg-green-500' : ($isQuizActive ? 'border-teal-600 bg-teal-600' : 'border-gray-300') }}
                                                     flex items-center justify-center transition-all">
                                             @if($isQuizCompleted)
                                             <svg class="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
@@ -195,7 +195,7 @@
 
     // Buka otomatis modul aktif
     document.addEventListener("DOMContentLoaded", () => {
-        const activeSub = document.querySelector(".border-purple-600");
+        const activeSub = document.querySelector(".border-teal-600");
         if (activeSub) {
             const moduleEl = activeSub.closest(".module-content");
             const iconEl = moduleEl.previousElementSibling.querySelector("svg");
