@@ -249,7 +249,8 @@ class CourseController extends Controller
      */
     public function update(Request $request, $id)
     {
-        {
+
+        // dd($request->all());
         $course = Course::findOrFail($id);
 
         if (Auth::user()->role->id == 2 && $course->teacher_id != Auth::id()) {
@@ -340,45 +341,46 @@ class CourseController extends Controller
 
                 $updatedMaterialIds[] = $material->id;
 
-            // Handle submaterials
-            if (isset($mat['submaterials']) && is_array($mat['submaterials'])) {
-                $existingSubmaterialIds = $material->submaterial()->pluck('id')->toArray();
-                $updatedSubmaterialIds = [];
+                // Handle submaterials
+                if (isset($mat['submaterials']) && is_array($mat['submaterials'])) {
+                    $existingSubmaterialIds = $material->submaterial()->pluck('id')->toArray();
+                    $updatedSubmaterialIds = [];
 
-                foreach ($mat['submaterials'] as $subIndex => $sub) {
-                    $content = $sub['isi_materi'] ?? null;
+                    foreach ($mat['submaterials'] as $subIndex => $sub) {
+                        $content = $sub['isi_materi'] ?? null;
 
-                    // For PDF type
-                    if ($sub['type'] === 'pdf') {
-                        // If there's a new file upload
-                        $pdfFieldName = "materials.{$materialIndex}.submaterials.{$subIndex}.pdf_file";
-                        if ($request->hasFile($pdfFieldName)) {
-                            // Store the new file
-                            $content = $request->file($pdfFieldName)->store('submaterials/pdf', 'public');
+                        // For PDF type
+                        if ($sub['type'] === 'pdf') {
+                            // If there's a new file upload
+                            $pdfFieldName = "materials.{$materialIndex}.submaterials.{$subIndex}.pdf_file";
+                            if ($request->hasFile($pdfFieldName)) {
+                                // Store the new file
+                                $content = $request->file($pdfFieldName)->store('submaterials/pdf', 'public');
+                            }
+                            // If no new file but has existing PDF
+                            else if (!empty($sub['existing_pdf'])) {
+                                $content = $sub['existing_pdf'];
+                            }
+                            // New submaterial requires a file
+                            else if (!isset($sub['id'])) {
+                                continue; // Skip this submaterial if no file provided for new entry
+                            }
                         }
-                        // If no new file but has existing PDF
-                        else if (!empty($sub['existing_pdf'])) {
-                            $content = $sub['existing_pdf'];
-                        }
-                        // New submaterial requires a file
-                        else if (!isset($sub['id'])) {
-                            continue; // Skip this submaterial if no file provided for new entry
-                        }
-                    }
 
-                    // Skip if no content for required types
-                    if ($content === null && in_array($sub['type'], ['text', 'pdf'])) {
-                        continue;
-                    }
+                        // Skip if no content for required types
+                        if ($content === null && in_array($sub['type'], ['text', 'pdf'])) {
+                            continue;
+                        }
 
-                    $submaterial = $material->submaterial()->updateOrCreate(
-                        ['id' => $sub['id'] ?? null],
-                        [
-                            'nama_submateri' => $sub['nama_submateri'],
-                            'type' => $sub['type'],
-                            'isi_materi' => $content
-                        ]
-                    );                        $updatedSubmaterialIds[] = $submaterial->id;
+                        $submaterial = $material->submaterial()->updateOrCreate(
+                            ['id' => $sub['id'] ?? null],
+                            [
+                                'nama_submateri' => $sub['nama_submateri'],
+                                'type' => $sub['type'],
+                                'isi_materi' => $content
+                            ]
+                        );
+                        $updatedSubmaterialIds[] = $submaterial->id;
                     }
 
                     // Clean up old submaterials
@@ -459,18 +461,74 @@ class CourseController extends Controller
                 ->withErrors(['error' => 'Gagal mengupdate course: ' . $e->getMessage()]);
         }
     }
-    }
     public function destroy(course $course)
     {
         //
     }
 
-    public function showCourse()
+    public function showCourse(Request $request)
     {
-        $course = course::where('public', true)->get();
+        $query = Course::where('public', true);
+
+        // Apply filters if present
+        if ($request->filled('search')) {
+            $query->where(function($q) use ($request) {
+                $q->where('nama_course', 'like', '%' . $request->search . '%')
+                  ->orWhere('description', 'like', '%' . $request->search . '%');
+            });
+        }
+
+        if ($request->filled('category')) {
+            $query->where('category_id', $request->category);
+        }
+
+        if ($request->filled('start_date')) {
+            $query->whereDate('start_date', '>=', $request->start_date);
+        }
+
+        if ($request->filled('end_date')) {
+            $query->whereDate('end_date', '<=', $request->end_date);
+        }
+
+        $course = $query->get();
+        $categories = Category::all();
+
         return view('course.index', [
             'course' => $course,
+            'categories' => $categories
         ]);
+    }
+
+    public function filterCourse(Request $request)
+    {
+        $query = Course::where('public', true);
+
+        // Search filter
+        if ($request->filled('search')) {
+            $query->where(function($q) use ($request) {
+                $q->where('nama_course', 'like', '%' . $request->search . '%')
+                  ->orWhere('description', 'like', '%' . $request->search . '%');
+            });
+        }
+
+        // Category filter
+        if ($request->filled('category')) {
+            $query->where('category_id', $request->category);
+        }
+
+        // Date range filter
+        if ($request->filled('start_date')) {
+            $query->whereDate('start_date', '>=', $request->start_date);
+        }
+
+        if ($request->filled('end_date')) {
+            $query->whereDate('end_date', '<=', $request->end_date);
+        }
+
+        $course = $query->get();
+
+        // Return partial view for AJAX request
+        return view('course.partials.course-cards', compact('course'));
     }
 
     public function guestDaftarKelas()
