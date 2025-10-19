@@ -55,7 +55,7 @@ class SubMaterialSeeders extends Seeder
             [
                 'nama' => 'Slide Presentasi',
                 'type' => 'pdf',
-                'content' => 'materials/slides/' . \Illuminate\Support\Str::slug($materialName) . '.pdf',
+                'content' => 'course/pdf/slide.pdf'
             ],
             [
                 'nama' => 'Video Praktik & Studi Kasus',
@@ -70,7 +70,7 @@ class SubMaterialSeeders extends Seeder
             [
                 'nama' => 'Handout & Cheat Sheet',
                 'type' => 'pdf',
-                'content' => 'materials/handouts/' . \Illuminate\Support\Str::slug($materialName) . '.pdf',
+                'content' => 'course/pdf/handout.pdf'
             ],
             [
                 'nama' => 'Referensi & Sumber Belajar',
