@@ -302,7 +302,7 @@
                                         <input type="file" name="materials[{{ $mIndex }}][submaterials][{{ $sIndex }}][isi_materi]"
                                             accept="application/pdf"
                                             class="w-full px-3 py-2 text-sm border border-gray-300 rounded focus:ring-2 focus:ring-blue-500">
-                                        <input type="hidden" name="materials[{{ $mIndex }}][submaterials][{{ $sIndex }}][existing_pdf]" value="{{ $sub->isi_materi }}">
+                                        <input type="hidden" name="materials[{{ $mIndex }}][submaterials][{{ $sIndex }}][isi_materi]" value="{{ $sub->isi_materi }}">
                                         @endif
                                     </div>
                                 </div>
@@ -541,7 +541,7 @@ document.addEventListener('change', function(e) {
                 <input type="file" name="materials[${materialIndex}][submaterials][${submaterialIndex}][isi_materi]"
                     accept="application/pdf" ${existingPdf ? '' : 'required'}
                     class="w-full px-3 py-2 text-sm border border-gray-300 rounded focus:ring-2 focus:ring-blue-500">
-                ${existingPdf ? `<input type="hidden" name="materials[${materialIndex}][submaterials][${submaterialIndex}][existing_pdf]" value="${existingPdf}">` : ''}
+                ${existingPdf ? `<input type="hidden" name="materials[${materialIndex}][submaterials][${submaterialIndex}][isi_materi]" value="${existingPdf}">` : ''}
             `;
         }
     }

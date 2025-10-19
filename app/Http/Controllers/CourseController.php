@@ -58,7 +58,7 @@ class CourseController extends Controller
      */
     public function store(Request $request)
     {
-        // dd($request->all());
+
         $validated = $request->validate([
             'category_id' => 'required|exists:categories,id',
             'nama_course' => 'required|string|max:255',
@@ -249,7 +249,6 @@ class CourseController extends Controller
      */
     public function update(Request $request, $id)
     {
-
         // dd($request->all());
         $course = Course::findOrFail($id);
 
@@ -349,17 +348,18 @@ class CourseController extends Controller
                     foreach ($mat['submaterials'] as $subIndex => $sub) {
                         $content = $sub['isi_materi'] ?? null;
 
-                        // For PDF type
+                            // For PDF type
                         if ($sub['type'] === 'pdf') {
                             // If there's a new file upload
-                            $pdfFieldName = "materials.{$materialIndex}.submaterials.{$subIndex}.pdf_file";
+                            $pdfFieldName = "materials.{$materialIndex}.submaterials.{$subIndex}.isi_materi";
+
                             if ($request->hasFile($pdfFieldName)) {
                                 // Store the new file
-                                $content = $request->file($pdfFieldName)->store('submaterials/pdf', 'public');
+                                $content = $request->file($pdfFieldName)->store('course/pdf', 'public');
                             }
                             // If no new file but has existing PDF
-                            else if (!empty($sub['existing_pdf'])) {
-                                $content = $sub['existing_pdf'];
+                            else if (!empty($sub['isi_materi'])) {
+                                $content = $sub['isi_materi'];
                             }
                             // New submaterial requires a file
                             else if (!isset($sub['id'])) {
