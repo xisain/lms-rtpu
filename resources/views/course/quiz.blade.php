@@ -53,12 +53,13 @@
                 <!-- Score Summary -->
                 <div class="text-center py-8 mb-8">
                     <div class="mb-4">
-                        <svg class="mx-auto h-12 w-12 text-green-500" fill="none" stroke="currentColor"
+                        <svg class="mx-auto h-20 w-20 text-green-500" fill="none" stroke="currentColor"
                             viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
                                 d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                         </svg>
                     </div>
+
                     <h3 class="text-lg font-medium text-gray-900">Quiz Selesai!</h3>
                     <p class="mt-1 text-sm text-gray-500">Anda telah menyelesaikan quiz ini dengan nilai</p>
 
@@ -220,30 +221,30 @@
         <aside class="lg:col-span-1">
             <div class="sticky top-8">
                 <div class="bg-white rounded-xl shadow-md overflow-hidden">
-                    <div class="bg-gradient-to-r from-purple-500 to-purple-700 text-white px-6 py-4">
-                        <h2 class="text-xl font-semibold">Quiz Info</h2>
+                    <div class="px-6 py-4">
+                        <h2 class="text-2xl text-dark font-semibold">Quiz Info</h2>
                     </div>
-                    <div class="p-6 space-y-4">
+                    <div class="p-6 space-y-4 -mt-3">
                         <div>
-                            <h3 class="text-sm font-medium text-gray-500">Materi</h3>
+                            <h3 class="text-lg font-medium text-gray-500">Materi</h3>
                             <p class="mt-1 text-base text-gray-900">{{ $materi->nama_materi }}</p>
                         </div>
                         <div>
-                            <h3 class="text-sm font-medium text-gray-500">Jumlah Pertanyaan</h3>
+                            <h3 class="text-lg font-medium text-gray-500">Jumlah Pertanyaan</h3>
                             <p class="mt-1 text-base text-gray-900">{{ $quiz->questions->count() }}</p>
                         </div>
                         @if($lastAttempt)
                         <div>
-                            <h3 class="text-sm font-medium text-gray-500">Status</h3>
+                            <h3 class="text-lg font-medium text-gray-500">Status</h3>
                             <p class="mt-1">
                                 @if($lastAttempt->status === 'completed')
                                 <span
-                                    class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                    class="inline-flex items-center px-2.5 py-0.5 rounded-full text-sm font-medium bg-green-100 text-green-800">
                                     Selesai
                                 </span>
                                 @else
                                 <span
-                                    class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                                    class="inline-flex items-center px-2.5 py-0.5 rounded-full text-sm font-medium bg-yellow-100 text-yellow-800">
                                     Belum Selesai
                                 </span>
                                 @endif

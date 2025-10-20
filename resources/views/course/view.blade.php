@@ -36,7 +36,7 @@
         <aside class="lg:col-span-1">
             <div class="sticky top-8">
                 <div class="bg-white rounded-xl shadow-md overflow-hidden">
-                    <div class="bg-gradient-to-r from-purple-500 to-purple-700 text-white px-6 py-4">
+                    <div class="bg-[#009999] text-white px-6 py-4">
                         <h2 class="text-xl font-semibold">Course Module</h2>
                     </div>
 
@@ -44,12 +44,12 @@
                     <div class="module-item" aria-labelledby="module-button-{{ $index }}">
                         <button id="module-button-{{ $index }}" onclick="toggleModule({{ $index }})"
                             aria-expanded="false"
-                            class="w-full px-6 py-4 flex justify-between items-center hover:bg-purple-50 transition-colors group">
+                            class="w-full px-6 py-4 flex justify-between items-center hover:bg-purple-50 transition-colors group rounded-lg">
                             <span class="font-medium text-gray-800 group-hover:text-purple-600 transition">
                                 {{ $module->nama_materi }}
                             </span>
                             <svg id="icon-{{ $index }}"
-                                class="w-5 h-5 text-gray-500 group-hover:text-purple-600 transition-all duration-300"
+                                class="w-5 h-5 text-gray-500 group-hover:text-purple-600 transition-all duration-300 "
                                 fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M9 5l7 7-7 7" />
@@ -57,7 +57,7 @@
                         </button>
 
                         <div id="module-{{ $index }}" role="region" aria-hidden="true"
-                            class="module-content bg-purple-50 max-h-0 overflow-hidden transition-all duration-400">
+                            class="module-content bg-[#009999]/10 max-h-0 overflow-hidden transition-all duration-400 rounded-lg">
                             <div class="px-6 py-3 space-y-2">
                                 @foreach($module->submaterial as $sub)
                                 @php
@@ -150,7 +150,7 @@
                                     @php
                                     $progress = App\Models\progress::getMaterialProgress(auth()->id(), $module->id);
                                     @endphp
-                                    <div class="flex items-center justify-between text-xs text-gray-600 mb-1">
+                                    <div class="flex items-center justify-between text-xs text-dark mb-1">
                                         <span>Progress</span>
                                         <span>{{ number_format($progress, 0) }}%</span>
                                     </div>

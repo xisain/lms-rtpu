@@ -57,7 +57,7 @@
                   :class="{ 'opacity-0 hidden': !sidebarOpen, 'opacity-100': sidebarOpen }">
                 LMS RTPU
             </span>
-        </div>
+         </div>
         @if (auth()->user()->role->name == "admin")
             <nav class="px-4 py-2 space-y-2">
                 <a href="{{ route('admin.home') }}"
@@ -83,7 +83,7 @@
                 <a href="{{ route('admin.course.index') }}"
                    class="flex items-center px-3 py-2 rounded-xl transition-all duration-200 {{ request()->routeIs('admin.course.index') ? 'bg-[#009999] font-semibold' : 'text-gray-900 hover:bg-gray-100' }}"
                    :class="{ 'justify-center': !sidebarOpen, 'justify-start': sidebarOpen }">
-                    <i class="fa-solid fa-plus" :class="{ 'text-lg': !sidebarOpen }"></i>
+                    <i class="fa-solid fa-graduation-cap" :class="{ 'text-lg': !sidebarOpen }"></i>
                     <span class="ml-3 transition-opacity duration-200"
                           :class="{ 'opacity-0 hidden': !sidebarOpen, 'opacity-100': sidebarOpen }">
                         Buat Course
@@ -102,27 +102,28 @@
                 @endif
             </nav>
         @else
-        <a href="{{ route('dosen.course.index') }}"
-                   class="flex items-center px-3 py-2 rounded-xl transition-all duration-200 {{ request()->routeIs('dosen.course.index') ? 'bg-[#009999] font-semibold' : 'text-gray-900 hover:bg-gray-100' }}"
-                   :class="{ 'justify-center': !sidebarOpen, 'justify-start': sidebarOpen }">
-                    <i class="fa-solid fa-plus" :class="{ 'text-lg': !sidebarOpen }"></i>
+            <!-- NAVIGATION DOsen -->
+            <nav class="px-4 py-2 space-y-2">
+                <a href="{{ route('dosen.course.index') }}"
+                    class="flex items-center px-3 py-2 rounded-xl transition-all duration-200 {{ request()->routeIs('dosen.course.index') ? 'bg-[#009999] font-semibold' : 'text-gray-900 hover:bg-gray-100' }}"
+                    :class="{ 'justify-center': !sidebarOpen, 'justify-start': sidebarOpen }">
+                    <i class="fa-solid fa-graduation-cap" :class="{ 'text-lg': !sidebarOpen }"></i>
                     <span class="ml-3 transition-opacity duration-200"
-                          :class="{ 'opacity-0 hidden': !sidebarOpen, 'opacity-100': sidebarOpen }">
-                        Buat Course
+                            :class="{ 'opacity-0 hidden': !sidebarOpen, 'opacity-100': sidebarOpen }">
+                        Course Anda
                     </span>
                 </a>
+            </nav>
         @endif
-            <!-- NAVIGATION -->
-
         </div>
 
         <!-- USER MENU DROPDOWN (bagian bawah sidebar) -->
         <div class="relative p-4 border-t border-gray-400 rounded-2xl shadow-lg">
             <button @click="userOpen = !userOpen"
-                    class="flex items-center justify-between w-full px-4 py-2 text-gray-900 rounded-md"
-                    :class="{ 'justify-center px-2': !sidebarOpen }">
-                <div class="flex items-center -ml-[5px]" :class="{ 'justify-center': !sidebarOpen }">
-                    <i class="fa-solid fa-user-circle" :class="{ 'text-2xl': !sidebarOpen, 'text-2xl mr-4': sidebarOpen }"></i>
+                    class="flex items-center w-full px-4 py-2 text-gray-900 rounded-md"
+                    :class="{ 'justify-center px-2': !sidebarOpen, 'justify-between': sidebarOpen }">
+                <div class="flex items-center" :class="{ 'justify-center': !sidebarOpen }">
+                    <i class="fa-solid fa-user-circle text-2xl" :class="{ 'mr-0': !sidebarOpen, 'mr-4': sidebarOpen }"></i>
                     <span class="text-dark transition-opacity duration-200"
                           :class="{ 'opacity-0 hidden': !sidebarOpen, 'opacity-100': sidebarOpen }">
                         {{ auth()->user()->name ?? 'Pengguna' }}

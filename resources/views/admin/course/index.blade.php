@@ -1,7 +1,7 @@
 @extends('layout.sidebar')
 
 @section('content')
-<div class="container mx-auto -mt-4 ml-4">
+<div class="container mx-auto -mt-[15px] ml-4">
     <div class="flex justify-between items-center mb-6">
         <h1 class="text-3xl font-bold">Daftar Course</h1>
         <a href="{{ route('course.create') }}" class="text-white hover:bg-[#0f5757] font-medium bg-[#009999] w-11/11 max-w-lg rounded-[10px] border border-gray-300 p-2 shadow-lg">

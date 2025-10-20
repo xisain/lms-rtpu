@@ -30,8 +30,8 @@
                             @if($isEnrolled)
                             @if($firstMaterial && $firstSubmaterial)
                             <a href="{{ route('course.mulai', ['slug' => $courseData->slugs,'material' => $firstMaterial->id,'submaterial' => $firstSubmaterial->id]) }}"
-                                class="w-full block text-center bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-4 rounded-lg transition duration-200 shadow-md">
-                                Mulai
+                                class="w-full block text-center hover:bg-[#0f5757] bg-[#009999] text-white font-semibold py-3 px-4 rounded-lg transition duration-200 shadow-md">
+                                Start Course
                             </a>
                             @else
                             <p class="text-gray-500 text-center">Belum ada materi.</p>
@@ -47,7 +47,7 @@
                             @endif
                             @else
                             <a href="{{ route('admin.course.index')}}"
-                                class="w-full block text-center bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-4 rounded-lg transition duration-200 shadow-md">
+                                class="w-full block text-center bg-[#009999]  hover:bg-[#0f5757] text-white font-semibold py-3 px-4 rounded-lg transition duration-200 shadow-md">
                                 Lihat di Panel
                             </a>
                             @endif

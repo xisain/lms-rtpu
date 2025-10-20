@@ -1,7 +1,7 @@
 @extends('layout.sidebar')
 
 @section('content')
-<div class="container mx-auto px-4 py-8">
+<div class="container mx-auto px-4 py-8 -mt-11">
     <div class="max-w-7xl mx-auto">
         <div class="bg-white rounded-lg shadow-md overflow-hidden">
             <!-- Header -->

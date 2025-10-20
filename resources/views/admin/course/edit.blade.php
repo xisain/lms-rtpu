@@ -2,10 +2,10 @@
 {{-- edit.blade.php --}}
 @section('content')
 <div class="container mx-auto px-4 py-6">
-    <div class="max-w-5xl mx-auto">
+    <div class="max-w mx-auto -mt-5">
         <!-- Header -->
         <div class="mb-6">
-            <h1 class="text-3xl font-bold text-gray-800">Edit Course</h1>
+            <h1 class="text-3xl font-bold text-dark">Edit Course</h1>
             <p class="text-gray-600 mt-2">Ubah informasi course, tambah atau hapus materi dan submateri</p>
         </div>
 

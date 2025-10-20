@@ -2,14 +2,14 @@
 
 @section('content')
 <div class="container mx-auto px-4 py-8">
-    <div class="max-w-3xl mx-auto">
+        <div class="px-2 py-4 -mt-11">
+            <h4 class="text-3xl font-bold text-dark">Edit Category</h4>
+        </div>
+    <div class="max-w mx-auto">
         <div class="bg-white rounded-lg shadow-md overflow-hidden">
             <!-- Header -->
-            <div class="bg-gradient-to-r from-blue-500 to-blue-600 px-6 py-4">
-                <h4 class="text-xl font-bold text-white">Edit Category</h4>
-            </div>
 
-            <div class="p-6">
+            <div class="p-5 -mt-5">
                 <form action="{{ route('admin.category.update', $category->id) }}" method="POST" class="space-y-6">
                     @csrf
                     @method('PUT')

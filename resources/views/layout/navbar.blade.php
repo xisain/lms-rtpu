@@ -14,6 +14,41 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     @stack('styles')
+    <style>
+        @keyframes border-animate {
+            0% {
+                border-image: linear-gradient(0deg, #009999, transparent) 0;
+                opacity: 1;
+            }
+            25% {
+                border-image: linear-gradient(90deg, #009999, transparent) 1;
+                opacity: 1;
+            }
+            50% {
+                border-image: linear-gradient(180deg, #009999, transparent) 1;
+                opacity: 1;
+            }
+            75% {
+                border-image: linear-gradient(270deg, #009999, transparent) 1;
+                opacity: 1;
+            }
+            90% {
+                border-image: linear-gradient(360deg, #009999, transparent) 1;
+                opacity: 1;
+            }
+            100% {
+                border-image: linear-gradient(360deg, #009999, transparent) 0;
+                opacity: 0; /* 🌟 Efek fade out */
+            }
+        }
+
+        button:focus .animate-border {
+        border-image-slice: 1;
+        border-image-source: linear-gradient(90deg, #009999, transparent);
+        animation: border-animate 2.5s ease-in-out forwards;
+        }
+    </style>
+
 </head>
 
 <body class="font-inter">
@@ -60,23 +95,28 @@
 
                     <!-- Dropdown Kelas -->
                     <div class="relative" x-data="{ openDropdown: false }">
-                        <button @click="openDropdown = !openDropdown"
-                            class="flex items-center text-base font-medium text-gray-700 hover:text-[#0f5757] focus:outline-none">
-                            Kelas Ku
-                            <svg class="w-4 h-4 ml-1 mt-1" fill="currentColor" viewBox="0 0 20 20">
+                        <button 
+                            @click="openDropdown = !openDropdown"
+                            class="relative flex items-center text-base font-medium text-gray-700 hover:text-[#0f5757] 
+                                focus:outline-none focus:ring-0 rounded-md px-2 py-1 transition-all duration-300">
+                            My Course
+                            <svg 
+                                class="w-4 h-4 ml-1 mt-1 transform transition-transform duration-300"
+                                :class="openDropdown ? 'rotate-180 text-[#0f5757]' : 'rotate-0'"
+                                fill="currentColor" viewBox="0 0 20 20">
                                 <path fill-rule="evenodd"
                                     d="M5.23 7.21a.75.75 0 011.06.02L10 10.94l3.71-3.71a.75.75 0 011.06 1.06l-4.24 4.25a.75.75 0 01-1.06 0L5.21 8.27a.75.75 0 01.02-1.06z"
                                     clip-rule="evenodd" />
                             </svg>
+                            <span class="absolute inset-0 rounded-md border-2 border-transparent animate-border"></span>
                         </button>
-
                         <div x-show="openDropdown" x-transition:enter="transition ease-out duration-200 transform"
                             x-transition:enter-start="opacity-0 -translate-y-2"
                             x-transition:enter-end="opacity-100 translate-y-0"
                             x-transition:leave="transition ease-in duration-150 transform"
                             x-transition:leave-start="opacity-100 translate-y-0"
                             x-transition:leave-end="opacity-0 -translate-y-2" @click.away="openDropdown = false"
-                            class="absolute left-0 mt-2 w-48 bg-white rounded-md shadow-lg ring-1 ring-black ring-opacity-5">
+                            class="absolute left-0 mt-4 w-48 bg-white rounded-md shadow-lg ring-1 ring-black ring-opacity-5">
                             @php
                             $enrollments = auth()->user()->enrollment()->with('course')->get();
                             @endphp
@@ -102,18 +142,24 @@
         <div class="hidden lg:flex items-center space-x-4">
             @auth
             <div class="relative" x-data="{ userOpen: false }">
-                <button @click="userOpen = !userOpen"
-                    class="flex items-center text-gray-700 hover:text-[#0f5757] focus:outline-none">
+                <button 
+                    @click="userOpen = !userOpen"
+                    class="flex items-center text-gray-700 hover:text-[#0f5757] focus:outline-none transition-all duration-300 px-2 py-1">
                     <span class="mr-2 font-medium">{{ auth()->user()->name }}</span>
-                    <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
+                    <svg 
+                        class="h-5 w-5 transform transition-transform duration-300"
+                        :class="userOpen ? 'rotate-180 text-[#0f5757]' : 'rotate-0'"
+                        fill="currentColor" viewBox="0 0 20 20">
                         <path fill-rule="evenodd"
                             d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
                             clip-rule="evenodd" />
                     </svg>
+                    <span class="absolute inset-0 rounded-md border-2 border-transparent animate-border"></span>
                 </button>
 
+
                 <div x-show="userOpen" x-transition @click.away="userOpen = false"
-                    class="absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5">
+                    class="absolute right-0 mt-4 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5">
                     @if(auth()->user()->role->name == "admin")
                     <a href="{{ route('admin.home') }}"
                         class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Admin Dashboard</a>
