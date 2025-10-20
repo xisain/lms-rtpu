@@ -2,28 +2,37 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
-use App\Models\course;
-use App\Models\material;
+use App\Models\Course;
+use App\Models\Material;
 
 class MaterialSeeders extends Seeder
 {
-    /**
-     * Run the database seeds.
-     */
     public function run(): void
     {
-        $courses = course::all();
+        $courses = Course::all();
 
         foreach ($courses as $course) {
             $materials = [
-                ['nama_materi' => 'Pengenalan ' . $course->nama_course, 'course_id' => $course->id],
-                ['nama_materi' => 'Konsep Dasar ' . $course->nama_course, 'course_id' => $course->id],
-                ['nama_materi' => 'Implementasi ' . $course->nama_course, 'course_id' => $course->id],
+                [
+                    'nama_materi' => 'Pengenalan ' . $course->nama_course,
+                    'course_id' => $course->id,
+                ],
+                [
+                    'nama_materi' => 'Konsep Dasar ' . $course->nama_course,
+                    'course_id' => $course->id,
+                ],
+                [
+                    'nama_materi' => 'Implementasi ' . $course->nama_course,
+                    'course_id' => $course->id,
+                ],
+                [
+                    'nama_materi' => 'Studi Kasus ' . $course->nama_course,
+                    'course_id' => $course->id,
+                ],
             ];
 
-        material::insert($materials);
-    }
+            Material::insert($materials);
+        }
     }
 }

@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Models\category;
 use App\Models\course;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use App\Models\material;
 use App\Models\submaterial;
 use App\Models\progress;
@@ -17,9 +16,11 @@ use App\Models\quiz_option;
 use App\Models\quiz_question;
 use App\Models\QuizAttempt;
 use App\Models\QuizOption;
-use Illuminate\Support\Facades\DB;
-use App\Models\User;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Auth;
+use App\Models\User;
+use Illuminate\Support\Facades\DB;
 
 class CourseController extends Controller
 {
@@ -57,7 +58,7 @@ class CourseController extends Controller
      */
     public function store(Request $request)
     {
-        // dd($request->all());
+
         $validated = $request->validate([
             'category_id' => 'required|exists:categories,id',
             'nama_course' => 'required|string|max:255',
@@ -248,10 +249,10 @@ class CourseController extends Controller
      */
     public function update(Request $request, $id)
     {
+        // dd($request->all());
         $course = Course::findOrFail($id);
 
-        // Check if user has permission to edit this course
-        if (auth()->user()->role->id == 2 && $course->teacher_id != auth()->id()) {
+        if (Auth::user()->role->id == 2 && $course->teacher_id != Auth::id()) {
             return back()->with('error', 'Anda tidak memiliki akses untuk mengedit course ini.');
         }
 
@@ -266,8 +267,6 @@ class CourseController extends Controller
             'end_date' => 'nullable|required_if:isLimitedCourse,1|date|after:start_date',
             'maxEnrollment' => 'nullable|required_if:isLimitedCourse,1|integer|min:1',
             'public' => 'boolean',
-
-            // Validasi materials
             'materials' => 'required|array|min:1',
             'materials.*.nama_materi' => 'required|string|max:255',
             'materials.*.quiz.judul_quiz' => 'nullable|string|max:255',
@@ -275,35 +274,22 @@ class CourseController extends Controller
             'materials.*.quiz.questions.*.pertanyaan' => 'nullable|string',
             'materials.*.quiz.questions.*.options' => 'nullable|array',
             'materials.*.quiz.questions.*.correct_option' => 'nullable|integer|min:0|max:3',
-
-            // Validasi submaterials
             'materials.*.submaterials' => 'required|array|min:1',
             'materials.*.submaterials.*.nama_submateri' => 'required|string|max:255',
             'materials.*.submaterials.*.type' => 'required|in:text,video,pdf',
             'materials.*.submaterials.*.isi_materi' => 'nullable'
         ];
 
-        // Add teacher_id validation only for admin
         if (auth()->user()->role->id == 1) {
             $rules['teacher_id'] = 'required|exists:users,id';
         }
 
         $validated = $request->validate($rules);
 
-        DB::beginTransaction();
-
         try {
-            // Handle image upload
-            $imagePath = $course->image_link;
-            if ($request->hasFile('image_link')) {
-                // Delete old image
-                if ($imagePath) {
-                    Storage::disk('public')->delete($imagePath);
-                }
-                $imagePath = $request->file('image_link')->store('course/images', 'public');
-            }
+            // 1. Update course basic info first
+            DB::beginTransaction();
 
-            // Prepare course update data
             $courseData = [
                 'category_id' => $validated['category_id'],
                 'nama_course' => $validated['nama_course'],
@@ -314,137 +300,235 @@ class CourseController extends Controller
                 'end_date' => $validated['end_date'] ?? null,
                 'maxEnrollment' => $validated['maxEnrollment'] ?? null,
                 'public' => $validated['public'] ?? false,
-                'image_link' => $imagePath
             ];
 
-            // Only admin can update teacher_id
             if (auth()->user()->role->id == 1 && isset($validated['teacher_id'])) {
                 $courseData['teacher_id'] = $validated['teacher_id'];
             }
 
-            // Update course
             $course->update($courseData);
-
-            // Delete old materials and related data
-            foreach ($course->material as $material) {
-                // Delete PDF files from submaterials
-                foreach ($material->submaterial as $submaterial) {
-                    if ($submaterial->type === 'pdf' && $submaterial->isi_materi) {
-                        Storage::disk('public')->delete($submaterial->isi_materi);
-                    }
-                }
-
-                // Delete quiz and related data
-                if ($material->quiz) {
-                    foreach ($material->quiz->questions as $question) {
-                        $question->options()->delete();
-                    }
-                    $material->quiz->questions()->delete();
-                    $material->quiz->delete();
-                }
-
-                // Delete submaterials
-                $material->submaterial()->delete();
-            }
-
-            // Delete materials
-            $course->material()->delete();
-
-            // Recreate materials
-            foreach ($validated['materials'] as $materialIndex => $mat) {
-                $material = material::create([
-                    'course_id' => $course->id,
-                    'nama_materi' => $mat['nama_materi'],
-                    'order' => $materialIndex + 1
-                ]);
-
-                if (isset($mat['submaterials']) && is_array($mat['submaterials'])) {
-                    foreach ($mat['submaterials'] as $submaterialIndex => $sub) {
-                        $content = null;
-
-                        if ($sub['type'] === 'text') {
-                            $content = $sub['isi_materi'] ?? '';
-                        } elseif ($sub['type'] === 'video') {
-                            $content = $sub['isi_materi'] ?? '';
-                        } elseif ($sub['type'] === 'pdf') {
-                            $fileKey = "materials.{$materialIndex}.submaterials.{$submaterialIndex}.isi_materi";
-
-                            if ($request->hasFile($fileKey)) {
-                                $pdfPath = $request->file($fileKey)->store('course/pdf', 'public');
-                                $content = $pdfPath;
-                            }
-                        }
-
-                        submaterial::create([
-                            'material_id' => $material->id,
-                            'nama_submateri' => $sub['nama_submateri'],
-                            'type' => $sub['type'],
-                            'isi_materi' => $content,
-                            'order' => $submaterialIndex + 1
-                        ]);
-                    }
-                }
-
-                // Handle Quiz
-                if (
-                    isset($mat['quiz']['judul_quiz']) &&
-                    !empty($mat['quiz']['judul_quiz']) &&
-                    isset($mat['quiz']['questions']) &&
-                    count($mat['quiz']['questions']) > 0
-                ) {
-                    $quiz = quiz::create([
-                        'material_id' => $material->id,
-                        'judul_quiz' => $mat['quiz']['judul_quiz'],
-                        'is_required' => true
-                    ]);
-
-                    foreach ($mat['quiz']['questions'] as $q) {
-                        if (empty($q['pertanyaan'])) continue;
-
-                        $question = quiz_question::create([
-                            'quiz_id' => $quiz->id,
-                            'pertanyaan' => $q['pertanyaan']
-                        ]);
-
-                        if (isset($q['options']) && is_array($q['options'])) {
-                            foreach ($q['options'] as $index => $optionText) {
-                                if (empty($optionText)) continue;
-
-                                quiz_option::create([
-                                    'quiz_question_id' => $question->id,
-                                    'teks_pilihan' => $optionText,
-                                    'is_correct' => isset($q['correct_option']) && $index === (int) $q['correct_option']
-                                ]);
-                            }
-                        }
-                    }
-                }
-            }
-
             DB::commit();
 
+            // 2. Handle image upload separately from main transaction
+            if ($request->hasFile('image_link')) {
+                $oldImage = $course->image_link;
+                $newImage = $request->file('image_link')->store('course/images', 'public');
+
+                DB::beginTransaction();
+                $course->update(['image_link' => $newImage]);
+                DB::commit();
+
+                if ($oldImage) {
+                    Storage::disk('public')->delete($oldImage);
+                }
+            }
+
+            // 3. Update materials in chunks
+            $existingMaterialIds = $course->material()->pluck('id')->toArray();
+            $updatedMaterialIds = [];
+
+            foreach ($validated['materials'] as $materialIndex => $mat) {
+                DB::beginTransaction();
+
+                // Create or update material
+                $material = $course->material()->updateOrCreate(
+                    ['id' => $mat['id'] ?? null],
+                    [
+                        'nama_materi' => $mat['nama_materi'],
+                    ]
+                );
+
+                $updatedMaterialIds[] = $material->id;
+
+                // Handle submaterials
+                if (isset($mat['submaterials']) && is_array($mat['submaterials'])) {
+                    $existingSubmaterialIds = $material->submaterial()->pluck('id')->toArray();
+                    $updatedSubmaterialIds = [];
+
+                    foreach ($mat['submaterials'] as $subIndex => $sub) {
+                        $content = $sub['isi_materi'] ?? null;
+
+                            // For PDF type
+                        if ($sub['type'] === 'pdf') {
+                            // If there's a new file upload
+                            $pdfFieldName = "materials.{$materialIndex}.submaterials.{$subIndex}.isi_materi";
+
+                            if ($request->hasFile($pdfFieldName)) {
+                                // Store the new file
+                                $content = $request->file($pdfFieldName)->store('course/pdf', 'public');
+                            }
+                            // If no new file but has existing PDF
+                            else if (!empty($sub['isi_materi'])) {
+                                $content = $sub['isi_materi'];
+                            }
+                            // New submaterial requires a file
+                            else if (!isset($sub['id'])) {
+                                continue; // Skip this submaterial if no file provided for new entry
+                            }
+                        }
+
+                        // Skip if no content for required types
+                        if ($content === null && in_array($sub['type'], ['text', 'pdf'])) {
+                            continue;
+                        }
+
+                        $submaterial = $material->submaterial()->updateOrCreate(
+                            ['id' => $sub['id'] ?? null],
+                            [
+                                'nama_submateri' => $sub['nama_submateri'],
+                                'type' => $sub['type'],
+                                'isi_materi' => $content
+                            ]
+                        );
+                        $updatedSubmaterialIds[] = $submaterial->id;
+                    }
+
+                    // Clean up old submaterials
+                    $deletedSubmaterials = array_diff($existingSubmaterialIds, $updatedSubmaterialIds);
+                    if (!empty($deletedSubmaterials)) {
+                        $material->submaterial()->whereIn('id', $deletedSubmaterials)->delete();
+                    }
+                }
+
+                // Handle quiz
+                if (isset($mat['quiz']['judul_quiz']) && !empty($mat['quiz']['judul_quiz'])) {
+                    $quiz = $material->quiz()->updateOrCreate(
+                        ['material_id' => $material->id],
+                        [
+                            'judul_quiz' => $mat['quiz']['judul_quiz'],
+                            'is_required' => true
+                        ]
+                    );
+
+                    if (isset($mat['quiz']['questions'])) {
+                        $existingQuestionIds = $quiz->questions()->pluck('id')->toArray();
+                        $updatedQuestionIds = [];
+
+                        foreach ($mat['quiz']['questions'] as $q) {
+                            $question = $quiz->questions()->updateOrCreate(
+                                ['id' => $q['id'] ?? null],
+                                ['pertanyaan' => $q['pertanyaan']]
+                            );
+
+                            $updatedQuestionIds[] = $question->id;
+
+                            if (isset($q['options'])) {
+                                $question->options()->delete();
+                                foreach ($q['options'] as $index => $optionText) {
+                                    if (!empty($optionText)) {
+                                        $question->options()->create([
+                                            'teks_pilihan' => $optionText,
+                                            'is_correct' => $index === (int)($q['correct_option'] ?? -1)
+                                        ]);
+                                    }
+                                }
+                            }
+                        }
+
+                        // Clean up old questions
+                        $deletedQuestions = array_diff($existingQuestionIds, $updatedQuestionIds);
+                        if (!empty($deletedQuestions)) {
+                            $quiz->questions()->whereIn('id', $deletedQuestions)->delete();
+                        }
+                    }
+                } else {
+                    $material->quiz()->delete();
+                }
+
+                DB::commit();
+            }
+
+            // Clean up old materials
+            $deletedMaterials = array_diff($existingMaterialIds, $updatedMaterialIds);
+            if (!empty($deletedMaterials)) {
+                DB::beginTransaction();
+                Material::whereIn('id', $deletedMaterials)->delete();
+                DB::commit();
+            }
+
             // Redirect based on user role
-            $redirectRoute = auth()->user()->role->id == 1 ? 'admin.course.index' : 'dosen.course.index';
+            $redirectRoute = Auth::user()->role->id == 1 ? 'admin.course.index' : 'dosen.course.index';
             return redirect()->route($redirectRoute)
                 ->with('success', 'Course berhasil diupdate!');
-
         } catch (\Exception $e) {
             DB::rollBack();
-            return back()->with('error', 'Gagal mengupdate course: ' . $e->getMessage());
+            Log::error('Course Update Error: ' . $e->getMessage());
+            Log::error('Stack trace: ' . $e->getTraceAsString());
+
+            // Redirect dengan pesan error dan input lama
+            return redirect()->back()
+                ->withInput()
+                ->withErrors(['error' => 'Gagal mengupdate course: ' . $e->getMessage()]);
         }
     }
-
     public function destroy(course $course)
     {
         //
     }
 
-    public function showCourse()
+    public function showCourse(Request $request)
     {
-        $course = course::where('public', true)->get();
+        $query = Course::where('public', true);
+
+        // Apply filters if present
+        if ($request->filled('search')) {
+            $query->where(function($q) use ($request) {
+                $q->where('nama_course', 'like', '%' . $request->search . '%')
+                  ->orWhere('description', 'like', '%' . $request->search . '%');
+            });
+        }
+
+        if ($request->filled('category')) {
+            $query->where('category_id', $request->category);
+        }
+
+        if ($request->filled('start_date')) {
+            $query->whereDate('start_date', '>=', $request->start_date);
+        }
+
+        if ($request->filled('end_date')) {
+            $query->whereDate('end_date', '<=', $request->end_date);
+        }
+
+        $course = $query->get();
+        $categories = Category::all();
+
         return view('course.index', [
             'course' => $course,
+            'categories' => $categories
         ]);
+    }
+
+    public function filterCourse(Request $request)
+    {
+        $query = Course::where('public', true);
+
+        // Search filter
+        if ($request->filled('search')) {
+            $query->where(function($q) use ($request) {
+                $q->where('nama_course', 'like', '%' . $request->search . '%')
+                  ->orWhere('description', 'like', '%' . $request->search . '%');
+            });
+        }
+
+        // Category filter
+        if ($request->filled('category')) {
+            $query->where('category_id', $request->category);
+        }
+
+        // Date range filter
+        if ($request->filled('start_date')) {
+            $query->whereDate('start_date', '>=', $request->start_date);
+        }
+
+        if ($request->filled('end_date')) {
+            $query->whereDate('end_date', '<=', $request->end_date);
+        }
+
+        $course = $query->get();
+
+        // Return partial view for AJAX request
+        return view('course.partials.course-cards', compact('course'));
     }
 
     public function guestDaftarKelas()
