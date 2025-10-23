@@ -2,7 +2,7 @@
 {{-- create.blade.php --}}
 @section('content')
 <div class="container mx-auto px-4 py-6">
-    <div class="max-w-4xl mx-auto">
+    <div class="max-w mx-auto">
         <!-- Header -->
         <div class="mb-6">
             <h1 class="text-3xl font-bold text-gray-800">Buat Course Baru</h1>
@@ -11,7 +11,7 @@
         @if ($errors->any())
         <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-6">
             <strong class="font-semibold">Terjadi kesalahan:</strong>
-            <ul class="mt-2 list-disc list-inside text-sm">
+            <ul class="mt-2 list-disc list-inside text-sm"> 
                 @foreach ($errors->all() as $error)
                 <li>{{ $error }}</li>
                 @endforeach
@@ -56,14 +56,20 @@
 
                     <!-- Description -->
                     <div class="col-span-2">
-                        <label for="description" class="block text-sm font-medium text-gray-700 mb-2">Deskripsi
-                            *</label>
+                        <label for="description" class="block text-sm font-medium text-gray-700 mb-2">
+                            Deskripsi *
+                        </label>
                         <textarea name="description" id="description" rows="4" required
                             class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                             placeholder="Jelaskan tentang course ini..."></textarea>
-                        @error('description')
-                        <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
-                        @enderror
+                        <div class="flex justify-between items-center mt-1">
+                            <div>
+                                @error('description')
+                                <p class="text-red-500 text-sm">{{ $message }}</p>
+                                @enderror
+                            </div>
+                            <p id="wordCount" class="text-sm text-gray-600">0 / 100 kata</p>
+                        </div>
                     </div>
                     <div class="col-span-2">
                         <label for="image_link" class="block text-sm font-medium text-gray-700 mb-2">Gambar Course
@@ -137,7 +143,7 @@
                 <div class="flex justify-between items-center mb-4 border-b pb-2">
                     <h2 class="text-xl font-semibold text-gray-800">Materi Course</h2>
                     <button type="button" id="addMaterial"
-                        class="text-white hover:bg-[#0f5757] font-medium bg-[#009999] w-11/11 max-w-lg rounded-[10px] border border-gray-300 p-2 shadow-lg transition">
+                        class="text-white hover:bg-[#0f5757] font-medium bg-[#009999] max-w-lg rounded-[10px] border border-gray-300 p-2 shadow-lg transition">
                         + Tambah Materi
                     </button>
                 </div>
@@ -154,7 +160,7 @@
                     Batal
                 </a>
                 <button type="submit"
-                    class="text-white hover:bg-[#0f5757] font-medium bg-[#009999] w-11/11 max-w-lg rounded-[10px] border border-gray-300 p-2 shadow-lg transition">
+                    class="text-white hover:bg-[#0f5757] font-medium bg-[#009999]  max-w-lg rounded-[10px] border border-gray-300 p-2 shadow-lg transition">
                     Simpan Course
                 </button>
             </div>
@@ -232,7 +238,7 @@ document.getElementById('addMaterial').addEventListener('click', function() {
                             <div class="questions-container space-y-4" data-material-index="${materialIndex}">
                                 <!-- Questions will be added here -->
                             </div>
-                            <button type="button" class="add-question mt-3 text-sm bg-gray-100 hover:bg-gray-200 text-gray-600 py-2 px-4 rounded"
+                            <button type="button" class="add-question mt-3 text-base bg-[#009999] hover:bg-[#0f5757] text-white py-2 px-4 rounded-lg"
                                 data-material-index="${materialIndex}">
                                 + Tambah Pertanyaan
                             </button>
@@ -244,7 +250,7 @@ document.getElementById('addMaterial').addEventListener('click', function() {
             <div class="mb-3">
                 <div class="flex justify-between items-center mb-2">
                     <label class="text-sm font-medium text-gray-700">Submateri</label>
-                    <button type="button" class="add-submaterial text-white hover:bg-[#0f5757] font-small bg-[#009999] w-11/11 max-w-lg rounded-[10px] border border-gray-300 p-2 shadow-lg transition"
+                    <button type="button" class="add-submaterial text-white hover:bg-[#0f5757] font-small bg-[#009999]  max-w-lg rounded-[10px] border border-gray-300 p-2 shadow-lg transition"
                         data-material-index="${materialIndex}">
                         + Tambah Submateri
                     </button>
@@ -539,6 +545,64 @@ document.addEventListener('click', function(e) {
             addQuestion(materialIndex);
         }
     }
+});
+
+// maksimal teks deskripsi
+document.addEventListener('DOMContentLoaded', function() {
+    const descriptionField = document.getElementById('description');
+    const wordCountDisplay = document.getElementById('wordCount');
+    const maxWords = 100;
+
+    function countWords(text) {
+        // Trim dan split berdasarkan whitespace, lalu filter empty strings
+        return text.trim().split(/\s+/).filter(word => word.length > 0).length;
+    }
+
+    function updateWordCount() {
+        const text = descriptionField.value;
+        const wordCount = countWords(text);
+        
+        wordCountDisplay.textContent = `${wordCount} / ${maxWords} kata`;
+        
+        if (wordCount > maxWords) {
+            wordCountDisplay.classList.remove('text-gray-600');
+            wordCountDisplay.classList.add('text-red-600', 'font-semibold');
+        } else if (wordCount > maxWords * 0.9) {
+            // Warning saat mendekati limit (90%)
+            wordCountDisplay.classList.remove('text-gray-600', 'text-red-600');
+            wordCountDisplay.classList.add('text-orange-500');
+        } else {
+            wordCountDisplay.classList.remove('text-red-600', 'text-orange-500', 'font-semibold');
+            wordCountDisplay.classList.add('text-gray-600');
+        }
+    }
+
+    // Update word count saat mengetik
+    descriptionField.addEventListener('input', updateWordCount);
+
+    // Validasi saat form submit
+    document.getElementById('courseForm').addEventListener('submit', function(e) {
+        const wordCount = countWords(descriptionField.value);
+        
+        if (wordCount > maxWords) {
+            e.preventDefault();
+            e.stopImmediatePropagation();
+            
+            Swal.fire({
+                title: 'Deskripsi Terlalu Panjang!',
+                text: `Deskripsi Anda ${wordCount} kata. Maksimal hanya ${maxWords} kata. Silakan persingkat deskripsi Anda.`,
+                icon: 'warning',
+                confirmButtonText: 'OK',
+                confirmButtonColor: '#009999'
+            });
+            
+            // Scroll ke field description
+            descriptionField.focus();
+            descriptionField.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            
+            return false;
+        }
+    }, true); // Use capture phase untuk prioritas
 });
 
 // Add validation for quiz

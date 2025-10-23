@@ -4,12 +4,12 @@
 <div class="container mx-auto -mt-[15px] ml-4">
     <div class="flex justify-between items-center mb-6">
         <h1 class="text-3xl font-bold">Daftar Course</h1>
-        <a href="{{ route('course.create') }}" class="text-white hover:bg-[#0f5757] font-medium bg-[#009999] w-11/11 max-w-lg rounded-[10px] border border-gray-300 p-2 shadow-lg">
+        <a href="{{ route('course.create') }}" class="text-white hover:bg-[#0f5757] font-medium bg-[#009999] max-w-lg rounded-[10px] border border-gray-300 p-2 mr-9 shadow-lg">
             + Tambah Course
         </a>
     </div>
 
-    <div class="bg-white shadow rounded-lg overflow-hidden">
+    <div class="bg-white shadow rounded-lg overflow-hidden mr-9">
         <table class="min-w-full text-sm text-left text-gray-600">
             <thead class="bg-gray-100 text-gray-700 uppercase text-xs">
                 <tr>

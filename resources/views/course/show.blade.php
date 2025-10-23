@@ -10,21 +10,27 @@
             <div class="flex gap-8 max-w-7xl">
                 <!-- Course Card -->
                 <div class="w-96 flex-shrink-0">
-                    <div
-                        class="bg-gradient-to-br from-gray-50 to-gray-100 rounded-3xl shadow-xl overflow-hidden border border-gray-200">
+                    <div class="bg-gradient-to-br from-gray-50 to-gray-100 rounded-3xl shadow-xl overflow-hidden border border-gray-200">
                         <!-- Course Image -->
                         <div class="relative bg-white p-8">
                             <img src="{{ asset('storage/'.$courseData->image_link) }}"
-                                alt="{{ $courseData->nama_course }}" class="w-full h-auto object-contain">
+                                alt="{{ $courseData->nama_course }}" class="w-full h-auto object-contain rounded-lg">
                         </div>
 
                         <!-- Course Title -->
-                        <div class="px-6 py-4 bg-white">
+                        <div class="px-6 py-2 bg-white">
                             <h2 class="text-lg font-bold text-gray-800 text-center">{{ $courseData->nama_course }}</h2>
                         </div>
 
+                        <!-- Description -->
+                        <div class="mb-8 px-6 py-2 bg-white rounded-b-xl shadow-md">
+                            <p class="text-gray-700 text-sm leading-relaxed text-justify">
+                                {{ $courseData->description }}
+                            </p>
+                        </div>
+
                         <!-- Enroll Button -->
-                        <div class="px-6 pt-4 pb-2">
+                        <div class="px-6 pt-4 -mt-4">
                             @if (auth()->user()->roles_id !== 1)
 
                             @if($isEnrolled)
@@ -117,16 +123,11 @@
 
                 <!-- Description Card -->
                 <div class="flex-1">
+                    <!-- 🔹 BAGIAN BARU UNTUK PREVIEW SUBMATERI -->
                     <div class="bg-white rounded-3xl shadow-xl p-8 border border-gray-200">
-                        <div class="mb-6">
-                            <p class="text-gray-700 leading-relaxed text-justify">
-                                {{ $courseData->description }}
-                            </p>
-                        </div>
                         @if(!$isEnrolled && $previewSubmaterial)
                         <!-- Preview Section -->
-                        <div
-                            class="mt-6 bg-gradient-to-br from-teal-50 to-cyan-50 border-2 border-teal-200 rounded-2xl p-6 relative overflow-hidden mb-3">
+                        <div class="border-2 border-teal-200 rounded-2xl p-6 relative overflow-hidden mb-3">
                             <!-- Preview Badge -->
                             <div class="absolute top-4 right-4">
                                 <span
@@ -140,25 +141,60 @@
                                     Preview
                                 </span>
                             </div>
+                            <div class="mb-4">
+                                <h2 class="text-2xl font-bold text-gray-800 mb-4">
+                                    Preview: {{ $previewSubmaterial->nama_submateri }}
+                                </h2>
+                                @if($previewSubmaterial)
+                                    @php
+                                        $type = $previewSubmaterial->type ?? 'text';
+                                    @endphp
+                                    {{-- 🔹 Preview berdasarkan jenis submateri --}}
+                                    @if($type === 'text')
+                                        <div class="relative prose max-w-none h-[400px] text-gray-700 leading-relaxed overflow-hidden rounded-lg bg-white">
+                                            {!! \Illuminate\Support\Str::of(strip_tags($previewSubmaterial->isi_materi))
+                                                ->split('/(\r?\n){2,}/')
+                                                ->take(2)
+                                                ->implode("\n\n") !!}
+                                            <div class="absolute -bottom-10 left-0 w-full h-25 bg-gradient-to-t from-white via-white/95 to-transparent pointer-events-none"></div>
+                                        </div>
+                                        <div class="mt-4 text-center">
+                                            <p class="text-sm text-gray-500 italic">Teks dipersingkat untuk pratinjau.</p>
+                                        </div>
+                                    @elseif($type === 'pdf')
+                                        <iframe 
+                                            src="{{ asset('storage/' . $previewSubmaterial->isi_materi) }}#page=1&zoom=100" 
+                                            class="w-full h-[400px] rounded-lg border"></iframe>
 
-                            <h3 class="text-xl font-bold text-gray-800 mb-2 pr-20">
-                                {{ $previewSubmaterial->nama_submateri }}
-                            </h3>
-                            <p class="text-xs text-gray-500 mb-4">Materi dari: {{
-                                $previewSubmaterial->material->nama_materi }}</p>
+                                        <div class="mt-4 text-center">
+                                            <p class="text-sm text-gray-500 italic">
+                                                Hanya menampilkan 7 halaman pertama (gunakan kontrol PDF untuk navigasi halaman).
+                                            </p>
+                                        </div>
 
-                            <!-- Preview Content with Gradient Fade -->
-                            <div class="relative">
-                                <div class="prose prose-sm max-w-none text-gray-700 leading-relaxed">
-                                    {!! Str::limit(strip_tags($previewSubmaterial->content), 500) !!}
-                                </div>
+                                    @elseif($type === 'video')
+                                        @php
+                                            $youtubeId = str_replace('https://www.youtube.com/watch?v=', '', $previewSubmaterial->isi_materi);
+                                        @endphp
+                                        <div class="relative w-full" style="padding-bottom: 56.25%;">
+                                            <iframe 
+                                                src="https://www.youtube.com/embed/{{ $youtubeId }}?start=0&end=20" 
+                                                class="absolute top-0 left-0 w-full h-full rounded-lg"
+                                                allowfullscreen 
+                                                frameborder="0">
+                                            </iframe>
+                                        </div>
 
-                                <!-- Gradient Overlay -->
-                                <div
-                                    class="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-teal-50 to-transparent">
-                                </div>
+                                        <div class="mt-4 text-center">
+                                            <p class="text-sm text-gray-500 italic">Menampilkan 20 detik pertama dari video.</p>
+                                        </div>
+                                    @else
+                                        <p class="text-gray-500 italic">Jenis materi belum didukung untuk pratinjau.</p>
+                                    @endif
+                                @else
+                                    <p class="text-gray-400 italic text-center">Belum ada submateri untuk ditampilkan sebagai preview.</p>
+                                @endif
                             </div>
-
                             <!-- CTA -->
                             <div class="mt-6 pt-4 border-t border-teal-200">
                                 <div class="flex items-center justify-between">

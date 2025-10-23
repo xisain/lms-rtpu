@@ -23,9 +23,11 @@ class course extends Model
     public function category() {
         return $this->belongsTo(category::class);
     }
-    public function material() {
-        return $this->hasMany(material::class);
-    }
+public function material()
+{
+    return $this->hasMany(Material::class, 'course_id', 'id');
+}
+
     public function enrollment() {
         return $this->hasMany(enrollment::class);
     }

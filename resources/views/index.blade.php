@@ -2,7 +2,7 @@
 
 @section('content')
 <div class="min-h-screen bg-gradient-to-b from-[#f0f7ff] to-white flex items-center justify-center">
-    <div class="flex flex-col md:flex-row items-center justify-between w-11/11 max-w-6xl mx-auto">
+    <div class="flex flex-col md:flex-row items-center justify-between max-w-6xl mx-auto">
         <div class="text-left max-w-md">
             <h1 class="text-4xl font-bold text-gray-900">
                 Apa Itu <span class="text-[#008b8b] italic">Rekayasa Teknologi & Produk Unggulan?</span><br>

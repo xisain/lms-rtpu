@@ -12,8 +12,9 @@ class submaterial extends Model
         'type',
         'isi_materi',
     ];
-    public function material()
-    {
-        return $this->belongsTo(material::class);
-    }
+public function material()
+{
+    return $this->belongsTo(Material::class, 'material_id', 'id');
+}
+
 }

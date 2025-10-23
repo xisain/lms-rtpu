@@ -80,7 +80,7 @@
                 <!-- Menu Desktop -->
                 @guest
                 <!-- Guest: menu di tengah -->
-                <div class="hidden lg:flex items-center space-x-8 absolute left-1/2 transform -translate-x-1/2">
+                <div class="hidden lg:flex items-center space-x-4 absolute left-1/2 transform -translate-x-1/2">
                     <a href="{{ route('home') }}" class="text-base font-medium text-gray-700 hover:text-[#0f5757]">Home</a>
                     <a href="{{ route('list.kelas') }}" class="text-base font-medium text-gray-700 hover:text-[#0f5757]">Course</a>
                 </div>
@@ -88,16 +88,16 @@
 
                 @auth
                 <!-- Auth: menu kiri -->
-                <div class="hidden lg:flex items-center space-x-8">
-                    <a href="{{ route('home') }}" class="text-base font-medium text-gray-700 hover:text-[#0f5757]">Home</a>
-                    <a href="{{ route('course.index') }}" class="text-base font-medium text-gray-700 hover:text-[#0f5757]">Dashboard</a>
+                <div class="hidden lg:flex items-center space-x-3">
+                    <a href="{{ route('home') }}" class="mr-9 text-base font-medium text-gray-700 hover:text-[#0f5757]">Home</a>
+                    <a href="{{ route('course.index') }}" class="ml-5 text-base font-medium text-gray-700 hover:text-[#0f5757]">Dashboard</a>
 
                     <!-- Dropdown Kelas -->
                     <div class="relative" x-data="{ openDropdown: false }">
                         <button 
                             @click="openDropdown = !openDropdown"
                             class="relative flex items-center text-base font-medium text-gray-700 hover:text-[#0f5757] 
-                                focus:outline-none focus:ring-0 rounded-md px-2 py-1 transition-all duration-300">
+                                focus:outline-none focus:ring-0 rounded-md px-1 py-1 transition-all duration-300">
                             My Course
                             <svg 
                                 class="w-4 h-4 ml-1 mt-1 transform transition-transform duration-300"

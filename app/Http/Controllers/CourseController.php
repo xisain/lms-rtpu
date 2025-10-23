@@ -176,42 +176,77 @@ class CourseController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show($slug)
-    {
-        $course = course::where('slugs', $slug)
-            ->with(['material.submaterial'])
-            ->first();
+public function show($slug)
+{
+    $course = course::where('slugs', $slug)
+        ->with(['material.submaterial'])
+        ->first();
 
-        $isEnrolled = false;
+    if (!$course) {
+        abort(404, 'Kursus tidak ditemukan');
+    }
 
-        if (Auth::check()) {
-            $isEnrolled = enrollment::where('user_id', Auth::id())
-                ->where('course_id', $course->id)
-                ->exists();
+    Log::info('Course ditemukan:', ['id' => $course->id, 'slug' => $slug]);
+
+    $isEnrolled = false;
+
+    if (Auth::check()) {
+        $isEnrolled = enrollment::where('user_id', Auth::id())
+            ->where('course_id', $course->id)
+            ->exists();
+    }
+
+    Log::info('Status enrollment:', ['isEnrolled' => $isEnrolled]);
+
+    $firstMaterial = $course->material->first();
+    $firstSubmaterial = $firstMaterial?->submaterial->first();
+
+    Log::info('First material:', [
+        'id' => $firstMaterial?->id,
+        'name' => $firstMaterial?->title,
+        'firstSubmaterial' => $firstSubmaterial?->title,
+    ]);
+
+    $previewSubmaterial = null;
+
+    if (!$isEnrolled) {
+        Log::info('User belum enroll, mencari preview submaterial...');
+
+        // Cari previewSubmaterial tanpa peduli enroll
+        foreach ($course->material as $material) {
+            $textSubmaterial = $material->submaterial->where('type', 'text')->first();
+            if ($textSubmaterial) {
+                $previewSubmaterial = $textSubmaterial;
+                break;
+            }
         }
 
-        $firstMaterial = $course->material->first();
-        $firstSubmaterial = $firstMaterial?->submaterial->first();
-
-        $previewSubmaterial = null;
-        if (!$isEnrolled) {
+        if (!$previewSubmaterial) {
             foreach ($course->material as $material) {
-                $textSubmaterial = $material->submaterial->where('type', 'text')->first();
-                if ($textSubmaterial) {
-                    $previewSubmaterial = $textSubmaterial;
+                $firstSub = $material->submaterial->first();
+                if ($firstSub) {
+                    $previewSubmaterial = $firstSub;
                     break;
                 }
             }
         }
-
-        return view('course.show', [
-            'courseData' => $course,
-            'isEnrolled' => $isEnrolled,
-            'firstMaterial' => $firstMaterial,
-            'firstSubmaterial' => $firstSubmaterial,
-            'previewSubmaterial' => $previewSubmaterial
-        ]);
     }
+
+    Log::info('Preview submaterial akhir:', [
+        'id' => $previewSubmaterial?->id,
+        'title' => $previewSubmaterial?->title,
+        'type' => $previewSubmaterial?->type,
+    ]);
+
+    return view('course.show', [
+        'courseData' => $course,
+        'isEnrolled' => $isEnrolled,
+        'firstMaterial' => $firstMaterial,
+        'firstSubmaterial' => $firstSubmaterial,
+        'previewSubmaterial' => $previewSubmaterial
+    ]);
+}
+
 
     /**
      * Show the form for editing the specified resource.
@@ -534,7 +569,9 @@ class CourseController extends Controller
     public function guestDaftarKelas()
     {
         $course = course::where('public', true)->get();
+        $categories = category::all();
         return view('course.index', [
+            'categories' => $categories,
             'course' => $course,
         ]);
     }

@@ -14,9 +14,11 @@ class material extends Model
     public function course() {
         return $this->belongsTo(course::class, 'course_id');
     }
-    public function submaterial() {
-        return $this->hasMany(submaterial::class,);
-    }
+public function submaterial()
+{
+    return $this->hasMany(Submaterial::class, 'material_id', 'id');
+}
+
     public function progress() {
         return $this->hasMany(progress::class);
     }

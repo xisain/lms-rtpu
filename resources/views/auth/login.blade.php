@@ -1,15 +1,24 @@
-@extends('layout.navbar')
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+    <title>@yield('title') - LMS</title>
+    @vite('resources/css/app.css')
+</head>
+<body class="bg-gray-100">
+<div class="mt-15">
 
-@section('title', 'Login')
-
-@section('content')
-    <div class="sm:mx-auto sm:w-full sm:max-w-md">
-        <h2 class="mt-6 text-center text-3xl font-extrabold text-gray-900">
+    <div class="mt-[50px] sm:mx-auto sm:w-full sm:max-w-md">
+        <div class="flex justify-center items-center mb-4">
+        <img src="/images/logo.png" alt="Logo" class="w-16 h-16">
+        </div>
+        <h2 class="mb-6 text-center text-2xl font-extrabold text-[#009999]">
             Login LMS
         </h2>
-    </div>
-
-    <div class="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
         @if (session('success'))
             <div class="mb-4 p-4 rounded-lg bg-green-100 text-green-800 border border-green-300">
                 {{ session('success') }}
@@ -35,15 +44,19 @@
                     </div>
 
                 </div>
-
                 <div>
                     <label for="password" class="block text-sm font-medium text-gray-700">
                         Password
                     </label>
-                    <div class="mt-1">
+                    <div class="mt-1 relative">
                         <input id="password" name="password" type="password" required autocomplete="current-password"
-                            class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400
+                            class="appearance-none block w-full pr-12 px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400
                             focus:outline-none focus:ring-teal-500 focus:border-teal-500 sm:text-sm @error('password') border-red-500 @enderror">
+                        <!-- Toggle button -->
+                        <button type="button" id="togglePassword"
+                            class="absolute inset-y-0 right-0 pr-3 flex items-center text-sm leading-5 text-gray-500">
+                            <i id="eyeIcon" class="fa-solid fa-eye"></i>
+                        </button>
                     </div>
                     @error('password')
                         <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
@@ -89,4 +102,25 @@
             </div>
         </div>
     </div>
-@endsection
+</div>
+</body>
+</html>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    const togglePassword = document.getElementById('togglePassword');
+    const password = document.getElementById('password');
+    const eyeIcon = document.getElementById('eyeIcon');
+
+    if (togglePassword && password && eyeIcon) {
+        togglePassword.addEventListener('click', function () {
+            const type = password.getAttribute('type') === 'password' ? 'text' : 'password';
+            password.setAttribute('type', type);
+            eyeIcon.classList.toggle('fa-eye');
+            eyeIcon.classList.toggle('fa-eye-slash');
+        });
+    } else {
+        console.warn("⚠️ Elemen togglePassword / eyeIcon tidak ditemukan di DOM.");
+    }
+});
+</script>
