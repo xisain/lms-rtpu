@@ -22,7 +22,8 @@ class User extends Authenticatable
         'email',
         'password',
         'roles_id', // default 1
-        'category_id' // default 1
+        'category_id', // default 1
+        'isActive' // default 0 
     ];
 
     /**
