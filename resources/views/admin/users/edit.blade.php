@@ -12,46 +12,46 @@
 
             <div>
                 <label class="block text-sm font-medium mb-1">Nama</label>
-                <input type="text" name="name" 
-                       value="{{ old('name', $user->name) }}" 
+                <input type="text" name="name"
+                       value="{{ old('name', $user->name) }}"
                        class="w-full border border-gray-300 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
-                @error('name') 
-                    <p class="text-red-500 text-sm mt-1">{{ $message }}</p> 
+                @error('name')
+                    <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
                 @enderror
             </div>
 
             <div>
                 <label class="block text-sm font-medium mb-1">Email</label>
-                <input type="email" name="email" 
-                       value="{{ old('email', $user->email) }}" 
+                <input type="email" name="email"
+                       value="{{ old('email', $user->email) }}"
                        class="w-full border border-gray-300 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
-                @error('email') 
-                    <p class="text-red-500 text-sm mt-1">{{ $message }}</p> 
+                @error('email')
+                    <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
                 @enderror
             </div>
 
             <div>
                 <label class="block text-sm font-medium mb-1">Password (Opsional)</label>
-                <input type="password" name="password" 
+                <input type="password" name="password"
                        class="w-full border border-gray-300 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                        placeholder="Kosongkan jika tidak diubah">
-                @error('password') 
-                    <p class="text-red-500 text-sm mt-1">{{ $message }}</p> 
+                @error('password')
+                    <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
                 @enderror
             </div>
 
             <div>
                 <label class="block text-sm font-medium mb-1">Konfirmasi Password</label>
-                <input type="password" name="password_confirmation" 
+                <input type="password" name="password_confirmation"
                        class="w-full border border-gray-300 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
             </div>
 
             <div>
                 <label class="block text-sm font-medium mb-1">Role</label>
-                <select name="roles_id" 
+                <select name="roles_id"
                         class="w-full border border-gray-300 rounded-lg p-2 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500">
                     @foreach($role as $r)
-                        <option value="{{ $r->id }}" 
+                        <option value="{{ $r->id }}"
                             {{ old('roles_id', $user->roles_id) == $r->id ? 'selected' : '' }}>
                             {{ ucfirst($r->name) }}
                         </option>
@@ -61,10 +61,10 @@
 
             <div>
                 <label class="block text-sm font-medium mb-1">Kategori</label>
-                <select name="category_id" 
+                <select name="category_id"
                         class="w-full border border-gray-300 rounded-lg p-2 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500">
                     @foreach($category as $c)
-                        <option value="{{ $c->id }}" 
+                        <option value="{{ $c->id }}"
                             {{ old('category_id', $user->category_id) == $c->id ? 'selected' : '' }}>
                             {{ ucfirst($c->category ?? 'Tanpa Nama') }}
                         </option>
@@ -74,7 +74,7 @@
 
             <div>
                 <label class="inline-flex items-center">
-                    <input type="checkbox" name="isActive" value="1" 
+                    <input type="checkbox" name="isActive" value="1"
                            class="mr-2 accent-blue-600 focus:ring-2 focus:ring-blue-500"
                            {{ old('isActive', $user->isActive) ? 'checked' : '' }}>
                     <span>User Aktif</span>
@@ -85,7 +85,7 @@
                 <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition">
                     Update
                 </button>
-                <a href="{{ route('admin.user.index') }}" 
+                <a href="{{ route('admin.user.index') }}"
                    class="bg-gray-400 hover:bg-gray-500 text-white px-4 py-2 rounded-lg transition">
                     Batal
                 </a>

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\category;
+use App\Models\Certificate;
 use App\Models\course;
 use Illuminate\Http\Request;
 use App\Models\material;
@@ -16,6 +17,7 @@ use App\Models\quiz_option;
 use App\Models\quiz_question;
 use App\Models\QuizAttempt;
 use App\Models\QuizOption;
+use App\Jobs\GenerateCertificateJob;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
@@ -238,12 +240,64 @@ public function show($slug)
         'type' => $previewSubmaterial?->type,
     ]);
 
+    $certificateStatus = null;
+    if ($isEnrolled) {
+        // Cek apakah semua materi sudah selesai
+        $allCompleted = true;
+        foreach ($course->material as $m) {
+            // Cek submaterial completion
+            foreach ($m->submaterial as $sub) {
+                $progress = progress::where('user_id', Auth::id())
+                    ->where('submaterial_id', $sub->id)
+                    ->where('status', 'completed')
+                    ->exists();
+
+                if (!$progress) {
+                    $allCompleted = false;
+                    break 2;
+                }
+            }
+
+            // Cek quiz completion jika ada quiz
+            if ($m->quiz) {
+                $quizAttempt = quiz_attempt::where('user_id', Auth::id())
+                    ->where('quiz_id', $m->quiz->id)
+                    ->where('status', 'completed')
+                    ->where('score', '>=', 70)
+                    ->exists();
+
+                if (!$quizAttempt) {
+                    $allCompleted = false;
+                    break;
+                }
+            }
+        }
+
+        if ($allCompleted) {
+            // Cek status sertifikat
+            $certificate = Certificate::where('user_id', Auth::id())
+                ->where('course_id', $course->id)
+                ->first();
+
+            $certificateStatus = [
+                'completed' => true,
+                'certificate' => $certificate
+            ];
+        } else {
+            $certificateStatus = [
+                'completed' => false,
+                'certificate' => null
+            ];
+        }
+    }
+
     return view('course.show', [
         'courseData' => $course,
         'isEnrolled' => $isEnrolled,
         'firstMaterial' => $firstMaterial,
         'firstSubmaterial' => $firstSubmaterial,
-        'previewSubmaterial' => $previewSubmaterial
+        'previewSubmaterial' => $previewSubmaterial,
+        'certificateStatus' => $certificateStatus
     ]);
 }
 
@@ -643,6 +697,58 @@ public function show($slug)
             ],
             ['status' => 'completed']
         );
+
+        // Cek apakah semua materi dan quiz sudah selesai
+        $allCompleted = true;
+        foreach ($course->material as $m) {
+            // Cek submaterial completion
+            foreach ($m->submaterial as $sub) {
+                $progress = progress::where('user_id', Auth::id())
+                    ->where('submaterial_id', $sub->id)
+                    ->where('status', 'completed')
+                    ->exists();
+
+                if (!$progress) {
+                    $allCompleted = false;
+                    break 2;
+                }
+            }
+
+            // Cek quiz completion jika ada quiz
+            if ($m->quiz) {
+                $quizAttempt = quiz_attempt::where('user_id', Auth::id())
+                    ->where('quiz_id', $m->quiz->id)
+                    ->where('status', 'completed')
+                    ->where('score', '>=', 70) // Nilai minimum untuk lulus
+                    ->exists();
+
+                if (!$quizAttempt) {
+                    $allCompleted = false;
+                    break;
+                }
+            }
+        }
+
+        // Jika semua materi selesai, generate sertifikat
+        if ($allCompleted) {
+            $existingCertificate = Certificate::where('user_id', Auth::id())
+                ->where('course_id', $course->id)
+                ->first();
+
+            if (!$existingCertificate) {
+                // Generate sertifikat
+                $certificateNumber = 'CERT-' . Str::upper(Str::random(8));
+                $certificate = Certificate::create([
+                    'user_id' => Auth::id(),
+                    'course_id' => $course->id,
+                    'certificate_number' => $certificateNumber,
+                    'issued_date' => now(),
+                ]);
+
+                // Generate PDF di background
+                GenerateCertificateJob::dispatch(Auth::user(), $course, $certificate);
+            }
+        }
 
         return view('course.view', compact('course', 'materi', 'submateri'));
     }

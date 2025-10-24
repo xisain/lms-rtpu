@@ -8,10 +8,11 @@ use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\EnrollmentController;
 use App\Http\Controllers\QuizController;
+use App\Http\Controllers\CertificateController;
 use App\Http\Middleware\adminMiddleware;
 use App\Http\Middleware\courseMiddleware;
 use App\Http\Middleware\dosenMiddleware;
-
+Route::get('certificate/{certificate}/download', [CertificateController::class, 'download'])->name('certificate.download');
 Route::middleware('guest')->group(function () {
     Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
     Route::post('/login', [AuthController::class, 'login']);
@@ -32,6 +33,11 @@ Route::middleware('auth')->group(function () {
         Route::post('{slug}/enroll', [EnrollmentController::class, 'store'])->name('course.enroll');
         // Buat quiz nanti jangan di apa apain
         Route::post('{slug}/{material}/quiz/submit', [CourseController::class, 'quizSubmit'])->name('quiz.submit');
+
+        // Certificate routes
+        Route::post('{course}/certificate/{user}', [CertificateController::class, 'generate'])->name('certificate.generate');
+        Route::get('certificate/{certificate}/download', [CertificateController::class, 'download'])->name('certificate.download');
+        Route::get('certificate/{certificate}/status', [CertificateController::class, 'status'])->name('certificate.status');
     });
 
     Route::prefix('admin')->middleware('admin')->group(function () {
