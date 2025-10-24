@@ -7,7 +7,7 @@
         <!-- Sidebar -->
         <!-- Main Content Area -->
         <div class="flex-1 p-8">
-            <div class="flex gap-8 max-w-7xl">
+            <div class="flex gap-8 items-stretch">
                 <!-- Course Card -->
                 <div class="w-96 flex-shrink-0">
                     <div class="bg-gradient-to-br from-gray-50 to-gray-100 rounded-3xl shadow-xl overflow-hidden border border-gray-200">
@@ -246,9 +246,9 @@
                                         </h3>
                                         <p class="text-sm {{ $certificateStatus['completed'] ? 'text-green-600' : 'text-gray-500' }}">
                                             @if($certificateStatus['completed'])
-                                                Congratulations! You've completed all requirements.
+                                            Selamat! Anda telah memenuhi semua persyaratan.
                                             @else
-                                                Complete all materials and quizzes to get your certificate.
+                                                Selesaikan semua materi dan kuis untuk mendapatkan sertifikat Anda.
                                             @endif
                                         </p>
                                     </div>
@@ -335,7 +335,7 @@
                                                     <span class="{{ $materialCompleted ? 'text-green-600' : 'text-gray-500' }}">
                                                         {{ $material->nama_materi }}
                                                         @if($material->quiz)
-                                                            (including quiz)
+                                                            (Termasuk quiz)
                                                         @endif
                                                     </span>
                                                 </li>
