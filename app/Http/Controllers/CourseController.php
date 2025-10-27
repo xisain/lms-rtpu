@@ -23,6 +23,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
+use SweetAlert2\Laravel\Swal;
 
 class CourseController extends Controller
 {
@@ -184,8 +185,20 @@ public function show($slug)
         ->with(['material.submaterial'])
         ->first();
 
+    // Course bukan public dan bukan admin
+    if(!$course->public && auth()->user()->role->id != 1) {
+        Swal::error([
+            'title' => 'Error',
+            'text'=> 'Kelas Tidak Di temukan'
+        ]);
+        return redirect()->route('course.index');
+    }
     if (!$course) {
-        abort(404, 'Kursus tidak ditemukan');
+         Swal::error([
+            'title' => 'Error',
+            'text'=> 'Kelas Tidak Di temukan'
+        ]);
+         return redirect()->route('course.index');
     }
 
     Log::info('Course ditemukan:', ['id' => $course->id, 'slug' => $slug]);
@@ -415,7 +428,6 @@ public function show($slug)
             // 3. Update materials in chunks
             $existingMaterialIds = $course->material()->pluck('id')->toArray();
             $updatedMaterialIds = [];
-
             foreach ($validated['materials'] as $materialIndex => $mat) {
                 DB::beginTransaction();
 
