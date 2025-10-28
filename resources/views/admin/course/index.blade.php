@@ -57,8 +57,7 @@
                         <form action="{{ route('course.destroy', $c->id) }}" method="POST" class="inline">
                             @csrf
                             @method('DELETE')
-                            <button type="submit" class="text-red-600 hover:underline mr-4" alt="Hapus"
-                                onclick="return confirm('Yakin ingin menghapus course ini?')">
+                            <button type="submit" class="text-red-600 hover:underline mr-4 btn-delete" alt="Hapus">
                                 <i class="fa-solid fa-trash"></i>
                             </button>
                         </form>
@@ -75,4 +74,29 @@
         </table>
     </div>
 </div>
+@push('scripts')
+<script>
+document.querySelectorAll('.btn-delete').forEach(button => {
+    button.addEventListener('click', function(e) {
+        e.preventDefault();
+        const form = this.closest('form');
+
+        Swal.fire({
+            title: 'Yakin Menghapus Course ini?',
+            text: "Data Yang Terhapus Termasuk Material, Submaterial dan Quiz. Data yang di hapus tidak bisa di kembalikan",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Ya, Hapus!',
+            cancelButtonText: 'Batal'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                form.submit();
+            }
+        });
+    });
+});
+</script>
+@endpush
 @endsection

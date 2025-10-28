@@ -297,7 +297,7 @@ class CourseController extends Controller
      */
     public function update(Request $request, $id)
     {
-        // Fix: Update tanpa menghapus id lama 
+        // Fix: Update tanpa menghapus id lama
         $course = Course::findOrFail($id);
         if (Auth::user()->role->id == 2 && $course->teacher_id != Auth::id()) {
             return back()->with('error', 'Anda tidak memiliki akses untuk mengedit course ini.');
@@ -565,9 +565,13 @@ class CourseController extends Controller
                 ->withErrors(['error' => 'Gagal mengupdate course: ' . $e->getMessage()]);
         }
     }
-    public function destroy(course $course)
+    public function destroy(string $id)
     {
-        //
+    //    $deletedCourse = course::with(['material', 'material.submaterial','material.quiz', 'material.quiz.questions','material.quiz.questions.options'])->findOrFail($id);
+        $deletedCourse = Course::findOrFail($id);
+       $deletedCourse->delete();
+       $redirectRoute = Auth::user()->role->id == 1 ? 'admin.course.index' : 'dosen.course.index';
+       return redirect()->route($redirectRoute);
     }
 
     public function showCourse(Request $request)
