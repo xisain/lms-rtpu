@@ -619,9 +619,13 @@ class CourseController extends Controller
                 ->withErrors(['error' => 'Gagal mengupdate course: ' . $e->getMessage()]);
         }
     }
-    public function destroy(course $course)
+    public function destroy(string $id)
     {
-        //
+    //    $deletedCourse = course::with(['material', 'material.submaterial','material.quiz', 'material.quiz.questions','material.quiz.questions.options'])->findOrFail($id);
+        $deletedCourse = Course::findOrFail($id);
+       $deletedCourse->delete();
+       $redirectRoute = Auth::user()->role->id == 1 ? 'admin.course.index' : 'dosen.course.index';
+       return redirect()->route($redirectRoute);
     }
 
     public function showCourse(Request $request)

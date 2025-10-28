@@ -52,13 +52,12 @@
                         @endif
                     </td>
                     <td class="px-6 py-4 text-center space-x-5">
-                        <a href="{{ route('course.show', $c->slugs) }}" class="text-blue-600 hover:underline" alt="Lihat Course"><i class="fa-solid fa-eye"></i></a>
+                        <a href="{{ route('course.show', $c->slugs) }}" class="text-blue-600 hover:underline -mr-1" alt="Lihat Course"><i class="fa-solid fa-eye"></i></a>
                         <a href="{{ route('course.edit', $c->id) }}" class="text-yellow-400 hover:underline" alt="Edit"><i class="fa-solid fa-pen"></i></a>
                         <form action="{{ route('course.destroy', $c->id) }}" method="POST" class="inline">
                             @csrf
                             @method('DELETE')
-                            <button type="submit" class="text-red-600 hover:underline" alt="Hapus"
-                                onclick="return confirm('Yakin ingin menghapus course ini?')">
+                            <button type="submit" class="text-red-600 hover:underline mr-4 btn-delete" alt="Hapus">
                                 <i class="fa-solid fa-trash"></i>
                             </button>
                         </form>
@@ -75,4 +74,29 @@
         </table>
     </div>
 </div>
+@push('scripts')
+<script>
+document.querySelectorAll('.btn-delete').forEach(button => {
+    button.addEventListener('click', function(e) {
+        e.preventDefault();
+        const form = this.closest('form');
+
+        Swal.fire({
+            title: 'Yakin Menghapus Course ini?',
+            text: "Data Yang Terhapus Termasuk Material, Submaterial dan Quiz. Data yang di hapus tidak bisa di kembalikan",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Ya, Hapus!',
+            cancelButtonText: 'Batal'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                form.submit();
+            }
+        });
+    });
+});
+</script>
+@endpush
 @endsection
