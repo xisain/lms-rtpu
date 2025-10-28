@@ -89,8 +89,8 @@
                 @auth
                 <!-- Auth: menu kiri -->
                 <div class="hidden lg:flex items-center space-x-3">
-                    <a href="{{ route('home') }}" class="mr-9 text-base font-medium text-gray-700 hover:text-[#0f5757]">Home</a>
-                    <a href="{{ route('course.index') }}" class="ml-5 text-base font-medium text-gray-700 hover:text-[#0f5757]">Dashboard</a>
+                    <a href="{{ route('home') }}" class="text-base font-medium text-gray-700 hover:text-[#0f5757]">Home</a>
+                    <a href="{{ route('course.index') }}" class="text-base font-medium text-gray-700 hover:text-[#0f5757]">Dashboard</a>
 
                     <!-- Dropdown Kelas -->
                     <div class="relative" x-data="{ openDropdown: false }">

@@ -52,12 +52,12 @@
                         @endif
                     </td>
                     <td class="px-6 py-4 text-center space-x-5">
-                        <a href="{{ route('course.show', $c->slugs) }}" class="text-blue-600 hover:underline" alt="Lihat Course"><i class="fa-solid fa-eye"></i></a>
+                        <a href="{{ route('course.show', $c->slugs) }}" class="text-blue-600 hover:underline -mr-1" alt="Lihat Course"><i class="fa-solid fa-eye"></i></a>
                         <a href="{{ route('course.edit', $c->id) }}" class="text-yellow-400 hover:underline" alt="Edit"><i class="fa-solid fa-pen"></i></a>
                         <form action="{{ route('course.destroy', $c->id) }}" method="POST" class="inline">
                             @csrf
                             @method('DELETE')
-                            <button type="submit" class="text-red-600 hover:underline" alt="Hapus"
+                            <button type="submit" class="text-red-600 hover:underline mr-4" alt="Hapus"
                                 onclick="return confirm('Yakin ingin menghapus course ini?')">
                                 <i class="fa-solid fa-trash"></i>
                             </button>

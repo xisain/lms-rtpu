@@ -7,9 +7,9 @@
         <!-- Sidebar -->
         <!-- Main Content Area -->
         <div class="flex-1 p-8">
-            <div class="flex gap-8 max-w-7xl">
+            <div class="flex flex-col md:flex-row gap-8 w-full">
                 <!-- Course Card -->
-                <div class="w-96 flex-shrink-0">
+                <div class="w-full md:max-w-sm lg:max-w-md flex-shrink-0 mx-auto md:mx-0">
                     <div class="bg-gradient-to-br from-gray-50 to-gray-100 rounded-3xl shadow-xl overflow-hidden border border-gray-200">
                         <!-- Course Image -->
                         <div class="relative bg-white p-8">
@@ -122,9 +122,9 @@
                 </div>
 
                 <!-- Description Card -->
-                <div class="flex-1">
+                <div class="flex-1 max-w-7xl">
                     <!-- 🔹 BAGIAN BARU UNTUK PREVIEW SUBMATERI -->
-                    <div class="bg-white rounded-3xl shadow-xl p-8 border border-gray-200">
+                    <div class="bg-white rounded-3xl shadow-xl p-8 border border-gray-200 max-w-7xl">
                         @if(!$isEnrolled && $previewSubmaterial)
                         <!-- Preview Section -->
                         <div class="border-2 border-teal-200 rounded-2xl p-6 relative overflow-hidden mb-3">

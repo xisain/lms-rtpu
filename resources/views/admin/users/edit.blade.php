@@ -82,7 +82,7 @@
             </div>
 
             <div class="pt-4 flex space-x-3">
-                <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition">
+                <button type="submit" class="bg-[#009999] hover:bg-[#0f5757] text-white px-4 py-2 rounded-lg transition">
                     Update
                 </button>
                 <a href="{{ route('admin.user.index') }}" 
