@@ -24,7 +24,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
     // Protected routes here
-    Route::middleware(courseMiddleware::class)->prefix('course')->group(function () {
+    Route::prefix('course')->group(function () {
         Route::get('/', [CourseController::class, 'showCourse'])->name('course.index');
         Route::get('/filter', [CourseController::class, 'filterCourse'])->name('course.filter');
         Route::get('{slug}', [CourseController::class, 'show'])->name('course.show');
