@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 
 class course extends Model
@@ -23,15 +24,32 @@ class course extends Model
     public function category() {
         return $this->belongsTo(category::class);
     }
-public function material()
-{
-    return $this->hasMany(Material::class, 'course_id', 'id');
-}
+
+    public function material()
+    {
+        return $this->hasMany(Material::class, 'course_id', 'id');
+    }
 
     public function enrollment() {
         return $this->hasMany(enrollment::class);
     }
     public function teacher(){
         return $this->belongsTo(User::class, 'teacher_id');
+    }
+    public function expireCourse() {
+        if(!$this->end_date){
+            return false;
+        }
+        return Carbon::now()->isAfter($this->end_date);
+    }
+    public function maxSlotEnrollment() {
+         if (!$this->isLimitedCourse) {
+            return false;
+        }
+
+        return $this->enrollment()->count() >= $this->maxEnrollment;
+    }
+    public function countEnrollment(){
+        return $this->enrollment()->count();
     }
 }

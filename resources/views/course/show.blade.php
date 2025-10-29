@@ -10,7 +10,8 @@
             <div class="flex flex-col md:flex-row gap-8 w-full">
                 <!-- Course Card -->
                 <div class="w-full md:max-w-sm lg:max-w-md flex-shrink-0 mx-auto md:mx-0">
-                    <div class="bg-gradient-to-br from-gray-50 to-gray-100 rounded-3xl shadow-xl overflow-hidden border border-gray-200">
+                    <div
+                        class="bg-gradient-to-br from-gray-50 to-gray-100 rounded-3xl shadow-xl overflow-hidden border border-gray-200">
                         <!-- Course Image -->
                         <div class="relative bg-white p-8">
                             <img src="{{ asset('storage/'.$courseData->image_link) }}"
@@ -32,8 +33,16 @@
                         <!-- Enroll Button -->
                         <div class="px-6 pt-4 -mt-4">
                             @if (auth()->user()->roles_id !== 1)
-
                             @if($isEnrolled)
+                            {{-- User sudah enroll --}}
+                            @if($expireCourse)
+                            {{-- Course sudah expire --}}
+                            <button disabled
+                                class="w-full bg-gray-400 text-gray-600 font-semibold py-3 px-4 rounded-lg cursor-not-allowed shadow-md opacity-50">
+                                Course Expired
+                            </button>
+                            @else
+                            {{-- Course masih aktif --}}
                             @if($firstMaterial && $firstSubmaterial)
                             <a href="{{ route('course.mulai', ['slug' => $courseData->slugs,'material' => $firstMaterial->id,'submaterial' => $firstSubmaterial->id]) }}"
                                 class="w-full block text-center hover:bg-[#0f5757] bg-[#009999] text-white font-semibold py-3 px-4 rounded-lg transition duration-200 shadow-md">
@@ -42,22 +51,37 @@
                             @else
                             <p class="text-gray-500 text-center">Belum ada materi.</p>
                             @endif
+                            @endif
                             @else
+                            {{-- User belum enroll --}}
+                            @if($expireCourse || $courseMaxEnroll)
+                            {{-- Course expire atau sudah penuh --}}
+                            <button disabled
+                                class="w-full bg-gray-400 text-gray-600 font-semibold py-3 px-4 rounded-lg cursor-not-allowed shadow-md opacity-50">
+                                @if($expireCourse)
+                                Course Expired
+                                @else
+                                Course Full
+                                @endif
+                            </button>
+                            @else
+                            {{-- Course masih available --}}
                             <form action="{{ route('course.enroll', $courseData->slugs) }}" method="POST">
                                 @csrf
                                 <button type="submit"
-                                    class="w-full  hover:bg-[#0f5757] bg-[#009999] text-white font-semibold py-3 px-4 rounded-lg transition duration-200 shadow-md">
+                                    class="w-full hover:bg-[#0f5757] bg-[#009999] text-white font-semibold py-3 px-4 rounded-lg transition duration-200 shadow-md">
                                     Enroll In Course
                                 </button>
                             </form>
                             @endif
+                            @endif
                             @else
+                            {{-- Admin --}}
                             <a href="{{ route('admin.course.index')}}"
-                                class="w-full block text-center bg-[#009999]  hover:bg-[#0f5757] text-white font-semibold py-3 px-4 rounded-lg transition duration-200 shadow-md">
+                                class="w-full block text-center bg-[#009999] hover:bg-[#0f5757] text-white font-semibold py-3 px-4 rounded-lg transition duration-200 shadow-md">
                                 Lihat di Panel
                             </a>
                             @endif
-
                         </div>
 
                         <!-- Course Modules -->
@@ -146,53 +170,56 @@
                                     Preview: {{ $previewSubmaterial->nama_submateri }}
                                 </h2>
                                 @if($previewSubmaterial)
-                                    @php
-                                        $type = $previewSubmaterial->type ?? 'text';
-                                    @endphp
-                                    {{-- 🔹 Preview berdasarkan jenis submateri --}}
-                                    @if($type === 'text')
-                                        <div class="relative prose max-w-none h-[400px] text-gray-700 leading-relaxed overflow-hidden rounded-lg bg-white">
-                                            {!! \Illuminate\Support\Str::of(strip_tags($previewSubmaterial->isi_materi))
-                                                ->split('/(\r?\n){2,}/')
-                                                ->take(2)
-                                                ->implode("\n\n") !!}
-                                            <div class="absolute -bottom-10 left-0 w-full h-25 bg-gradient-to-t from-white via-white/95 to-transparent pointer-events-none"></div>
-                                        </div>
-                                        <div class="mt-4 text-center">
-                                            <p class="text-sm text-gray-500 italic">Teks dipersingkat untuk pratinjau.</p>
-                                        </div>
-                                    @elseif($type === 'pdf')
-                                        <iframe 
-                                            src="{{ asset('storage/' . $previewSubmaterial->isi_materi) }}#page=1&zoom=100" 
-                                            class="w-full h-[400px] rounded-lg border"></iframe>
+                                @php
+                                $type = $previewSubmaterial->type ?? 'text';
+                                @endphp
+                                {{-- 🔹 Preview berdasarkan jenis submateri --}}
+                                @if($type === 'text')
+                                <div
+                                    class="relative prose max-w-none h-[400px] text-gray-700 leading-relaxed overflow-hidden rounded-lg bg-white">
+                                    {!! \Illuminate\Support\Str::of(strip_tags($previewSubmaterial->isi_materi))
+                                    ->split('/(\r?\n){2,}/')
+                                    ->take(2)
+                                    ->implode("\n\n") !!}
+                                    <div
+                                        class="absolute -bottom-10 left-0 w-full h-25 bg-gradient-to-t from-white via-white/95 to-transparent pointer-events-none">
+                                    </div>
+                                </div>
+                                <div class="mt-4 text-center">
+                                    <p class="text-sm text-gray-500 italic">Teks dipersingkat untuk pratinjau.</p>
+                                </div>
+                                @elseif($type === 'pdf')
+                                <iframe src="{{ asset('storage/' . $previewSubmaterial->isi_materi) }}#page=1&zoom=100"
+                                    class="w-full h-[400px] rounded-lg border"></iframe>
 
-                                        <div class="mt-4 text-center">
-                                            <p class="text-sm text-gray-500 italic">
-                                                Hanya menampilkan 7 halaman pertama (gunakan kontrol PDF untuk navigasi halaman).
-                                            </p>
-                                        </div>
+                                <div class="mt-4 text-center">
+                                    <p class="text-sm text-gray-500 italic">
+                                        Hanya menampilkan 7 halaman pertama (gunakan kontrol PDF untuk navigasi
+                                        halaman).
+                                    </p>
+                                </div>
 
-                                    @elseif($type === 'video')
-                                        @php
-                                            $youtubeId = str_replace('https://www.youtube.com/watch?v=', '', $previewSubmaterial->isi_materi);
-                                        @endphp
-                                        <div class="relative w-full" style="padding-bottom: 56.25%;">
-                                            <iframe 
-                                                src="https://www.youtube.com/embed/{{ $youtubeId }}?start=0&end=20" 
-                                                class="absolute top-0 left-0 w-full h-full rounded-lg"
-                                                allowfullscreen 
-                                                frameborder="0">
-                                            </iframe>
-                                        </div>
+                                @elseif($type === 'video')
+                                @php
+                                $youtubeId = str_replace('https://www.youtube.com/watch?v=', '',
+                                $previewSubmaterial->isi_materi);
+                                @endphp
+                                <div class="relative w-full" style="padding-bottom: 56.25%;">
+                                    <iframe src="https://www.youtube.com/embed/{{ $youtubeId }}?start=0&end=20"
+                                        class="absolute top-0 left-0 w-full h-full rounded-lg" allowfullscreen
+                                        frameborder="0">
+                                    </iframe>
+                                </div>
 
-                                        <div class="mt-4 text-center">
-                                            <p class="text-sm text-gray-500 italic">Menampilkan 20 detik pertama dari video.</p>
-                                        </div>
-                                    @else
-                                        <p class="text-gray-500 italic">Jenis materi belum didukung untuk pratinjau.</p>
-                                    @endif
+                                <div class="mt-4 text-center">
+                                    <p class="text-sm text-gray-500 italic">Menampilkan 20 detik pertama dari video.</p>
+                                </div>
                                 @else
-                                    <p class="text-gray-400 italic text-center">Belum ada submateri untuk ditampilkan sebagai preview.</p>
+                                <p class="text-gray-500 italic">Jenis materi belum didukung untuk pratinjau.</p>
+                                @endif
+                                @else
+                                <p class="text-gray-400 italic text-center">Belum ada submateri untuk ditampilkan
+                                    sebagai preview.</p>
                                 @endif
                             </div>
                             <!-- CTA -->
@@ -251,7 +278,8 @@
                                     </p>
                                     @if($courseData->maxEnrollment)
                                     <p class="text-sm text-blue-800 mt-1">
-                                        <strong>Max Enrollment:</strong> {{ $courseData->maxEnrollment }} students
+                                        <strong>Student Enrollment:</strong> {{ $countEnroll }}/{{
+                                        $courseData->maxEnrollment }} students
                                     </p>
                                     @endif
                                 </div>

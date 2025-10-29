@@ -180,9 +180,11 @@ class CourseController extends Controller
     public function show($slug)
     {
         $course = course::where('slugs', $slug)
-            ->with(['material.submaterial'])
-            ->first();
-
+        ->with(['material.submaterial'])
+        ->first();
+        $courseEnroll = $course->maxSlotEnrollment();
+        $courseStudent = $course->countEnrollment();
+        $courseExpire = $course->expireCourse();
         // Course bukan public dan bukan admin
         if (!$course->public && auth()->user()->role->id != 1) {
             Swal::error([
@@ -253,6 +255,9 @@ class CourseController extends Controller
 
         return view('course.show', [
             'courseData' => $course,
+            'courseMaxEnroll' => $courseEnroll,
+            'expireCourse'=> $courseExpire,
+            'countEnroll' => $courseStudent,
             'isEnrolled' => $isEnrolled,
             'firstMaterial' => $firstMaterial,
             'firstSubmaterial' => $firstSubmaterial,
