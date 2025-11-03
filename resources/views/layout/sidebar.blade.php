@@ -100,6 +100,17 @@
                     </span>
                 </a>
                 @endif
+                @if(Route::has('admin.plan.index'))
+                <a href="{{ route('admin.plan.index') }}"
+                   class="flex items-center px-3 py-2 rounded-xl transition-all duration-200 {{ request()->routeIs('admin.plan.*') ? 'bg-[#009999] font-semibold' : 'text-gray-900 hover:bg-gray-100' }}"
+                   :class="{ 'justify-center': !sidebarOpen, 'justify-start': sidebarOpen }">
+                    <i class="fa-solid fa-shopping-cart" :class="{ 'text-lg': !sidebarOpen }"></i>
+                    <span class="ml-3 transition-opacity duration-200"
+                          :class="{ 'opacity-0 hidden': !sidebarOpen, 'opacity-100': sidebarOpen }">
+                        Plan
+                    </span>
+                </a>
+                @endif
             </nav>
         @else
             <!-- NAVIGATION DOsen -->

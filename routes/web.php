@@ -8,9 +8,11 @@ use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\EnrollmentController;
 use App\Http\Controllers\QuizController;
+use App\Http\Controllers\SubscriptionController;
 use App\Http\Middleware\adminMiddleware;
 use App\Http\Middleware\courseMiddleware;
 use App\Http\Middleware\dosenMiddleware;
+use App\Models\subscription;
 
 Route::middleware('guest')->group(function () {
     Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
@@ -64,6 +66,14 @@ Route::middleware('auth')->group(function () {
             Route::put('/edit/{id}/update', [CourseController::class, 'update'])->name('course.update');
             Route::get('/edit/{id}', [CourseController::class, 'edit'])->name('course.edit');
             Route::delete('/{id}', [CourseController::class, 'destroy'])->name('course.destroy');
+        });
+        Route::prefix('plan')->group(function () {
+            Route::get('/', [SubscriptionController::class, 'index'])->name('admin.plan.index');
+            Route::post('/', [SubscriptionController::class, 'store'])->name('admin.plan.store');
+            Route::get('create', [SubscriptionController::class, 'create'])->name('admin.plan.create');
+            Route::get('edit/{subs}', [SubscriptionController::class, 'edit'])->name('admin.plan.edit');
+            Route::put('update/{subs}', [SubscriptionController::class, 'update'])->name('admin.plan.update');
+            Route::delete('{subs}/delete', [SubscriptionController::class, 'destroy'])->name('admin.plan.destroy');
         });
     });
 
