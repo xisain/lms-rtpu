@@ -1,58 +1,76 @@
 @extends('layout.sidebar')
-@include("sweetalert2::index")
+@include('sweetalert2::index')
 @section('content')
-<div class="container mx-auto px-4 py-1 -mt-4">
-    <h1 class="text-3xl font-bold text-gray-800 mb-6">Daftar Pengguna</h1>
+    <div class="mx-auto py-2">
+        <div class="max-w-10xl mx-auto">
+            <div class="bg-white rounded-lg shadow-md overflow-hidden">
+                <div class="bg-[#009999] px-6 py-4 flex justify-between items-center">
+                    <h4 class="text-xl font-bold text-white">Pengguna</h4>
+                </div>
 
-    <div class="overflow-x-auto bg-white rounded-xl shadow-md">
-        <table class="min-w-full divide-y divide-gray-200">
-            <thead class="bg-gray-100">
-                <tr>
-                    <th class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">#</th>
-                    <th class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Nama</th>
-                    <th class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Email</th>
-                    <th class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Role</th>
-                    <th class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Dibuat Pada</th>
-                    <th class="px-6 py-3 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">Aksi</th>
-                </tr>
-            </thead>
-
-            <tbody class="divide-y divide-gray-200">
-                @forelse ($users as $index => $user)
-                <tr class="hover:bg-gray-50 transition">
-                    <td class="px-6 py-4 text-sm text-gray-700">{{ $index + 1 }}</td>
-                    <td class="px-6 py-4 text-sm text-gray-900 font-medium">{{ $user->name }}</td>
-                    <td class="px-6 py-4 text-sm text-gray-700">{{ $user->email }}</td>
-                    <td class="px-6 py-4">
-                        <span class="px-3 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800">
-                            {{ $user->role->name}}
-                        </span>
-                    </td>
-                    <td class="px-6 py-4 text-sm text-gray-700">{{ $user->created_at->format('d M Y') }}</td>
-                    <td class="px-6 py-4 text-center">
-                        <div class="flex justify-center space-x-2">
-                            <a href="{{ route('admin.user.edit', $user->id) }}"
-                               class="bg-yellow-100 hover:bg-yellow-200 text-yellow-700 px-3 py-1 rounded-lg text-sm font-semibold">
-                                Edit
-                            </a>
-                            <form action="{{ route('admin.user.destroy', $user->id) }}" method="POST" onsubmit="return confirm('Yakin ingin menghapus user ini?')">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit"
-                                    class="bg-red-100 hover:bg-red-200 text-red-700 px-3 py-1 rounded-lg text-sm font-semibold">
-                                    Hapus
-                                </button>
-                            </form>
-                        </div>
-                    </td>
-                </tr>
-                @empty
-                <tr>
-                    <td colspan="6" class="text-center py-6 text-gray-500">Tidak ada pengguna yang terdaftar.</td>
-                </tr>
-                @endforelse
-            </tbody>
-        </table>
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-gray-50">
+                            <tr class="">
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray uppercase tracking-wider">#</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray uppercase tracking-wider">Nama
+                                </th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray uppercase tracking-wider">email
+                                </th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray uppercase tracking-wider">Role
+                                </th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray uppercase tracking-wider">
+                                    Dibuat Pada</th>
+                                <th class="px-6 py-3 text-center text-xs font-medium text-gray uppercase tracking-wider">
+                                    Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody class="bg-white divide-x divide-y divide-gray 200">
+                            @forelse ($users as $index =>$user)
+                                <tr class="hover:bg-gray-50 transition duration-150">
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                        {{ $index + 1 }}
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">{{ $user->name }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap">{{ $user->email }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span
+                                            class="px-3 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800">
+                                            {{ $user->role->name }}
+                                        </span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">{{ $user->created_at->format('d M Y') }}</td>
+                                    <td class="px-6 py-4 text-center">
+                                        <div class="flex justify-center space-x-2">
+                                            <a href="{{ route('admin.user.edit', $user->id) }}"
+                                                class="bg-yellow-100 hover:bg-yellow-200 text-yellow-700 px-3 py-1 rounded-lg text-sm font-semibold">
+                                                Edit
+                                            </a>
+                                            <form action="{{ route('admin.user.destroy', $user->id) }}" method="POST"
+                                                onsubmit="return confirm('Yakin ingin menghapus user ini?')">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit"
+                                                    class="bg-red-100 hover:bg-red-200 text-red-700 px-3 py-1 rounded-lg text-sm font-semibold">
+                                                    Hapus
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="6" class="text-center py-6 text-gray-500">Tidak ada pengguna yang
+                                        terdaftar.</td>
+                                </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                </div>
+                <div class="px-6 py-4 ">
+                    {{ $users->links() }}
+                </div>
+            </div>
+        </div>
     </div>
-</div>
 @endsection

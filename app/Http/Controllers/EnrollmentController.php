@@ -15,9 +15,23 @@ class EnrollmentController extends Controller
 
    public function store($slug)
     {
+
         $course = course::where('slugs', $slug)->firstOrFail();
         $userId = Auth::id();
-
+        if($course->expireCourse()){
+            Swal::error([
+                'title'=> 'Gagal',
+                'text' => 'Course Ini Sudah Expire :('
+            ]);
+            return back();
+        }
+        if($course->maxSlotEnrollment()){
+            Swal::error([
+                'title'=> 'Gagal',
+                'text' => 'Course Ini Sudah penuh :('
+            ]);
+            return back();
+        }
         // Cek apakah sudah terdaftar
         $existing = Enrollment::where('user_id', $userId)
             ->where('course_id', $course->id)

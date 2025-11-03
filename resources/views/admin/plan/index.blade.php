@@ -1,25 +1,9 @@
 @extends('layout.sidebar')
-
 @section('content')
-<div class="mx-auto py-2">
-    <div class="max-w-10xl mx-auto">
-        <div class="bg-white rounded-lg shadow-md overflow-hidden">
-            <!-- Header -->
-            <div class="bg-[#009999] px-6 py-4 flex justify-between items-center">
-                <h4 class="text-xl font-bold text-white">Categories</h4>
-                <a href="{{ route('admin.category.create') }}"
-                   class="bg-white text-dark hover:bg-gray-200 px-4 py-2 rounded-lg font-semibold transition duration-200 flex items-center gap-2">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
-                    </svg>
-                    Add New Category
-                </a>
-            </div>
-
-            <div class="p-6">
-                <!-- Success Alert -->
-                @if(session('success'))
-                    <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mb-6 rounded relative" role="alert">
+    <div class="mx-auto px-4 py-8">
+        <div class="max-w-10xl mx-auto">
+            @if(session('success'))
+            <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mb-6 rounded relative" role="alert">
                         <div class="flex justify-between items-center">
                             <span>{{ session('success') }}</span>
                             <button onclick="this.parentElement.parentElement.remove()" class="text-green-700 hover:text-green-900">
@@ -29,44 +13,73 @@
                             </button>
                         </div>
                     </div>
-                @endif
+            @endif
+            <div class="bg-white rounded-lg shadow-md overflow-hidden">
+                <div class="bg-[#009999] px-6 py-4 flex justify-between items-center">
+                    <h4 class="text-xl font-bold text-white">Plan</h4>
+                    <a href="{{ route('admin.plan.create') }}"
+                        class="bg-white text-dark hover:bg-gray-200 px-4 py-2 rounded-lg font-semibold transition duration-200 flex items-center gap-2">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                        </svg>
+                        Add New Plan
+                    </a>
+                </div>
 
-                <!-- Table -->
+
                 <div class="overflow-x-auto">
                     <table class="min-w-full divide-y divide-gray-200">
                         <thead class="bg-gray-50">
-                            <tr>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-16">No</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Category</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Description</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Created At</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-32">Actions</th>
+                            <tr class="">
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray uppercase tracking-wider">ID
+                                </th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray uppercase tracking-wider">Name
+                                </th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray uppercase tracking-wider">
+                                    Description</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray uppercase tracking-wider">price
+                                </th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray uppercase tracking-wider">
+                                    Duration</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray uppercase tracking-wider">
+                                    Active</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray uppercase tracking-wider">
+                                    Aksi
+                                </th>
                             </tr>
                         </thead>
                         <tbody class="bg-white divide-y divide-gray-200">
-                            @forelse($categories as $category)
+                            @forelse($plan as $plans)
                                 <tr class="hover:bg-gray-50 transition duration-150">
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                        {{ $loop->iteration + ($categories->currentPage() - 1) * $categories->perPage() }}
+                                        {{ $loop->iteration + ($plan->currentPage() - 1) * $plan->perPage() }}
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap">
-                                        <div class="text-sm font-medium text-gray-900">{{ $category->category }}</div>
+                                        {{ $plans->name }}
                                     </td>
-                                    <td class="px-6 py-4 text-sm text-gray-500">
-                                        {{ $category->description ?? '-' }}
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        {{ $plans->description }}
                                     </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                        {{ $category->created_at->format('d M Y') }}
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        Rp {{ number_format($plans->price, 0, ',', '.') }}
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        {{ $plans->duration_in_days }} hari
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        {!! $plans->is_active
+                                            ? '<span class="inline-flex items-center rounded-md bg-green-400/10 px-2 py-1 text-xs font-medium text-green-400 inset-ring inset-ring-green-500/20">Aktif</span>'
+                                            : '<span class="inline-flex items-center rounded-md bg-red-400/10 px-2 py-1 text-xs font-medium text-red-400 inset-ring inset-ring-red-400/20">Nonaktif</span>' !!}
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                         <div class="flex gap-2">
-                                            <a href="{{ route('admin.category.edit', $category->id) }}"
+                                            <a href="{{ route('admin.plan.edit', $plans->id) }}"
                                                class="bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-1.5 rounded transition duration-200">
                                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
                                                 </svg>
                                             </a>
-                                            <form action="{{ route('admin.category.destroy', $category->id) }}"
+                                            <form action="{{ route('admin.plan.destroy', $plans->id) }}"
                                                   method="POST">
                                                 @csrf
                                                 @method('DELETE')
@@ -84,10 +97,12 @@
                                 <tr>
                                     <td colspan="5" class="px-6 py-8 text-center text-gray-500">
                                         <div class="flex flex-col items-center">
-                                            <svg class="w-12 h-12 text-gray-400 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"/>
+                                            <svg class="w-12 h-12 text-gray-400 mb-2" fill="none" stroke="currentColor"
+                                                viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
                                             </svg>
-                                            <p class="text-lg">No categories found.</p>
+                                            <p class="text-lg">Tidak ada Plan</p>
                                         </div>
                                     </td>
                                 </tr>
@@ -95,16 +110,13 @@
                         </tbody>
                     </table>
                 </div>
-
-                <!-- Pagination -->
-                <div class="mt-6">
-                    {{ $categories->links() }}
+                <div class="px-6 py-4">
+                    {{ $plan->links() }}
                 </div>
             </div>
         </div>
     </div>
-</div>
-@push('scripts')
+    @push('scripts')
 <script>
 document.querySelectorAll('.btn-delete').forEach(button => {
     button.addEventListener('click', function(e) {
@@ -112,7 +124,7 @@ document.querySelectorAll('.btn-delete').forEach(button => {
         const form = this.closest('form');
 
         Swal.fire({
-            title: 'Yakin Menghapus Kategori ini?',
+            title: 'Yakin Menghapus Plan ini?',
             text: "Data yang dihapus tidak dapat dikembalikan!",
             icon: 'warning',
             showCancelButton: true,
