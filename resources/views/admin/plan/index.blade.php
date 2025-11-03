@@ -1,7 +1,7 @@
 @extends('layout.sidebar')
 @section('content')
-    <div class="container mx-auto px-4 py-8 -mt-11">
-        <div class="max-w-7xl mx-auto">
+    <div class="mx-auto px-4 py-8">
+        <div class="max-w-10xl mx-auto">
             @if(session('success'))
             <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mb-6 rounded relative" role="alert">
                         <div class="flex justify-between items-center">

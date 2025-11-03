@@ -31,7 +31,7 @@ class CourseController extends Controller
     public function index()
     {
         if (Auth::user()->role->name == "admin") {
-            $course = course::with('material', 'material.submaterial')->get();
+            $course = course::with('material', 'material.submaterial')->orderBy('id','desc')->paginate(5);
             return view('admin.course.index', ['course' => $course]);
         } else {
             $course = course::with('material', 'material.submaterial')->where('teacher_id', '=', Auth::user()->id)->get();

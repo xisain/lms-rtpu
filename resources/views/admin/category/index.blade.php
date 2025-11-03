@@ -1,8 +1,8 @@
 @extends('layout.sidebar')
 
 @section('content')
-<div class="container mx-auto px-4 py-8 -mt-11">
-    <div class="max-w-7xl mx-auto">
+<div class="mx-auto py-2">
+    <div class="max-w-10xl mx-auto">
         <div class="bg-white rounded-lg shadow-md overflow-hidden">
             <!-- Header -->
             <div class="bg-[#009999] px-6 py-4 flex justify-between items-center">
