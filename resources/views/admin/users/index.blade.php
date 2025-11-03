@@ -25,7 +25,7 @@
                                     Aksi</th>
                             </tr>
                         </thead>
-                        <tbody class="bg-white divide-x divide-y divide-gray 200">
+                        <tbody class="bg-white divide-x divide-y divide-gray-200">
                             @forelse ($users as $index =>$user)
                                 <tr class="hover:bg-gray-50 transition duration-150">
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
@@ -41,18 +41,18 @@
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap">{{ $user->created_at->format('d M Y') }}</td>
                                     <td class="px-6 py-4 text-center">
-                                        <div class="flex justify-center space-x-2">
+                                        <div class="flex justify-center space-x-6">
                                             <a href="{{ route('admin.user.edit', $user->id) }}"
-                                                class="bg-yellow-100 hover:bg-yellow-200 text-yellow-700 px-3 py-1 rounded-lg text-sm font-semibold">
-                                                Edit
+                                                class="text-yellow-400 hover:underline">
+                                                <i class="fa-solid fa-pen" style="color:"></i>
                                             </a>
                                             <form action="{{ route('admin.user.destroy', $user->id) }}" method="POST"
                                                 onsubmit="return confirm('Yakin ingin menghapus user ini?')">
                                                 @csrf
                                                 @method('DELETE')
                                                 <button type="submit"
-                                                    class="bg-red-100 hover:bg-red-200 text-red-700 px-3 py-1 rounded-lg text-sm font-semibold">
-                                                    Hapus
+                                                class="text-red-600 hover:underline mr-4 btn-delete"
+                                                alt="Hapus"><i class="fa-solid fa-trash"></i>
                                                 </button>
                                             </form>
                                         </div>

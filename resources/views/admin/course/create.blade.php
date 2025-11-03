@@ -139,11 +139,11 @@
             </div>
 
             <!-- Materials Section -->
-            <div class="mb-8">
-                <div class="flex justify-between items-center mb-4 border-b pb-2">
+            <div class="mb-8 p-2 pt-6 rounded-lg border border-gray-300">
+                <div class="flex justify-between items-center mb-4 pb-2">
                     <h2 class="text-xl font-semibold text-gray-800">Materi Course</h2>
                     <button type="button" id="addMaterial"
-                        class="text-white hover:bg-[#0f5757] font-medium bg-[#009999] max-w-lg rounded-[10px] border border-gray-300 p-2 shadow-lg transition">
+                        class="text-white hover:bg-[#0f5757] font-medium bg-[#009999] max-w-lg rounded-[10px] border border-gray-300 p-2 shadow-xs transition">
                         + Tambah Materi
                     </button>
                 </div>
@@ -154,7 +154,7 @@
             </div>
 
             <!-- Submit Buttons -->
-            <div class="flex justify-end gap-3 pt-6 border-t">
+            <div class="flex justify-end gap-3 pt-6">
                 <a href="{{ route('course.index') }}"
                     class="px-6 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition">
                     Batal
@@ -214,7 +214,7 @@ document.getElementById('addMaterial').addEventListener('click', function() {
             </div>
 
             <!-- Quiz Section -->
-            <div class="mb-4 border-t pt-4">
+            <div class="mb-6 pt-4 pb-1 px-2 rounded-lg border border-gray-200 bg-white">
                 <div class="flex items-center justify-between mb-3">
                     <label class="block text-sm font-medium text-gray-700">Quiz untuk Materi Ini</label>
                     <label class="inline-flex items-center">

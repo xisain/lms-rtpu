@@ -34,9 +34,9 @@
                                 </th>
                             </tr>
                         </thead>
-                        <tbody>
+                        <tbody class="bg-white divide-y divide-gray-200">
                             @forelse($course as $index => $c)
-                                <tr class="border-b hover:bg-gray-50">
+                                <tr class="hover:bg-gray-50">
                                     <td class="px-6 py-4">{{ $index + 1 }}</td>
                                     <td class="px-6 py-4 font-semibold">{{ $c->nama_course }}</td>
                                     <td class="px-6 py-4">{{ Str::limit($c->description, 50) }}</td>
@@ -65,25 +65,29 @@
                                                 class="px-2 py-1 bg-yellow-100 text-yellow-700 rounded text-xs">Private</span>
                                         @endif
                                     </td>
-                                    <td class="px-6 py-4 text-center space-x-5">
-                                        <a href="{{ route('course.show', $c->slugs) }}"
-                                            class="text-blue-600 hover:underline -mr-1 px-5" alt="Lihat Course"><i
-                                                class="fa-solid fa-eye"></i></a>
-                                        <a href="{{ route('course.edit', $c->id) }}" class="text-yellow-400 hover:underline"
-                                            alt="Edit"><i class="fa-solid fa-pen"></i></a>
-                                        <form action="{{ route('course.destroy', $c->id) }}" method="POST" class="inline">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit" class="text-red-600 hover:underline mr-4 btn-delete"
-                                                alt="Hapus">
-                                                <i class="fa-solid fa-trash"></i>
-                                            </button>
-                                        </form>
+                                    <td class="px-9 py-4">
+                                        <div class="flex justify-center items-center gap-4">
+                                            <a href="{{ route('course.show', $c->slugs) }}"
+                                                class="text-blue-600 hover:underline" alt="Lihat Course">
+                                                <i class="fa-solid fa-eye text-lg"></i>
+                                            </a>
+                                            <a href="{{ route('course.edit', $c->id) }}"
+                                                class="text-yellow-400 hover:underline" alt="Edit">
+                                                <i class="fa-solid fa-pen text-lg"></i>
+                                            </a>
+                                            <form action="{{ route('course.destroy', $c->id) }}" method="POST" class="inline">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" class="text-red-600 hover:underline btn-delete" alt="Hapus">
+                                                    <i class="fa-solid fa-trash text-lg"></i>
+                                                </button>
+                                            </form>
+                                        </div>
                                     </td>
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="7" class="text-center py-6 text-gray-500">
+                                    <td colspan="7" class="text-center py-6 text-gray-00">
                                         Tidak ada course ditemukan.
                                     </td>
                                 </tr>
