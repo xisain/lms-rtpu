@@ -6,7 +6,7 @@
             <div class="bg-white rounded-lg shadow-md overflow-hidden mb-5">
                 <div class="bg-[#009999] px-6 py-4 flex justify-between items-center">
                     <h4 class="text-xl font-bold text-white">Daftar Course</h4>
-                    <a href="{{ route('admin.category.create') }}"
+                    <a href="{{ route('course.create') }}"
                         class="bg-white text-dark hover:bg-gray-200 px-4 py-2 rounded-lg font-semibold transition duration-200 flex items-center gap-2">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
@@ -15,7 +15,7 @@
                     </a>
                 </div>
                 <div class="overflow-x-auto">
-                    <table class="min-w-full divide-y divide-gray-200">
+                    <table class="min-w-full divide-y divide-x divide-gray-200">
                         <thead class="bg-gray-50">
                             <tr>
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray uppercase tracking-wider">#
@@ -67,7 +67,7 @@
                                     </td>
                                     <td class="px-6 py-4 text-center space-x-5">
                                         <a href="{{ route('course.show', $c->slugs) }}"
-                                            class="text-blue-600 hover:underline -mr-1" alt="Lihat Course"><i
+                                            class="text-blue-600 hover:underline -mr-1 px-5" alt="Lihat Course"><i
                                                 class="fa-solid fa-eye"></i></a>
                                         <a href="{{ route('course.edit', $c->id) }}" class="text-yellow-400 hover:underline"
                                             alt="Edit"><i class="fa-solid fa-pen"></i></a>

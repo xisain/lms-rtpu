@@ -21,7 +21,7 @@
             padding: 0;
             width: 297mm;
             height: 210mm;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #05a575 0%, #057755 100%);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -41,7 +41,7 @@
             position: absolute;
             width: 150px;
             height: 150px;
-            border: 3px solid #667eea;
+            border: 3px solid #05a575;
         }
 
         .corner-tl {
@@ -89,7 +89,7 @@
         .circle-2 {
             width: 200px;
             height: 200px;
-            background: #764ba2;
+            background: #05a575;
             bottom: -50px;
             left: -50px;
         }
@@ -109,7 +109,7 @@
             display: inline-block;
             width: 80px;
             height: 80px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #05a575 0%, #057755 100%);
             border-radius: 50%;
             margin-bottom: 15px;
             box-shadow: 0 5px 20px rgba(102, 126, 234, 0.3);
@@ -125,7 +125,7 @@
             letter-spacing: 3px;
             text-transform: uppercase;
             margin-bottom: 10px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #05a575 0%, #057755 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
@@ -164,7 +164,7 @@
             transform: translateX(-50%);
             width: 80%;
             height: 2px;
-            background: linear-gradient(90deg, transparent, #667eea, transparent);
+            background: linear-gradient(90deg, transparent, #05a575, transparent);
         }
 
         .completion-text {
@@ -177,7 +177,7 @@
         .course-name {
             font-size: 32px;
             font-weight: bold;
-            color: #667eea;
+            color: #05a575;
             margin: 20px 0 30px 0;
         }
 
@@ -246,7 +246,7 @@
             left: 60px;
             width: 80px;
             height: 80px;
-            border: 3px solid #667eea;
+            border: 3px solid #05a575;
             border-radius: 50%;
             display: flex;
             align-items: center;
@@ -258,7 +258,7 @@
         .seal-text {
             font-size: 10px;
             font-weight: bold;
-            color: #667eea;
+            color: #05a575;
             text-align: center;
             line-height: 1.2;
             letter-spacing: 1px;

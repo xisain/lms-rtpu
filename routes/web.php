@@ -28,6 +28,7 @@ Route::middleware('auth')->group(function () {
 
     // Protected routes here
     Route::prefix('course')->group(function () {
+        Route::get('my',[CourseController::class,'myCourse'])->name('course.my');
         Route::get('/', [CourseController::class, 'showCourse'])->name('course.index');
         Route::get('/filter', [CourseController::class, 'filterCourse'])->name('course.filter');
         Route::get('{slug}', [CourseController::class, 'show'])->name('course.show');

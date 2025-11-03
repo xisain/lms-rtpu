@@ -2,27 +2,25 @@
 
 namespace App\Http\Controllers;
 
+use App\Jobs\GenerateCertificateJob;
 use App\Models\category;
 use App\Models\Certificate;
 use App\Models\course;
-use Illuminate\Http\Request;
-use App\Models\material;
-use App\Models\submaterial;
-use App\Models\progress;
-use Illuminate\Support\Str;
 use App\Models\enrollment;
+use App\Models\material;
+use App\Models\progress;
 use App\Models\Quiz;
 use App\Models\quiz_attempt;
 use App\Models\quiz_option;
 use App\Models\quiz_question;
-use App\Models\QuizAttempt;
-use App\Models\QuizOption;
-use App\Jobs\GenerateCertificateJob;
-use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Auth;
+use App\Models\submaterial;
 use App\Models\User;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use SweetAlert2\Laravel\Swal;
 
 class CourseController extends Controller
@@ -32,11 +30,13 @@ class CourseController extends Controller
      */
     public function index()
     {
-        if (Auth::user()->role->name == "admin") {
-            $course = course::with('material', 'material.submaterial')->orderBy('id','desc')->paginate(5);
+        if (Auth::user()->role->name == 'admin') {
+            $course = course::with('material', 'material.submaterial')->orderBy('id', 'desc')->paginate(5);
+
             return view('admin.course.index', ['course' => $course]);
         } else {
             $course = course::with('material', 'material.submaterial')->where('teacher_id', '=', Auth::user()->id)->get();
+
             return view('dosen.course.index', ['course' => $course]);
         }
     }
@@ -50,9 +50,10 @@ class CourseController extends Controller
         $teacher = User::with('role')->whereHas('role', function ($q) {
             $q->where('id', 2);
         })->get();
+
         return view('admin.course.create', [
             'categories' => $category,
-            'teachers' => $teacher
+            'teachers' => $teacher,
         ]);
     }
 
@@ -142,29 +143,33 @@ class CourseController extends Controller
             }
 
             // Handle Quiz
-            if (isset($mat['quiz']['judul_quiz']) && !empty($mat['quiz']['judul_quiz']) && isset($mat['quiz']['questions']) && count($mat['quiz']['questions']) > 0) {
+            if (isset($mat['quiz']['judul_quiz']) && ! empty($mat['quiz']['judul_quiz']) && isset($mat['quiz']['questions']) && count($mat['quiz']['questions']) > 0) {
                 $quiz = quiz::create([
                     'material_id' => $material->id,
                     'judul_quiz' => $mat['quiz']['judul_quiz'],
-                    'is_required' => true
+                    'is_required' => true,
                 ]);
 
                 foreach ($mat['quiz']['questions'] as $q) {
-                    if (empty($q['pertanyaan'])) continue;
+                    if (empty($q['pertanyaan'])) {
+                        continue;
+                    }
 
                     $question = quiz_question::create([
                         'quiz_id' => $quiz->id,
-                        'pertanyaan' => $q['pertanyaan']
+                        'pertanyaan' => $q['pertanyaan'],
                     ]);
 
                     if (isset($q['options']) && is_array($q['options'])) {
                         foreach ($q['options'] as $index => $optionText) {
-                            if (empty($optionText)) continue;
+                            if (empty($optionText)) {
+                                continue;
+                            }
 
                             quiz_option::create([
                                 'quiz_question_id' => $question->id,
                                 'teks_pilihan' => $optionText,
-                                'is_correct' => isset($q['correct_option']) && $index === (int) $q['correct_option']
+                                'is_correct' => isset($q['correct_option']) && $index === (int) $q['correct_option'],
                             ]);
                         }
                     }
@@ -182,24 +187,26 @@ class CourseController extends Controller
     public function show($slug)
     {
         $course = course::where('slugs', $slug)
-        ->with(['material.submaterial'])
-        ->first();
+            ->with(['material.submaterial'])
+            ->first();
         $courseEnroll = $course->maxSlotEnrollment();
         $courseStudent = $course->countEnrollment();
         $courseExpire = $course->expireCourse();
         // Course bukan public dan bukan admin
-        if (!$course->public && auth()->user()->role->id != 1) {
+        if (! $course->public && auth()->user()->role->id != 1) {
             Swal::error([
                 'title' => 'Error',
-                'text' => 'Kelas Tidak Di temukan'
+                'text' => 'Kelas Tidak Di temukan',
             ]);
+
             return redirect()->route('course.index');
         }
-        if (!$course) {
+        if (! $course) {
             Swal::error([
                 'title' => 'Error',
-                'text' => 'Kelas Tidak Di temukan'
+                'text' => 'Kelas Tidak Di temukan',
             ]);
+
             return redirect()->route('course.index');
         }
 
@@ -226,7 +233,7 @@ class CourseController extends Controller
 
         $previewSubmaterial = null;
 
-        if (!$isEnrolled) {
+        if (! $isEnrolled) {
             Log::info('User belum enroll, mencari preview submaterial...');
 
             // Cari previewSubmaterial tanpa peduli enroll
@@ -238,7 +245,7 @@ class CourseController extends Controller
                 }
             }
 
-            if (!$previewSubmaterial) {
+            if (! $previewSubmaterial) {
                 foreach ($course->material as $material) {
                     $firstSub = $material->submaterial->first();
                     if ($firstSub) {
@@ -255,70 +262,69 @@ class CourseController extends Controller
             'type' => $previewSubmaterial?->type,
         ]);
 
-    $certificateStatus = null;
-    if ($isEnrolled) {
-        // Cek apakah semua materi sudah selesai
-        $allCompleted = true;
-        foreach ($course->material as $m) {
-            // Cek submaterial completion
-            foreach ($m->submaterial as $sub) {
-                $progress = progress::where('user_id', Auth::id())
-                    ->where('submaterial_id', $sub->id)
-                    ->where('status', 'completed')
-                    ->exists();
+        $certificateStatus = null;
+        if ($isEnrolled) {
+            // Cek apakah semua materi sudah selesai
+            $allCompleted = true;
+            foreach ($course->material as $m) {
+                // Cek submaterial completion
+                foreach ($m->submaterial as $sub) {
+                    $progress = progress::where('user_id', Auth::id())
+                        ->where('submaterial_id', $sub->id)
+                        ->where('status', 'completed')
+                        ->exists();
 
-                if (!$progress) {
-                    $allCompleted = false;
-                    break 2;
+                    if (! $progress) {
+                        $allCompleted = false;
+                        break 2;
+                    }
+                }
+
+                // Cek quiz completion jika ada quiz
+                if ($m->quiz) {
+                    $quizAttempt = quiz_attempt::where('user_id', Auth::id())
+                        ->where('quiz_id', $m->quiz->id)
+                        ->where('status', 'completed')
+                        ->where('score', '>=', 70)
+                        ->exists();
+
+                    if (! $quizAttempt) {
+                        $allCompleted = false;
+                        break;
+                    }
                 }
             }
 
-            // Cek quiz completion jika ada quiz
-            if ($m->quiz) {
-                $quizAttempt = quiz_attempt::where('user_id', Auth::id())
-                    ->where('quiz_id', $m->quiz->id)
-                    ->where('status', 'completed')
-                    ->where('score', '>=', 70)
-                    ->exists();
+            if ($allCompleted) {
+                // Cek status sertifikat
+                $certificate = Certificate::where('user_id', Auth::id())
+                    ->where('course_id', $course->id)
+                    ->first();
 
-                if (!$quizAttempt) {
-                    $allCompleted = false;
-                    break;
-                }
+                $certificateStatus = [
+                    'completed' => true,
+                    'certificate' => $certificate,
+                ];
+            } else {
+                $certificateStatus = [
+                    'completed' => false,
+                    'certificate' => null,
+                ];
             }
         }
-
-        if ($allCompleted) {
-            // Cek status sertifikat
-            $certificate = Certificate::where('user_id', Auth::id())
-                ->where('course_id', $course->id)
-                ->first();
-
-            $certificateStatus = [
-                'completed' => true,
-                'certificate' => $certificate
-            ];
-        } else {
-            $certificateStatus = [
-                'completed' => false,
-                'certificate' => null
-            ];
-        }
-    }
 
         return view('course.show', [
             'courseData' => $course,
             'courseMaxEnroll' => $courseEnroll,
-            'expireCourse'=> $courseExpire,
+            'expireCourse' => $courseExpire,
             'countEnroll' => $courseStudent,
             'isEnrolled' => $isEnrolled,
             'firstMaterial' => $firstMaterial,
             'firstSubmaterial' => $firstSubmaterial,
             'previewSubmaterial' => $previewSubmaterial,
-        'certificateStatus' => $certificateStatus
+            'certificateStatus' => $certificateStatus,
         ]);
     }
-
 
     /**
      * Show the form for editing the specified resource.
@@ -335,18 +341,20 @@ class CourseController extends Controller
         if (auth()->user()->role->id == 1) {
             // Admin view
             $category = Category::all();
-            $teachers = User::whereHas('role', fn($q) => $q->where('name', 'dosen'))->get();
+            $teachers = User::whereHas('role', fn ($q) => $q->where('name', 'dosen'))->get();
+
             return view('admin.course.edit', [
                 'course' => $course,
                 'categories' => $category,
-                'teachers' => $teachers
+                'teachers' => $teachers,
             ]);
         } else {
             // Dosen view
             $category = Category::all();
+
             return view('dosen.course.edit', [
                 'course' => $course,
-                'categories' => $category
+                'categories' => $category,
             ]);
         }
     }
@@ -388,7 +396,7 @@ class CourseController extends Controller
             'materials.*.submaterials.*.id' => 'nullable|integer|exists:submaterials,id',
             'materials.*.submaterials.*.nama_submateri' => 'required|string|max:255',
             'materials.*.submaterials.*.type' => 'required|in:text,video,pdf',
-            'materials.*.submaterials.*.isi_materi' => 'nullable'
+            'materials.*.submaterials.*.isi_materi' => 'nullable',
         ];
 
         if (auth()->user()->role->id == 1) {
@@ -438,9 +446,9 @@ class CourseController extends Controller
                 $materialId = $mat['id'] ?? null;
 
                 Log::info("Processing Material #{$materialIndex}", [
-                    'has_id' => !empty($materialId),
+                    'has_id' => ! empty($materialId),
                     'id_value' => $materialId,
-                    'nama_materi' => $mat['nama_materi']
+                    'nama_materi' => $mat['nama_materi'],
                 ]);
 
                 // Create atau update material
@@ -470,9 +478,9 @@ class CourseController extends Controller
 
                         Log::info("Processing Submaterial #{$subIndex}", [
                             'material_id' => $material->id,
-                            'has_id' => !empty($submaterialId),
+                            'has_id' => ! empty($submaterialId),
                             'id_value' => $submaterialId,
-                            'type' => $sub['type']
+                            'type' => $sub['type'],
                         ]);
 
                         // Handle PDF type
@@ -481,15 +489,15 @@ class CourseController extends Controller
 
                             if ($request->hasFile($pdfFieldName)) {
                                 // Delete old PDF if exists
-                                if ($submaterialId && !empty($content)) {
+                                if ($submaterialId && ! empty($content)) {
                                     Storage::disk('public')->delete($content);
                                 }
                                 // Store new file
                                 $content = $request->file($pdfFieldName)->store('course/pdf', 'public');
-                            } else if (!empty($sub['isi_materi'])) {
+                            } elseif (! empty($sub['isi_materi'])) {
                                 // Keep existing file
                                 $content = $sub['isi_materi'];
-                            } else if (!$submaterialId) {
+                            } elseif (! $submaterialId) {
                                 // New submaterial requires a file
                                 continue;
                             }
@@ -507,14 +515,14 @@ class CourseController extends Controller
                             $submaterial->update([
                                 'nama_submateri' => $sub['nama_submateri'],
                                 'type' => $sub['type'],
-                                'isi_materi' => $content
+                                'isi_materi' => $content,
                             ]);
                         } else {
                             // CREATE new submaterial
                             $submaterial = $material->submaterial()->create([
                                 'nama_submateri' => $sub['nama_submateri'],
                                 'type' => $sub['type'],
-                                'isi_materi' => $content
+                                'isi_materi' => $content,
                             ]);
                         }
 
@@ -523,11 +531,11 @@ class CourseController extends Controller
 
                     // Delete removed submaterials
                     $deletedSubmaterials = array_diff($existingSubmaterialIds, $updatedSubmaterialIds);
-                    if (!empty($deletedSubmaterials)) {
+                    if (! empty($deletedSubmaterials)) {
                         // Delete files first
                         $toDeleteSubs = Submaterial::whereIn('id', $deletedSubmaterials)->get();
                         foreach ($toDeleteSubs as $sub) {
-                            if ($sub->type === 'pdf' && !empty($sub->isi_materi)) {
+                            if ($sub->type === 'pdf' && ! empty($sub->isi_materi)) {
                                 Storage::disk('public')->delete($sub->isi_materi);
                             }
                         }
@@ -537,7 +545,7 @@ class CourseController extends Controller
                 }
 
                 // Handle quiz
-                if (isset($mat['quiz']['judul_quiz']) && !empty($mat['quiz']['judul_quiz'])) {
+                if (isset($mat['quiz']['judul_quiz']) && ! empty($mat['quiz']['judul_quiz'])) {
                     $quizId = $mat['quiz']['id'] ?? null;
 
                     if ($quizId) {
@@ -545,13 +553,13 @@ class CourseController extends Controller
                         $quiz = Quiz::findOrFail($quizId);
                         $quiz->update([
                             'judul_quiz' => $mat['quiz']['judul_quiz'],
-                            'is_required' => true
+                            'is_required' => true,
                         ]);
                     } else {
                         // CREATE new quiz
                         $quiz = $material->quiz()->create([
                             'judul_quiz' => $mat['quiz']['judul_quiz'],
-                            'is_required' => true
+                            'is_required' => true,
                         ]);
                     }
 
@@ -569,7 +577,7 @@ class CourseController extends Controller
                             } else {
                                 // CREATE new question
                                 $question = $quiz->questions()->create([
-                                    'pertanyaan' => $q['pertanyaan']
+                                    'pertanyaan' => $q['pertanyaan'],
                                 ]);
                             }
 
@@ -581,10 +589,10 @@ class CourseController extends Controller
                                 $question->options()->delete();
 
                                 foreach ($q['options'] as $index => $optionText) {
-                                    if (!empty($optionText)) {
+                                    if (! empty($optionText)) {
                                         $question->options()->create([
                                             'teks_pilihan' => $optionText,
-                                            'is_correct' => $index === (int)($q['correct_option'] ?? -1)
+                                            'is_correct' => $index === (int) ($q['correct_option'] ?? -1),
                                         ]);
                                     }
                                 }
@@ -593,7 +601,7 @@ class CourseController extends Controller
 
                         // Delete removed questions
                         $deletedQuestions = array_diff($existingQuestionIds, $updatedQuestionIds);
-                        if (!empty($deletedQuestions)) {
+                        if (! empty($deletedQuestions)) {
                             quiz_question::whereIn('id', $deletedQuestions)->delete();
                         }
                     }
@@ -605,32 +613,35 @@ class CourseController extends Controller
 
             // Delete removed materials
             $deletedMaterials = array_diff($existingMaterialIds, $updatedMaterialIds);
-            if (!empty($deletedMaterials)) {
+            if (! empty($deletedMaterials)) {
                 Material::whereIn('id', $deletedMaterials)->delete();
             }
 
             DB::commit();
 
             $redirectRoute = Auth::user()->role->id == 1 ? 'admin.course.index' : 'dosen.course.index';
+
             return redirect()->route($redirectRoute)
                 ->with('success', 'Course berhasil diupdate!');
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::error('Course Update Error: ' . $e->getMessage());
-            Log::error('Stack trace: ' . $e->getTraceAsString());
+            Log::error('Course Update Error: '.$e->getMessage());
+            Log::error('Stack trace: '.$e->getTraceAsString());
 
             return redirect()->back()
                 ->withInput()
-                ->withErrors(['error' => 'Gagal mengupdate course: ' . $e->getMessage()]);
+                ->withErrors(['error' => 'Gagal mengupdate course: '.$e->getMessage()]);
         }
     }
+
     public function destroy(string $id)
     {
-    //    $deletedCourse = course::with(['material', 'material.submaterial','material.quiz', 'material.quiz.questions','material.quiz.questions.options'])->findOrFail($id);
+        //    $deletedCourse = course::with(['material', 'material.submaterial','material.quiz', 'material.quiz.questions','material.quiz.questions.options'])->findOrFail($id);
         $deletedCourse = Course::findOrFail($id);
-       $deletedCourse->delete();
-       $redirectRoute = Auth::user()->role->id == 1 ? 'admin.course.index' : 'dosen.course.index';
-       return redirect()->route($redirectRoute);
+        $deletedCourse->delete();
+        $redirectRoute = Auth::user()->role->id == 1 ? 'admin.course.index' : 'dosen.course.index';
+
+        return redirect()->route($redirectRoute);
     }
 
     public function showCourse(Request $request)
@@ -640,8 +651,8 @@ class CourseController extends Controller
         // Apply filters if present
         if ($request->filled('search')) {
             $query->where(function ($q) use ($request) {
-                $q->where('nama_course', 'like', '%' . $request->search . '%')
-                    ->orWhere('description', 'like', '%' . $request->search . '%');
+                $q->where('nama_course', 'like', '%'.$request->search.'%')
+                    ->orWhere('description', 'like', '%'.$request->search.'%');
             });
         }
 
@@ -662,7 +673,7 @@ class CourseController extends Controller
 
         return view('course.index', [
             'course' => $course,
-            'categories' => $categories
+            'categories' => $categories,
         ]);
     }
 
@@ -673,8 +684,8 @@ class CourseController extends Controller
         // Search filter
         if ($request->filled('search')) {
             $query->where(function ($q) use ($request) {
-                $q->where('nama_course', 'like', '%' . $request->search . '%')
-                    ->orWhere('description', 'like', '%' . $request->search . '%');
+                $q->where('nama_course', 'like', '%'.$request->search.'%')
+                    ->orWhere('description', 'like', '%'.$request->search.'%');
             });
         }
 
@@ -698,10 +709,48 @@ class CourseController extends Controller
         return view('course.partials.course-cards', compact('course'));
     }
 
+    public function myCourse(Request $request)
+    {
+        $userId = auth()->user()->id;
+
+        $query = Course::where('public', true);
+
+        // Apply filters if present
+        if ($request->filled('search')) {
+            $query->where(function ($q) use ($request) {
+                $q->where('nama_course', 'like', '%'.$request->search.'%')
+                    ->orWhere('description', 'like', '%'.$request->search.'%');
+            });
+        }
+
+        if ($request->filled('category')) {
+            $query->where('category_id', $request->category);
+        }
+
+        if ($request->filled('start_date')) {
+            $query->whereDate('start_date', '>=', $request->start_date);
+        }
+
+        if ($request->filled('end_date')) {
+            $query->whereDate('end_date', '<=', $request->end_date);
+        }
+
+        $course = Course::whereHas('enrollment', function($q) use ($userId) {
+        $q->where('user_id', $userId);
+        })->with('enrollment')->get();
+        $categories = Category::all();
+
+        return view('course.index', [
+            'course' => $course,
+            'categories' => $categories,
+        ]);
+    }
+
     public function guestDaftarKelas()
     {
         $course = course::where('public', true)->get();
         $categories = category::all();
+
         return view('course.index', [
             'categories' => $categories,
             'course' => $course,
@@ -715,7 +764,7 @@ class CourseController extends Controller
             ->firstOrFail();
 
         // Cek apakah user sudah enroll di course ini
-        if (!enrollment::where('user_id', Auth::id())
+        if (! enrollment::where('user_id', Auth::id())
             ->where('course_id', $course->id)
             ->exists()) {
             return redirect()->route('course.show', $slug)
@@ -725,20 +774,20 @@ class CourseController extends Controller
         // Ambil materi
         $materi = $material
             ? material::where('id', $material)
-            ->where('course_id', $course->id)
-            ->firstOrFail()
+                ->where('course_id', $course->id)
+                ->firstOrFail()
             : $course->material->first();
         $isQuiz = $submaterial === 'quiz';
 
         if ($isQuiz) {
             // Cek apakah semua submateri sudah selesai
-            if (!$materi->isAllSubmaterialCompleted(Auth::id())) {
+            if (! $materi->isAllSubmaterialCompleted(Auth::id())) {
                 return redirect()->route('course.show', $slug)
                     ->with('error', 'Selesaikan semua submateri terlebih dahulu untuk mengakses quiz.');
             }
 
             $quiz = $materi->quiz;
-            if (!$quiz) {
+            if (! $quiz) {
                 return redirect()->route('course.show', $slug)
                     ->with('error', 'Quiz belum tersedia untuk materi ini.');
             }
@@ -752,17 +801,17 @@ class CourseController extends Controller
         // Ambil submateri
         $submateri = $submaterial
             ? submaterial::where('id', $submaterial)
-            ->where('material_id', $materi->id)
-            ->firstOrFail()
+                ->where('material_id', $materi->id)
+                ->firstOrFail()
             : ($materi ? $materi->submaterial->first() : null);
 
-        if (!$materi || !$submateri) {
+        if (! $materi || ! $submateri) {
             return redirect()->route('course.show', $slug)
                 ->with('error', 'Materi atau submateri belum tersedia.');
         }
 
         // Cek apakah user bisa mengakses submateri ini (sudah selesai materi sebelumnya)
-        if (!progress::canAccess(Auth::id(), $submateri->id)) {
+        if (! progress::canAccess(Auth::id(), $submateri->id)) {
             return redirect()->route('course.show', $slug)
                 ->with('error', 'Anda harus menyelesaikan materi sebelumnya terlebih dahulu.');
         }
@@ -771,7 +820,7 @@ class CourseController extends Controller
         progress::updateOrCreate(
             [
                 'user_id' => Auth::id(),
-                'submaterial_id' => $submateri->id
+                'submaterial_id' => $submateri->id,
             ],
             ['status' => 'completed']
         );
@@ -786,7 +835,7 @@ class CourseController extends Controller
                     ->where('status', 'completed')
                     ->exists();
 
-                if (!$progress) {
+                if (! $progress) {
                     $allCompleted = false;
                     break 2;
                 }
@@ -800,7 +849,7 @@ class CourseController extends Controller
                     ->where('score', '>=', 70) // Nilai minimum untuk lulus
                     ->exists();
 
-                if (!$quizAttempt) {
+                if (! $quizAttempt) {
                     $allCompleted = false;
                     break;
                 }
@@ -813,9 +862,9 @@ class CourseController extends Controller
                 ->where('course_id', $course->id)
                 ->first();
 
-            if (!$existingCertificate) {
+            if (! $existingCertificate) {
                 // Generate sertifikat
-                $certificateNumber = 'CERT-' . Str::upper(Str::random(8));
+                $certificateNumber = 'CERT-'.Str::upper(Str::random(8));
                 $certificate = Certificate::create([
                     'user_id' => Auth::id(),
                     'course_id' => $course->id,
@@ -837,25 +886,25 @@ class CourseController extends Controller
         $materi = Material::with('quiz.questions.options')->findOrFail($material);
         $quiz = $materi->quiz;
 
-        if (!$quiz) {
+        if (! $quiz) {
             return redirect()->back()->with('error', 'Quiz tidak ditemukan.');
         }
 
         // Validate if user has access to this quiz
-        if (!$quiz->canAccess($request->user())) {
+        if (! $quiz->canAccess($request->user())) {
             return redirect()->back()->with('error', 'Anda belum dapat mengakses quiz ini.');
         }
 
         // Validate answers
         $request->validate([
             'answers' => 'required|array',
-            'answers.*' => 'required|exists:quiz_options,id'
+            'answers.*' => 'required|exists:quiz_options,id',
         ]);
 
         try {
             DB::beginTransaction();
             // Create new attempt
-            $attempt = new quiz_attempt();
+            $attempt = new quiz_attempt;
             $attempt->user_id = $request->user()->id;
             $attempt->quiz_id = $quiz->id;
 
@@ -883,7 +932,7 @@ class CourseController extends Controller
                     'selected_option_text' => $selectedOption->teks_pilihan,
                     'correct_option_id' => $correctOption->id,
                     'correct_option_text' => $correctOption->teks_pilihan,
-                    'is_correct' => $isCorrect
+                    'is_correct' => $isCorrect,
                 ];
             }
 
@@ -894,9 +943,11 @@ class CourseController extends Controller
             $attempt->save();
 
             DB::commit();
+
             return redirect()->back()->with('success', 'Quiz berhasil diselesaikan!');
         } catch (\Exception $e) {
             DB::rollBack();
+
             return redirect()->back()->with('error', 'Terjadi kesalahan saat menyimpan jawaban quiz.');
         }
     }

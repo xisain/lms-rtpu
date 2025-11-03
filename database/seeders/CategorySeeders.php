@@ -14,8 +14,8 @@ class CategorySeeders extends Seeder
     public function run(): void
     {
         category::create([
-            'category' => 'Testing',
-            'description'=> 'Text',
+            'category' => 'Pelatihan',
+            'description'=> 'Pelatihan ini diselenggarakan oleh Politeknik Negeri Jakarta (PNJ) sebagai upaya untuk meningkatkan kompetensi dan keterampilan peserta di bidang yang relevan dengan perkembangan industri saat ini. Melalui kegiatan ini, peserta dibekali dengan pengetahuan teoritis, praktik langsung, dan studi kasus nyata, sehingga mampu menerapkan hasil pelatihan dalam dunia kerja maupun pengembangan karier. Program ini juga menjadi wadah untuk memperluas jejaring profesional serta menumbuhkan semangat inovasi dan profesionalisme di kalangan mahasiswa maupun masyarakat umum.',
         ]);
     }
 }

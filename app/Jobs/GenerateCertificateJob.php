@@ -5,7 +5,6 @@ namespace App\Jobs;
 use App\Models\Certificate;
 use App\Models\Course;
 use App\Models\User;
-use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -14,7 +13,7 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Str;
+use Spatie\Browsershot\Browsershot;
 
 class GenerateCertificateJob implements ShouldQueue
 {
@@ -39,39 +38,43 @@ class GenerateCertificateJob implements ShouldQueue
                 Storage::disk('public')->makeDirectory('certificates');
             }
 
-            // Generate PDF
-            $pdf = PDF::loadView('certificates.template', [
+            // Buat filename dan path
+            $filename = "certificate_{$this->certificate->id}.pdf";
+            $path = storage_path("app/public/certificates/{$filename}");
+
+            // Render HTML dari Blade
+            $html = view('certificates.template', [
                 'certificate' => $this->certificate,
                 'user' => $this->user,
                 'course' => $this->course
-            ])->setPaper('a4', 'landscape');
+            ])->render();
 
-            // Save PDF
-            $filename = "certificate_{$this->certificate->id}.pdf";
-            $path = "certificates/{$filename}";
+            // Generate PDF dengan Browsershot
+            Browsershot::html($html)
+                ->margins(0, 0, 0, 0)
+                ->landscape()
+                ->format('A4')
+                ->showBackground() // penting agar background & gradient muncul
+                ->emulateMedia('screen')
+                ->waitUntilNetworkIdle() // pastikan font & asset selesai dimuat
+                ->savePdf($path);
 
-            // Simpan ke storage/app/public/certificates/
-            if (!Storage::disk('public')->put($path, $pdf->output())) {
-                throw new \Exception("Failed to save PDF file");
-            }
-
-            // Update certificate dengan path relatif (tanpa 'public/')
+            // Update database dengan path relatif
             $this->certificate->update([
-                'pdf_path' => $path
+                'pdf_path' => "certificates/{$filename}"
             ]);
 
-            \Log::info('Certificate generated successfully', [
+            Log::info('Certificate generated successfully (Browsershot)', [
                 'certificate_id' => $this->certificate->id,
-                'path' => $path
+                'path' => $path,
             ]);
         } catch (\Exception $e) {
-            \Log::error('Failed to generate certificate', [
+            Log::error('Failed to generate certificate (Browsershot)', [
                 'certificate_id' => $this->certificate->id,
                 'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString()
+                'trace' => $e->getTraceAsString(),
             ]);
-
-            throw $e; // Re-throw untuk menandai job gagal
+            throw $e;
         }
-}
+    }
 }

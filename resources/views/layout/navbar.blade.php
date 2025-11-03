@@ -94,12 +94,12 @@
 
                     <!-- Dropdown Kelas -->
                     <div class="relative" x-data="{ openDropdown: false }">
-                        <button 
+                        <button
                             @click="openDropdown = !openDropdown"
-                            class="relative flex items-center text-base font-medium text-gray-700 hover:text-[#0f5757] 
+                            class="relative flex items-center text-base font-medium text-gray-700 hover:text-[#0f5757]
                                 focus:outline-none focus:ring-0 rounded-md px-1 py-1 transition-all duration-300">
                             My Course
-                            <svg 
+                            <svg
                                 class="w-4 h-4 ml-1 mt-1 transform transition-transform duration-300"
                                 :class="openDropdown ? 'rotate-180 text-[#0f5757]' : 'rotate-0'"
                                 fill="currentColor" viewBox="0 0 20 20">
@@ -127,6 +127,7 @@
                                 {{ $enrollment->course->nama_course }}
                             </a>
                             @endforeach
+                            <a href="{{ route('course.my') }}" class="block px-4 py-2 text-center text-sm font-bold text-gray-700 bg-teal-100">Semua Course Saya</a>
                             @else
                             <p class="px-4 py-2 text-sm text-gray-700">Belum ada course yang di-enroll.</p>
                             @endif
@@ -141,11 +142,11 @@
         <div class="hidden lg:flex items-center space-x-4">
             @auth
             <div class="relative" x-data="{ userOpen: false }">
-                <button 
+                <button
                     @click="userOpen = !userOpen"
                     class="flex items-center text-gray-700 hover:text-[#0f5757] focus:outline-none transition-all duration-300 px-2 py-1">
                     <span class="mr-2 font-medium">{{ auth()->user()->name }}</span>
-                    <svg 
+                    <svg
                         class="h-5 w-5 transform transition-transform duration-300"
                         :class="userOpen ? 'rotate-180 text-[#0f5757]' : 'rotate-0'"
                         fill="currentColor" viewBox="0 0 20 20">

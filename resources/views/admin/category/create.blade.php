@@ -5,7 +5,7 @@
     <div class="max-w-3xl mx-auto">
         <div class="bg-white rounded-lg shadow-md overflow-hidden">
             <!-- Header -->
-            <div class="bg-gradient-to-r from-blue-500 to-blue-600 px-6 py-4">
+            <div class="bg-gradient-to-r from-teal-500 to-teal-700 px-6 py-4">
                 <h4 class="text-xl font-bold text-white">Add New Category</h4>
             </div>
 
@@ -55,7 +55,7 @@
                             Back
                         </a>
                         <button type="submit"
-                                class="inline-flex items-center gap-2 px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition duration-200">
+                                class="inline-flex items-center gap-2 px-5 py-2.5 bg-teal-600 hover:bg-teal-700 text-white rounded-lg font-medium transition duration-200">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"/>
                             </svg>
