@@ -75,6 +75,7 @@
                                                 class="text-yellow-400 hover:underline" alt="Edit">
                                                 <i class="fa-solid fa-pen text-lg"></i>
                                             </a>
+                                            <a href="{{ route('course.manage', $c->id) }}" class="text-brown-400 hover:underline"><i class="fa-solid fa-user"></i></a>
                                             <form action="{{ route('course.destroy', $c->id) }}" method="POST" class="inline">
                                                 @csrf
                                                 @method('DELETE')

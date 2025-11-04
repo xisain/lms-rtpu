@@ -181,6 +181,15 @@ class CourseController extends Controller
             ->with('success', 'Course berhasil dibuat beserta material dan submaterialnya!');
     }
 
+    public function manageCourse($id){
+        $course = course::with(['material','material.submaterial', 'material.quiz'])->find($id);
+        // $course = course::find($id);
+        $enrollmentUser = enrollment::where('course_id',$course->id)->with('user')->paginate(10);
+        return view('admin.course.manageCourse',
+        [
+        'course'=> $course,
+        'enrolluser' =>$enrollmentUser]);
+    }
     /**
      * Display the specified resource.
      */

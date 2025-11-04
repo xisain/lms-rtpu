@@ -15,6 +15,7 @@ use App\Http\Middleware\courseMiddleware;
 use App\Http\Middleware\dosenMiddleware;
 use App\Models\subscription;
 Route::get('certificate/{certificate}/download', [CertificateController::class, 'download'])->name('certificate.download');
+Route::get('/filter', [CourseController::class, 'filterCourse'])->name('course.filter');
 Route::middleware('guest')->group(function () {
     Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
     Route::post('/login', [AuthController::class, 'login']);
@@ -30,7 +31,7 @@ Route::middleware('auth')->group(function () {
     Route::prefix('course')->group(function () {
         Route::get('my',[CourseController::class,'myCourse'])->name('course.my');
         Route::get('/', [CourseController::class, 'showCourse'])->name('course.index');
-        Route::get('/filter', [CourseController::class, 'filterCourse'])->name('course.filter');
+
         Route::get('{slug}', [CourseController::class, 'show'])->name('course.show');
         Route::get('{slug}/{material?}/{submaterial?}', [CourseController::class, 'mulai'])->name('course.mulai');
         Route::post('{slug}/enroll', [EnrollmentController::class, 'store'])->name('course.enroll');
@@ -73,6 +74,7 @@ Route::middleware('auth')->group(function () {
             Route::put('/edit/{id}/update', [CourseController::class, 'update'])->name('course.update');
             Route::get('/edit/{id}', [CourseController::class, 'edit'])->name('course.edit');
             Route::delete('/{id}', [CourseController::class, 'destroy'])->name('course.destroy');
+            Route::get('/{id}/manage-course', [CourseController::class, 'manageCourse'])->name('course.manage');
         });
         Route::prefix('plan')->group(function () {
             Route::get('/', [SubscriptionController::class, 'index'])->name('admin.plan.index');

@@ -23,7 +23,7 @@ class User extends Authenticatable
         'password',
         'roles_id', // default 1
         'category_id', // default 1
-        'isActive' // default 0 
+        'isActive' // default 0
     ];
 
     /**
@@ -57,5 +57,8 @@ class User extends Authenticatable
     }
     public function teacher(){
         return $this->hasMany(course::class);
+    }
+    public function progress() {
+        return $this->hasMany(progress::class);
     }
 }

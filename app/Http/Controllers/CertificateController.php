@@ -5,9 +5,13 @@ namespace App\Http\Controllers;
 use App\Jobs\GenerateCertificateJob;
 use App\Models\Certificate;
 use App\Models\Course;
+use App\Models\progress;
+use App\Models\quiz_attempt;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
@@ -15,13 +19,39 @@ class CertificateController extends Controller
 {
     public function generate(Course $course, User $user)
     {
-        // Check if user has completed the course
-        $progress = $user->progress()
-            ->where('course_id', $course->id)
-            ->where('status', 'completed')
-            ->first();
+        // Check if user has completed all submaterials in the course
+        $allCompleted = true;
 
-        if (!$progress) {
+        foreach ($course->material as $material) {
+            // Cek submaterial completion
+            foreach ($material->submaterial as $sub) {
+                $progress = progress::where('user_id', $user->id)
+                    ->where('submaterial_id', $sub->id)
+                    ->where('status', 'completed')
+                    ->exists();
+
+                if (!$progress) {
+                    $allCompleted = false;
+                    break 2;
+                }
+            }
+
+            // Cek quiz completion jika ada quiz
+            if ($material->quiz) {
+                $quizAttempt = quiz_attempt::where('user_id', $user->id)
+                    ->where('quiz_id', $material->quiz->id)
+                    ->where('status', 'completed')
+                    ->where('score', '>=', 70)
+                    ->exists();
+
+                if (!$quizAttempt) {
+                    $allCompleted = false;
+                    break;
+                }
+            }
+        }
+
+        if (!$allCompleted) {
             return response()->json(['message' => 'User has not completed this course'], 400);
         }
 
@@ -69,13 +99,13 @@ class CertificateController extends Controller
     {
         try {
             // Cek authentication
-            if (!auth()->check()) {
+            if (!Auth::check()) {
                 abort(401, 'Unauthenticated');
             }
 
             // Authorization: Hanya pemilik atau admin yang bisa download
-            $user = auth()->user();
-            if ($user->id !== $certificate->user_id && !$user->isAdmin()) {
+            $user = Auth::user();
+            if ($user->id !== $certificate->user_id && $user->roles_id !== 1) {
                 abort(403, 'Unauthorized access');
             }
 
@@ -150,7 +180,7 @@ class CertificateController extends Controller
             'message' => 'Certificate is ready',
             'status' => 'completed',
             'certificate' => $certificate,
-            'pdf_url' => Storage::disk('public')->url($certificate->pdf_path)
+            'pdf_url' => asset('storage/' . $certificate->pdf_path)
         ]);
     }
 }
