@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\course;
 use App\Models\plan;
 use App\Models\subscription;
 use Illuminate\Http\Request;
@@ -24,7 +25,10 @@ class SubscriptionController extends Controller
      */
     public function create()
     {
-        return view('admin.plan.create');
+        $course = course::all();
+        return view('admin.plan.create', [
+            'course' => $course,
+        ]);
     }
 
     /**
@@ -35,21 +39,36 @@ class SubscriptionController extends Controller
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'description' => 'required|string',
-            'price' => 'required|integer',
-            'duration_in_days' => 'required|integer',
-            'features' => 'required|string',
-            'is_active' => 'boolean',
+            'price' => 'required|numeric|min:0',
+            'duration_in_days' => 'required|integer|min:1',
+            'features' => 'nullable|string',
+            'course' => 'required|array|min:1',
+            'course.*' => 'exists:courses,id',
+            'is_active' => 'required|boolean',
         ]);
-        if ($request->has('features')) {
-            $validated['features'] = array_map('trim', explode(',', $request->features));
-        }
 
+        // Convert features string to array
+        $features = !empty($validated['features'])
+            ? array_map('trim', explode(',', $validated['features']))
+            : [];
 
-        plan::create($validated);
+        // Simpan course sebagai array of integers
+        $courseIds = array_map('intval', $validated['course']);
 
-        return redirect()->route('admin.plan.index')->with('success', 'Berhasil Membuat Plan');
+        // Create plan
+        Plan::create([
+            'name' => $validated['name'],
+            'description' => $validated['description'],
+            'price' => $validated['price'],
+            'duration_in_days' => $validated['duration_in_days'],
+            'features' => $features,
+            'course' => $courseIds,  // simpan array IDs
+            'is_active' => $validated['is_active'],
+        ]);
+
+        return redirect()->route('admin.plan.index')
+            ->with('success', 'Plan berhasil ditambahkan!');
     }
-
     /**
      * Display the specified resource.
      */
@@ -58,11 +77,11 @@ class SubscriptionController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit($id)
+   public function edit($id)
     {
-        $plan = Plan::find($id);
-
-        return view('admin.plan.edit', compact('plan'));
+        $plan = plan::findOrFail($id);
+        $course = Course::where('public', true)->get();
+        return view('admin.plan.edit', compact('plan', 'course'));
     }
 
     /**
@@ -70,23 +89,34 @@ class SubscriptionController extends Controller
      */
     public function update(Request $request, $id)
     {
-
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'description' => 'required|string',
-            'price' => 'required|numeric',
-            'duration_in_days' => 'required|integer',
+            'price' => 'required|numeric|min:0',
+            'duration_in_days' => 'required|integer|min:1',
             'features' => 'nullable|string',
-            'is_active' => 'boolean',
+            'course' => 'required|array|min:1',
+            'course.*' => 'exists:courses,id',
+            'is_active' => 'required|boolean',
         ]);
+        // Convert features string to array
+        $features = array_map('trim', explode(',', $validated['features']));
 
-        if ($request->filled('features')) {
-            $validated['features'] = array_map('trim', explode(',', $request->features));
-        }
-        $plan = Plan::find($id);
-        $plan->update($validated);
+        // Simpan course sebagai array of integers
+        $courseIds = array_map('intval', $validated['course']);
+        // Update plan
+        $plan = plan::find($id);
+        $plan->update([
+            'name' => $validated['name'],
+            'description' => $validated['description'],
+            'price' => $validated['price'],
+            'duration_in_days' => $validated['duration_in_days'],
+            'features' => $features,
+            'course' => $courseIds,  // update array IDs
+            'is_active' => $validated['is_active'],
+        ]);
         return redirect()->route('admin.plan.index')
-            ->with('success', 'Berhasil Memperbarui Plan');
+            ->with('success', 'Plan berhasil diupdate!');
     }
 
     /**

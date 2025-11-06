@@ -18,6 +18,7 @@ return new class extends Migration
             $table->decimal('price', 10, 2);
             $table->integer('duration_in_days')->default(30);
             $table->json('features')->nullable();
+            $table->json('course')->nullable();
             $table->boolean('is_active')->default(true);
             $table->timestamps();
         });

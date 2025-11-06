@@ -81,10 +81,32 @@
                         <label for="features" class="block text-sm font-medium text-gray-700 mb-2">
                             Fitur Plan (opsional)
                         </label>
-                        <textarea name="features" id="features" rows="3"
-                            placeholder="Pisahkan fitur dengan koma, misal: Akses Premium, Sertifikat, Support 24 Jam"
-                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-[#009999] focus:border-transparent transition duration-200">{{ old('features') }}</textarea>
-                        <p class="text-xs text-gray-500 mt-1">Contoh: Akses Premium, Sertifikat, Support 24 Jam</p>
+                        <input type="text" name="features" id="features"
+                            placeholder="Ketik dan tekan Enter untuk menambah fitur"
+                            class="w-full px-4 py-2 border border-gray-300 rounded-lg">
+                        <p class="text-xs text-gray-500 mt-1">Ketik fitur dan tekan Enter. Contoh: Akses Premium, Sertifikat, Support 24 Jam</p>
+                        @error('features')
+                            <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    {{-- Course --}}
+                    <div>
+                        <label for="course" class="block text-sm font-medium text-gray-700 mb-2">
+                            Course <span class="text-red-500">*</span>
+                        </label>
+                        <select name="course[]" id="course" multiple class="w-full">
+                            @forelse ($course as $c)
+                                <option value="{{ $c->id }}" {{ (collect(old('course'))->contains($c->id)) ? 'selected' : '' }}>
+                                    {{ $c->nama_course }}
+                                </option>
+                            @empty
+                                <option value="" disabled>Tidak ada Course</option>
+                            @endforelse
+                        </select>
+                        @error('course')
+                            <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
+                        @enderror
                     </div>
 
                     {{-- Status --}}
@@ -121,17 +143,102 @@
         </div>
     </div>
 @endsection
+
+@push('styles')
+<style>
+    .choices__inner {
+        border-radius: 0.5rem;
+        border-color: #d1d5db;
+        min-height: 42px;
+        padding: 0.375rem 0.75rem;
+    }
+    .choices__list--multiple .choices__item {
+        background-color: #009999;
+        border-color: #007f7f;
+        border-radius: 0.375rem;
+    }
+    .choices[data-type*=select-multiple] .choices__button,
+    .choices[data-type*=text] .choices__button {
+        border-left-color: rgba(255, 255, 255, 0.4);
+    }
+    .choices__list--dropdown .choices__item--selectable.is-highlighted {
+        background-color: #009999;
+    }
+    .is-focused .choices__inner {
+        border-color: #009999;
+    }
+</style>
+@endpush
+
 @push('scripts')
 <script>
-    const priceInput = document.getElementById('price_display');
-    const hiddenPrice = document.getElementById('price');
+    document.addEventListener('DOMContentLoaded', function () {
+        // Price formatting (guard element existence)
+        const priceInput = document.getElementById('price_display');
+        const hiddenPrice = document.getElementById('price');
 
-    priceInput.addEventListener('input', function(e) {
-        const value = e.target.value.replace(/[^0-9]/g, '');
-        hiddenPrice.value = value;
+        if (priceInput && hiddenPrice) {
+            priceInput.addEventListener('input', function(e) {
+                const value = e.target.value.replace(/[^0-9]/g, '');
+                hiddenPrice.value = value;
+                e.target.value = new Intl.NumberFormat('id-ID').format(value);
+            });
+        }
 
+        // Initialize Choices.js when available (retry a few times)
+        function initChoices(retry = 0) {
+            if (typeof Choices === 'undefined') {
+                if (retry > 20) {
+                    console.warn('Choices.js not available after retries');
+                    return;
+                }
+                return setTimeout(() => initChoices(retry + 1), 50);
+            }
 
-        e.target.value = new Intl.NumberFormat('id-ID').format(value);
+            // Features (tags input)
+            const featuresInput = document.getElementById('features');
+            if (featuresInput) {
+                const featuresChoices = new Choices(featuresInput, {
+                    removeItemButton: true,
+                    addItems: true,
+                    duplicateItemsAllowed: false,
+                    delimiter: ',',
+                    editItems: true,
+                    maxItemCount: -1,
+                    placeholder: true,
+                    placeholderValue: 'Ketik dan tekan Enter untuk menambah fitur',
+                    searchEnabled: false,
+                    addItemText: (value) => {
+                        return `Tekan Enter untuk menambah "<b>${value}</b>"`;
+                    },
+                });
+
+                // Set old values for features if validation fails
+                @if(old('features'))
+                    const oldFeatures = "{{ old('features') }}".split(',');
+                    featuresChoices.setValue(oldFeatures);
+                @endif
+            }
+
+            // Course (multi-select)
+            const courseSelect = document.getElementById('course');
+            if (courseSelect) {
+                const courseChoices = new Choices(courseSelect, {
+                    removeItemButton: true,
+                    searchEnabled: true,
+                    searchPlaceholderValue: 'Cari course...',
+                    noResultsText: 'Tidak ada hasil',
+                    noChoicesText: 'Tidak ada pilihan',
+                    itemSelectText: 'Klik untuk memilih',
+                    maxItemCount: -1,
+                    placeholder: true,
+                    placeholderValue: 'Pilih course',
+                    shouldSort: false,
+                });
+            }
+        }
+
+        initChoices();
     });
 </script>
 @endpush

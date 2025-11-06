@@ -17,6 +17,7 @@
         "vite": "^7.0.7"
     },
     "dependencies": {
+        "choices.js": "^11.1.0",
         "puppeteer": "^24.28.0",
         "sweetalert2": "^11.25.0"
     }
