@@ -1,5 +1,7 @@
 @extends('layout.sidebar')
-
+@section('title')
+    Manage Course {{$course->nama_course}}
+@endsection
 @section('content')
 <div class="mx-auto py-2">
     <div class="max-w-10xl mx-auto">

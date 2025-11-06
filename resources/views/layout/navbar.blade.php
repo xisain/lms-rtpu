@@ -83,6 +83,7 @@
                 <div class="hidden lg:flex items-center space-x-4 absolute left-1/2 transform -translate-x-1/2">
                     <a href="{{ route('home') }}" class="text-base font-medium text-gray-700 hover:text-[#0f5757]">Home</a>
                     <a href="{{ route('list.kelas') }}" class="text-base font-medium text-gray-700 hover:text-[#0f5757]">Course</a>
+                    <a href="{{ route('plan') }}" class="text-base font-medium text-gray-700 hover:text-[#0f5757]">Plan</a>
                 </div>
                 @endguest
 
@@ -91,6 +92,7 @@
                 <div class="hidden lg:flex items-center space-x-3">
                     <a href="{{ route('home') }}" class="text-base font-medium text-gray-700 hover:text-[#0f5757]">Home</a>
                     <a href="{{ route('course.index') }}" class="text-base font-medium text-gray-700 hover:text-[#0f5757]">Dashboard</a>
+
 
                     <!-- Dropdown Kelas -->
                     <div class="relative" x-data="{ openDropdown: false }">
@@ -134,7 +136,7 @@
                         </div>
                     </div>
 
-                    <a href="{{ route('course.index') }}" class="text-base font-medium text-gray-700 hover:text-[#0f5757]">Event</a>
+                    <a href="{{ route('plan') }}" class="text-base font-medium text-gray-700 hover:text-[#0f5757]">Plan</a>
                 </div>
                 @endauth
 

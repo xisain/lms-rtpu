@@ -1,5 +1,8 @@
 @extends('layout.sidebar')
 {{-- edit.blade.php --}}
+@section('title')
+    Edit Course {{ $course->nama_course }}
+@endsection
 @section('content')
 <div class="container mx-auto px-4 py-6">
     <div class="max-w mx-auto -mt-5">

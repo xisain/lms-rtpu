@@ -1,5 +1,7 @@
 @extends('layout.sidebar')
-{{-- create.blade.php --}}
+@section('title')
+    Buat Course
+@endsection
 @section('content')
 <div class="container mx-auto px-4 py-6">
     <div class="max-w mx-auto">
@@ -11,7 +13,7 @@
         @if ($errors->any())
         <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-6">
             <strong class="font-semibold">Terjadi kesalahan:</strong>
-            <ul class="mt-2 list-disc list-inside text-sm"> 
+            <ul class="mt-2 list-disc list-inside text-sm">
                 @foreach ($errors->all() as $error)
                 <li>{{ $error }}</li>
                 @endforeach
@@ -561,9 +563,9 @@ document.addEventListener('DOMContentLoaded', function() {
     function updateWordCount() {
         const text = descriptionField.value;
         const wordCount = countWords(text);
-        
+
         wordCountDisplay.textContent = `${wordCount} / ${maxWords} kata`;
-        
+
         if (wordCount > maxWords) {
             wordCountDisplay.classList.remove('text-gray-600');
             wordCountDisplay.classList.add('text-red-600', 'font-semibold');
@@ -583,11 +585,11 @@ document.addEventListener('DOMContentLoaded', function() {
     // Validasi saat form submit
     document.getElementById('courseForm').addEventListener('submit', function(e) {
         const wordCount = countWords(descriptionField.value);
-        
+
         if (wordCount > maxWords) {
             e.preventDefault();
             e.stopImmediatePropagation();
-            
+
             Swal.fire({
                 title: 'Deskripsi Terlalu Panjang!',
                 text: `Deskripsi Anda ${wordCount} kata. Maksimal hanya ${maxWords} kata. Silakan persingkat deskripsi Anda.`,
@@ -595,11 +597,11 @@ document.addEventListener('DOMContentLoaded', function() {
                 confirmButtonText: 'OK',
                 confirmButtonColor: '#009999'
             });
-            
+
             // Scroll ke field description
             descriptionField.focus();
             descriptionField.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            
+
             return false;
         }
     }, true); // Use capture phase untuk prioritas

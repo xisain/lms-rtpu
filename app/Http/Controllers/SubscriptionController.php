@@ -87,8 +87,9 @@ class SubscriptionController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, plan $plan)
     {
+        // dd($plan);
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'description' => 'required|string',
@@ -105,7 +106,6 @@ class SubscriptionController extends Controller
         // Simpan course sebagai array of integers
         $courseIds = array_map('intval', $validated['course']);
         // Update plan
-        $plan = plan::find($id);
         $plan->update([
             'name' => $validated['name'],
             'description' => $validated['description'],
@@ -128,5 +128,10 @@ class SubscriptionController extends Controller
         $plan->delete();
          return redirect()->route('admin.plan.index')
             ->with('success', 'Plan Berhasil Di Hapus');
+    }
+
+    public function viewPlan(){
+        $plans = plan::where('is_active',true)->get();
+        return view('subscription.plan',compact('plans'));
     }
 }

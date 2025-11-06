@@ -44,12 +44,12 @@
                     <div class="module-item" aria-labelledby="module-button-{{ $index }}">
                         <button id="module-button-{{ $index }}" onclick="toggleModule({{ $index }})"
                             aria-expanded="false"
-                            class="w-full px-6 py-4 flex justify-between items-center hover:bg-purple-50 transition-colors group rounded-lg">
-                            <span class="font-medium text-gray-800 group-hover:text-purple-600 transition">
+                            class="w-full px-6 py-4 flex justify-between items-center hover:bg-teal-50 transition-colors group rounded-lg">
+                            <span class="font-medium text-gray-800 group-hover:text-teal-600 transition">
                                 {{ $module->nama_materi }}
                             </span>
                             <svg id="icon-{{ $index }}"
-                                class="w-5 h-5 text-gray-500 group-hover:text-purple-600 transition-all duration-300 "
+                                class="w-5 h-5 text-gray-500 group-hover:text-teal-600 transition-all duration-300 "
                                 fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M9 5l7 7-7 7" />

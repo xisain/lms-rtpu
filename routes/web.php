@@ -16,6 +16,7 @@ use App\Http\Middleware\dosenMiddleware;
 use App\Models\subscription;
 Route::get('certificate/{certificate}/download', [CertificateController::class, 'download'])->name('certificate.download');
 Route::get('/filter', [CourseController::class, 'filterCourse'])->name('course.filter');
+Route::get('/plan',[SubscriptionController::class,'viewPlan'])->name('plan');
 Route::middleware('guest')->group(function () {
     Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
     Route::post('/login', [AuthController::class, 'login']);
@@ -26,7 +27,9 @@ Route::middleware('guest')->group(function () {
 
 Route::middleware('auth')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
-
+    Route::prefix('plan')->group(function(){
+    Route::get('{id}/subscribe',[SubscriptionController::class,'subs'])->name('plan.checkout');
+    });
     // Protected routes here
     Route::prefix('course')->group(function () {
         Route::get('my',[CourseController::class,'myCourse'])->name('course.my');
@@ -81,7 +84,7 @@ Route::middleware('auth')->group(function () {
             Route::post('/', [SubscriptionController::class, 'store'])->name('admin.plan.store');
             Route::get('create', [SubscriptionController::class, 'create'])->name('admin.plan.create');
             Route::get('edit/{subs}', [SubscriptionController::class, 'edit'])->name('admin.plan.edit');
-            Route::put('update/{subs}', [SubscriptionController::class, 'update'])->name('admin.plan.update');
+            Route::put('update/{plan}', [SubscriptionController::class, 'update'])->name('admin.plan.update');
             Route::delete('{subs}/delete', [SubscriptionController::class, 'destroy'])->name('admin.plan.destroy');
         });
     });

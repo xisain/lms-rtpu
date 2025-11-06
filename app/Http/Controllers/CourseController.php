@@ -718,42 +718,67 @@ class CourseController extends Controller
         return view('course.partials.course-cards', compact('course'));
     }
 
-    public function myCourse(Request $request)
-    {
-        $userId = auth()->user()->id;
+public function myCourse(Request $request)
+{
+    $userId = auth()->user()->id;
 
-        $query = Course::where('public', true);
+    $query = Course::where('public', true);
 
-        // Apply filters if present
-        if ($request->filled('search')) {
-            $query->where(function ($q) use ($request) {
-                $q->where('nama_course', 'like', '%'.$request->search.'%')
-                    ->orWhere('description', 'like', '%'.$request->search.'%');
-            });
-        }
-
-        if ($request->filled('category')) {
-            $query->where('category_id', $request->category);
-        }
-
-        if ($request->filled('start_date')) {
-            $query->whereDate('start_date', '>=', $request->start_date);
-        }
-
-        if ($request->filled('end_date')) {
-            $query->whereDate('end_date', '<=', $request->end_date);
-        }
-
-        $course = Course::whereHas('enrollment', function($q) use ($userId) {
-        $q->where('user_id', $userId);
-        })->with('enrollment')->get();
-        $categories = Category::all();
-
-        return view('course.index', [
-            'course' => $course,
-            'categories' => $categories,
-        ]);
+    // Apply filters if present
+    if ($request->filled('search')) {
+        $query->where(function ($q) use ($request) {
+            $q->where('nama_course', 'like', '%'.$request->search.'%')
+                ->orWhere('description', 'like', '%'.$request->search.'%');
+        });
     }
+
+    if ($request->filled('category')) {
+        $query->where('category_id', $request->category);
+    }
+
+    if ($request->filled('start_date')) {
+        $query->whereDate('start_date', '>=', $request->start_date);
+    }
+
+    if ($request->filled('end_date')) {
+        $query->whereDate('end_date', '<=', $request->end_date);
+    }
+
+    $course = Course::whereHas('enrollment', function($q) use ($userId) {
+        $q->where('user_id', $userId);
+    })
+    ->with(['enrollment', 'material.submaterial'])
+    ->get()
+    ->map(function ($item) use ($userId) {
+        // Hitung total submaterial dalam course
+        $totalSubmaterials = $item->material->sum(function ($material) {
+            return $material->submaterial->count();
+        });
+
+        // Hitung submaterial yang sudah completed
+        $completedSubmaterials = 0;
+        foreach ($item->material as $material) {
+            $completedSubmaterials += progress::where('user_id', $userId)
+                ->whereIn('submaterial_id', $material->submaterial->pluck('id'))
+                ->where('status', 'completed')
+                ->count();
+        }
+
+        // Hitung persentase
+        $item->progress = $totalSubmaterials > 0
+            ? round(($completedSubmaterials / $totalSubmaterials) * 100)
+            : 0;
+
+        return $item;
+    });
+
+    $categories = Category::all();
+
+    return view('course.index', [
+        'course' => $course,
+        'categories' => $categories,
+    ]);
+}
 
     public function guestDaftarKelas()
     {

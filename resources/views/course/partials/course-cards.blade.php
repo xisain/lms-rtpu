@@ -19,13 +19,32 @@
                 <p><span class="font-semibold text-gray-800">Self Pace Class</span></p>
                 @endif
             </div>
+
+            {{-- Progress Bar --}}
+            @if(request()->routeIs('course.my'))
+            <div class="mt-4">
+                <div class="flex justify-between items-center mb-1">
+                    <span class="text-xs font-medium text-gray-700">Progress</span>
+                    <span class="text-xs font-semibold text-[#009999]">{{ $item->progress ?? 0 }}%</span>
+                </div>
+                <div class="w-full bg-gray-200 rounded-full h-2.5">
+                    <div class="bg-[#009999] h-2.5 rounded-full transition-all duration-300"
+                         style="width: {{ $item->progress ?? 0 }}%"></div>
+                </div>
+            </div>
+            @endif
         </div>
 
         {{-- Tombol aksi --}}
         <div class="flex justify-center items-center">
             <a href="{{ route('course.show', $item->slugs) }}"
                class="flex justify-center items-center px-4 py-2 text-white rounded-md hover:bg-[#0f5757] font-medium bg-[#009999] mt-3 w-full">
+                @if(request()->routeIs('course.my'))
+                {{ ($item->progress ?? 0) >= 100 ? 'Lihat Ulang' : 'Lanjutkan Belajar' }}
+                @else
                 Lihat Kelas
+                @endif
+
             </a>
         </div>
     </div>

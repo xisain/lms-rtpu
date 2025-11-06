@@ -77,7 +77,15 @@
         </div>
     </div>
 
-    <h2 class="text-2xl font-semibold mb-6 text-gray-800">Daftar Course</h2>
+    <h2 class="text-2xl font-semibold mb-6 text-gray-800">
+        @if (request()->routeIs('course.my'))
+        My Course
+        @else
+        Daftar Course
+        @endif
+
+
+    </h2>
 
     {{-- Loading State --}}
     <div x-show="loading" class="text-center py-8">
@@ -104,7 +112,7 @@ function courseFilter() {
         loading: false,
 
         init() {
-            // Bisa load dari URL params jika diperlukan
+
             const urlParams = new URLSearchParams(window.location.search);
             this.search = urlParams.get('search') || '';
             this.category = urlParams.get('category') || '';
