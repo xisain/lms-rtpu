@@ -1,0 +1,140 @@
+@extends('layout.sidebar')
+@section('title', 'Payment Method')
+@section('content')
+    <div class="mx-auto py-2">
+        <div class="max-w-10xl mx-auto">
+            {{-- Alert Success --}}
+            @if (session('success'))
+                <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-4" role="alert">
+                    <span class="block sm:inline">{{ session('success') }}</span>
+                </div>
+            @endif
+
+            <div class="bg-white rounded-lg shadow-md overflow-hidden mb-5">
+                <div class="bg-[#009999] px-6 py-4 flex justify-between items-center">
+                    <h4 class="text-xl font-bold text-white">Payment Method</h4>
+                    <a href="{{ route('admin.payment.create') }}"
+                        class="bg-white text-dark hover:bg-gray-200 px-4 py-2 rounded-lg font-semibold transition duration-200 flex items-center gap-2">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                        </svg>
+                        Tambah Metode Pembayaran
+                    </a>
+                </div>
+                <div class="overflow-x-auto p-4">
+                    <table class="display w-full" id="paymentTable">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Nama</th>
+                                <th>Nomor Rek</th>
+                                <th>Status</th>
+                                <th>Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @forelse ($payment as $index => $p)
+                                <tr>
+                                    <td class="text-center">{{ $index + 1 }}</td>
+                                    <td>{{ $p->nama }}</td>
+                                    <td>{{ $p->account_number }}</td>
+                                    <td>
+                                        @if ($p->status == 'aktif')
+                                            <span class="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                                                Aktif
+                                            </span>
+                                        @else
+                                            <span class="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">
+                                                Non-Aktif
+                                            </span>
+                                        @endif
+                                    </td>
+                                    <td class="text-center">
+                                        <div class="flex justify-center gap-2">
+                                            {{-- Tombol Edit --}}
+                                            <a href="{{ route('admin.payment.edit', $p->id) }}"
+                                                class="bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-1 rounded text-sm transition duration-200"
+                                                title="Edit">
+                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                        d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                                </svg>
+                                            </a>
+
+                                            {{-- Tombol Delete dengan SweetAlert --}}
+                                            <form action="{{ route('admin.payment.destroy', $p->id) }}" method="POST"
+                                                class="delete-form">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="button"
+                                                    class="btn-delete bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded text-sm transition duration-200"
+                                                    data-id="{{ $p->id }}"
+                                                    data-nama="{{ $p->nama }}"
+                                                    title="Hapus">
+                                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                            d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                                    </svg>
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="5" class="px-6 py-8 text-center text-gray-500">
+                                        <div class="flex flex-col items-center">
+                                            <svg class="w-12 h-12 text-gray-400 mb-2" fill="none" stroke="currentColor"
+                                                viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
+                                            </svg>
+                                            <p class="text-lg">Tidak ada Metode Pembayaran</p>
+                                        </div>
+                                    </td>
+                                </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {{-- SweetAlert Script --}}
+    @push('scripts')
+    <script>
+        $(document).ready(function() {
+            // DataTables
+            $('#paymentTable').DataTable({
+                order: [[0, 'asc']]
+            });
+
+            // SweetAlert untuk Delete
+            $('.btn-delete').on('click', function(e) {
+                e.preventDefault();
+
+                const form = $(this).closest('form');
+                const nama = $(this).data('nama');
+
+                Swal.fire({
+                    title: 'Apakah Anda yakin?',
+                    html: `Anda akan menghapus metode pembayaran <strong>"${nama}"</strong>`,
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#d33',
+                    cancelButtonColor: '#3085d6',
+                    confirmButtonText: 'Ya, Hapus!',
+                    cancelButtonText: 'Batal',
+                    reverseButtons: true
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        form.submit();
+                    }
+                });
+            });
+
+        });
+    </script>
+    @endpush
+@endsection

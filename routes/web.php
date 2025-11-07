@@ -10,13 +10,17 @@ use App\Http\Controllers\EnrollmentController;
 use App\Http\Controllers\QuizController;
 use App\Http\Controllers\CertificateController;
 use App\Http\Controllers\SubscriptionController;
+use App\Http\Controllers\PaymentController;
 use App\Http\Middleware\adminMiddleware;
 use App\Http\Middleware\courseMiddleware;
 use App\Http\Middleware\dosenMiddleware;
 use App\Models\subscription;
+
+// Unguarded Route
 Route::get('certificate/{certificate}/download', [CertificateController::class, 'download'])->name('certificate.download');
 Route::get('/filter', [CourseController::class, 'filterCourse'])->name('course.filter');
 Route::get('/plan',[SubscriptionController::class,'viewPlan'])->name('plan');
+
 Route::middleware('guest')->group(function () {
     Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
     Route::post('/login', [AuthController::class, 'login']);
@@ -27,8 +31,12 @@ Route::middleware('guest')->group(function () {
 
 Route::middleware('auth')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+
     Route::prefix('plan')->group(function(){
-    Route::get('{id}/subscribe',[SubscriptionController::class,'subs'])->name('plan.checkout');
+
+    Route::get('{id}/checkout',[SubscriptionController::class,'checkout'])->name('plan.checkout');
+    Route::post('/',[SubscriptionController::class,'purchases'])->name('plan.purchases');
+
     });
     // Protected routes here
     Route::prefix('course')->group(function () {
@@ -86,6 +94,18 @@ Route::middleware('auth')->group(function () {
             Route::get('edit/{subs}', [SubscriptionController::class, 'edit'])->name('admin.plan.edit');
             Route::put('update/{plan}', [SubscriptionController::class, 'update'])->name('admin.plan.update');
             Route::delete('{subs}/delete', [SubscriptionController::class, 'destroy'])->name('admin.plan.destroy');
+        });
+        Route::prefix('transaction')->group(function (){
+            Route::get('/',[SubscriptionController::class,'transactionTable'])->name('admin.transaction.index');
+            Route::put('{id}/approval',[SubscriptionController::class,'approval'])->name('admin.transaction.approval');
+        });
+        Route::prefix('payment')->group( function(){
+            Route::get('/', [PaymentController::class, 'index'])->name('admin.payment.index');
+            Route::get('/create', [PaymentController::class, 'create'])->name('admin.payment.create');
+            Route::get('/edit/{id}', [PaymentController::class, 'edit'])->name('admin.payment.edit');
+            Route::post('/', [PaymentController::class, 'store'])->name('admin.payment.store');
+            Route::put('{id}/update', [PaymentController::class, 'update'])->name('admin.payment.update');
+            Route::delete('/', [PaymentController::class, 'destroy'])->name('admin.payment.destroy');
         });
     });
 

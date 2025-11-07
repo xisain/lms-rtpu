@@ -5,21 +5,20 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-class subscription extends Model
+class Subscription extends Model
 {
     protected $fillable = [
         'user_id',
         'plan_id',
-        'start_at',
+        'payment_method_id',
+        'starts_at',
         'end_at',
         'status',
-        'price_paid',
-        'payment_method',
-        'payment_status',
+        'payment_proof_link',
     ];
     protected $casts = [
-        'start_at' => 'datetime',
-        'end_at' => 'datetime',
+        'starts_at' => 'datetime',
+        'ends_at' => 'datetime',
         'price_paid'=> 'integer'
     ];
     public function user() : BelongsTo {
@@ -28,6 +27,9 @@ class subscription extends Model
 
     public function plan() : BelongsTo {
         return $this->belongsTo(plan::class);
+    }
+    public function payment() : BelongsTo {
+        return $this->belongsTo(Payment::class,'payment_method_id');
     }
 
 }

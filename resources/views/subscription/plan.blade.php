@@ -6,7 +6,7 @@
     <!-- Header Section -->
     <div class="text-center mb-12">
         <h1 class="text-4xl font-bold text-gray-900 mb-4">Pilih Plan yang Tepat untuk Anda</h1>
-        <p class="text-xl text-gray-600">Dapatkan akses ke course berkualitas dengan harga terjangkau</p>
+        <p class="text-xl text-gray-600">Dapatkan akses ke course berkualitas dengan harga terjangau</p>
     </div>
 
     <!-- Plans Grid -->
@@ -29,7 +29,7 @@
 
                 <!-- Price -->
                 <div class="mb-4">
-                    <span class="text-5xl font-bold text-gray-900">Rp {{ number_format($plan->price, 0, ',', '.') }}</span>
+                    <span class="text-3xl font-bold text-gray-900">Rp {{ number_format($plan->price, 0, ',', '.') }}</span>
                 </div>
 
                 <!-- Duration Badge -->
@@ -80,16 +80,13 @@
             <!-- CTA Button -->
             <div class="p-8 pt-0">
                 @if($plan->is_active)
-                <form action="#">
-                    @csrf
-                    <button type="submit"
-                        class="w-full py-4 px-6 rounded-xl font-semibold text-lg transition-all duration-200
-                        {{ $plan->name === 'Premium'
-                            ? 'bg-blue-600 hover:bg-blue-700 text-white shadow-lg hover:shadow-xl'
-                            : 'bg-[#00999a] hover:bg-teal-800 text-white' }}">
-                        Pilih Plan Ini
-                    </button>
-                </form>
+                <a href="{{ route('plan.checkout', $plan->id) }}"
+                    class="block w-full py-4 px-6 rounded-xl font-semibold text-lg text-center transition-all duration-200
+                    {{ $plan->name === 'Premium'
+                        ? 'bg-blue-600 hover:bg-blue-700 text-white shadow-lg hover:shadow-xl'
+                        : 'bg-[#00999a] hover:bg-teal-800 text-white' }}">
+                    Pilih Plan Ini
+                </a>
                 @else
                 <button disabled
                     class="w-full py-4 px-6 rounded-xl font-semibold text-lg bg-gray-300 text-gray-500 cursor-not-allowed">
