@@ -3,10 +3,16 @@
 namespace App\Http\Controllers;
 
 use App\Models\category;
+use App\Models\Plan;
 use App\Models\role;
-use Illuminate\Http\Request;
 use App\Models\User;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
 use SweetAlert2\Laravel\Swal;
+use App\Models\Subscription;
 
 class UserController extends Controller
 {
@@ -15,7 +21,8 @@ class UserController extends Controller
      */
     public function index()
     {
-        $users = User::with('role')->orderBy('id','asc')->paginate(10);
+        $users = User::with('role')->orderBy('id', 'asc')->get();
+
         return view('admin.users.index', compact('users'));
     }
 
@@ -61,7 +68,7 @@ class UserController extends Controller
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:users,email,' . $user->id,
+            'email' => 'required|email|unique:users,email,'.$user->id,
             'password' => 'nullable|string|min:6|confirmed',
             'roles_id' => 'required|exists:roles,id',
             'category_id' => 'required|exists:categories,id',
@@ -79,7 +86,7 @@ class UserController extends Controller
         $user->update($validated);
         Swal::success([
             'Title' => 'Berhasil',
-            'text'=>'User Berhasil di Edit'
+            'text' => 'User Berhasil di Edit',
         ]);
 
         return redirect()->route('admin.user.index');
@@ -90,12 +97,237 @@ class UserController extends Controller
      */
     public function destroy(string $id)
     {
-       $delete = User::findOrFail($id);
-       Swal::success([
+        $delete = User::findOrFail($id);
+        Swal::success([
             'Title' => 'Berhasil',
-            'text'=>'User Berhasil di hapus'
+            'text' => 'User Berhasil di hapus',
         ]);
-       $delete->delete();
-       return redirect()->route('admin.user.index')->with('success', 'user berhasil di hapus');
+        $delete->delete();
+
+        return redirect()->route('admin.user.index')->with('success', 'user berhasil di hapus');
+    }
+
+    public function createBulkUser()
+    {
+        $plan = Plan::get();
+
+        return view('admin.users.create', ['plan' => $plan]);
+    }
+
+    public function storeBulkUser(Request $request)
+    {
+        $request->validate([
+            'plan_id' => 'required|exists:plans,id',
+            'csv_file' => 'required|file|mimes:csv,txt|max:2048',
+        ]);
+        $plan = plan::find($request->plan_id);
+        try {
+            $file = $request->file('csv_file');
+            $csv = array_map('str_getcsv', file($file));
+
+            // Remove BOM if exists
+            if (isset($csv[0][0])) {
+                $csv[0][0] = str_replace("\xEF\xBB\xBF", '', $csv[0][0]);
+            }
+
+            // Get header and find its position
+            $headerIndex = 0;
+            foreach ($csv as $index => $row) {
+                if (! empty($row[0]) && $row[0] !== '' && strpos($row[0], '#') !== 0) {
+                    if (strtolower(trim($row[0])) === 'email') {
+                        $headerIndex = $index;
+                        break;
+                    }
+                }
+            }
+
+            $header = array_map('trim', $csv[$headerIndex]);
+
+            // Remove header and everything before it
+            $csv = array_slice($csv, $headerIndex + 1);
+
+            // FIX #1: Pre-load existing emails untuk performance
+            $existingEmails = User::pluck('email')->map(function ($email) {
+                return strtolower(trim($email));
+            })->toArray();
+
+            $successCount = 0;
+            $errors = [];
+            DB::beginTransaction();
+
+            foreach ($csv as $index => $row) {
+                // Calculate actual line number in file
+                // FIX #2: Nomor baris yang benar
+                $actualLineNumber = $headerIndex + $index + 2;
+
+                // Skip empty rows and instruction rows
+                if (empty(array_filter($row)) || (isset($row[0]) && strpos($row[0], '#') === 0)) {
+                    continue;
+                }
+
+                // FIX #3: Validate column count before array_combine
+                if (count($header) !== count($row)) {
+                    $errors[] = "Baris $actualLineNumber: Jumlah kolom tidak sesuai";
+
+                    continue;
+                }
+
+                $data = array_combine($header, $row);
+
+                // Validate email
+                $email = trim($data['email'] ?? '');
+                if (empty($email) || ! filter_var($email, FILTER_VALIDATE_EMAIL)) {
+                    $errors[] = "Baris $actualLineNumber: Email tidak valid";
+
+                    continue;
+                }
+
+                // Validate name
+                $name = trim($data['name'] ?? '');
+                if (empty($name)) {
+                    $errors[] = "Baris $actualLineNumber: Nama tidak boleh kosong";
+
+                    continue;
+                }
+
+                // FIX #4: Check duplicate using array instead of query
+                if (in_array(strtolower($email), $existingEmails)) {
+                    $errors[] = "Baris $actualLineNumber: Email $email sudah terdaftar";
+
+                    continue;
+                }
+                // Generate password if empty
+                $password = ! empty($data['password']) ? trim($data['password']) : Str::random(12);
+                try {
+                    // Create user with basic information
+                    $user = User::create([
+                        'name' => $name,
+                        'email' => $email,
+                        'password' => Hash::make($password),
+                        'roles_id'=> 2,
+                        'category_id'=> 1,
+                    ]);
+
+                    // Debug: Cek apakah user berhasil dibuat
+                    if ($user && $user->id) {
+                        \Log::debug("User created successfully at line $actualLineNumber", [
+                            'user_id' => $user->id,
+                            'name' => $user->name,
+                            'email' => $user->email,
+                            'created_at' => $user->created_at,
+                        ]);
+                    } else {
+                        \Log::error("User creation returned null at line $actualLineNumber", [
+                            'name' => $name,
+                            'email' => $email,
+                        ]);
+                        $errors[] = "Baris $actualLineNumber: User dibuat tapi tidak ada ID";
+
+                        continue;
+                    }
+
+                    // Create subscription for the user with the selected plan
+                    $subscription = subscription::create([
+                        'plan_id' => $request->plan_id,
+                        'user_id'=> $user->id,
+                        'payment_method_id'=> 1,
+                        'starts_at' => now(),
+                        'ends_at' => now()->addDays($plan->duration_in_days),
+                        'status'=> 'approved',
+                        'payment_proof_link' => 'string',
+                    ]);
+
+                    // Debug: Cek apakah subscription berhasil dibuat
+                    \Log::debug("Subscription created for user {$user->id}", [
+                        'subscription_id' => $subscription->id ?? 'null',
+                        'plan_id' => $request->plan_id,
+                    ]);
+
+                    // FIX #6: Add email to array to prevent duplicate in same batch
+                    $existingEmails[] = strtolower($email);
+
+                    // Send email if checked
+                    if ($request->send_email) {
+                        // Queue email untuk performance yang lebih baik
+                        // dispatch(new SendWelcomeEmail($user, $password));
+                        // Atau tetap langsung:
+                        // Mail::to($user->email)->send(new WelcomeMail($user, $password));
+                    }
+
+                    $successCount++;
+
+                } catch (\Exception $e) {
+                    \Log::error("Failed to create user at line $actualLineNumber", [
+                        'name' => $name,
+                        'email' => $email,
+                        'error' => $e->getMessage(),
+                        'trace' => $e->getTraceAsString(),
+                    ]);
+
+                    $errors[] = "Baris $actualLineNumber: Gagal membuat user - ".$e->getMessage();
+
+                    continue;
+                }
+            }
+
+            DB::commit();
+
+            if ($successCount === 0) {
+                return back()->with('error', 'Tidak ada user yang berhasil ditambahkan. '.implode(', ', $errors))->withInput();
+            }
+
+            $message = "$successCount user berhasil ditambahkan";
+            if (! empty($errors)) {
+                $message .= '. Error: '.implode(' | ', array_slice($errors, 0, 5));
+                if (count($errors) > 5) {
+                    $message .= ' dan '.(count($errors) - 5).' error lainnya';
+                }
+            }
+
+            return redirect()->route('admin.user.index')->with('success', $message);
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+
+            // FIX #7: Add logging untuk debugging
+            Log::error('Bulk user import failed', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+            ]);
+
+            return back()->with('error', 'Terjadi kesalahan: '.$e->getMessage())->withInput();
+        }
+    }
+
+    public function downloadTemplate()
+    {
+        $fileName = 'template_bulk_user_'.date('Y-m-d').'.csv';
+
+        $headers = [
+            'Content-Type' => 'text/csv; charset=UTF-8',
+            'Content-Disposition' => 'attachment; filename="'.$fileName.'"',
+            'Pragma' => 'no-cache',
+            'Cache-Control' => 'must-revalidate, post-check=0, pre-check=0',
+            'Expires' => '0',
+        ];
+
+        $callback = function () {
+            $file = fopen('php://output', 'w');
+
+            // Add BOM to fix UTF-8 in Excel
+            fprintf($file, chr(0xEF).chr(0xBB).chr(0xBF));
+
+            // Header
+            fputcsv($file, ['email', 'name', 'password']);
+
+            // Sample data
+            fputcsv($file, ['user1@example.com', 'John Doe', 'password123']);
+            fputcsv($file, ['user2@example.com', 'Jane Smith', '']);
+            fputcsv($file, ['user3@example.com', 'Bob Johnson', 'mypassword']);
+
+            fclose($file);
+        };
+
+        return response()->stream($callback, 200, $headers);
     }
 }

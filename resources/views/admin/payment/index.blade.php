@@ -107,6 +107,22 @@
         $(document).ready(function() {
             // DataTables
             $('#paymentTable').DataTable({
+                language: {
+                    processing: 'Memuat data...',
+                    search: 'Cari:',
+                    lengthMenu: 'Tampilkan _MENU_ data',
+                    info: 'Menampilkan _START_ sampai _END_ dari _TOTAL_ data',
+                    infoEmpty: 'Menampilkan 0 sampai 0 dari 0 data',
+                    infoFiltered: '(difilter dari _MAX_ total data)',
+                    zeroRecords: 'Tidak ada data yang ditemukan',
+                    emptyTable: 'Tidak ada data yang tersedia',
+                    paginate: {
+                        first: '<<',
+                        last: '>>',
+                        next: '>',
+                        previous: '<'
+                    }
+                },
                 order: [[0, 'asc']]
             });
 

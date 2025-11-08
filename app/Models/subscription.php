@@ -12,7 +12,7 @@ class Subscription extends Model
         'plan_id',
         'payment_method_id',
         'starts_at',
-        'end_at',
+        'ends_at',
         'status',
         'payment_proof_link',
     ];

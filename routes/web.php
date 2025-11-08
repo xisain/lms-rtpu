@@ -73,10 +73,13 @@ Route::middleware('auth')->group(function () {
 
         Route::prefix('user')->group(function () {
             Route::get('/', [UserController::class, 'index'])->name('admin.user.index');
+            // Route::post('/', [UserController::class, 'index'])->name('admin.user.store');
             Route::delete('/{id}', [UserController::class, 'destroy'])->name('admin.user.destroy');
-            Route::get('/create', [UserController::class, 'create'])->name('admin.user.create');
+            Route::get('/create', [UserController::class, 'createBulkUser'])->name('admin.user.create');
             Route::get('/edit/{user}', [UserController::class, 'edit'])->name('admin.user.edit');
             Route::put('/edit/{user}/update', [UserController::class, 'update'])->name('admin.user.update');
+            Route::post('/bulk/store', [UserController::class, 'storeBulkUser'])->name('admin.user.bulk.store');
+            Route::get('/bulk/template', [UserController::class, 'downloadTemplate'])->name('admin.user.bulk.template');
         });
         Route::prefix('course')->group(function () {
             Route::get('/', [CourseController::class, 'index'])->name('admin.course.index');
