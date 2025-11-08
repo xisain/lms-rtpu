@@ -125,12 +125,10 @@ class UserController extends Controller
             $file = $request->file('csv_file');
             $csv = array_map('str_getcsv', file($file));
 
-            // Remove BOM if exists
             if (isset($csv[0][0])) {
                 $csv[0][0] = str_replace("\xEF\xBB\xBF", '', $csv[0][0]);
             }
 
-            // Get header and find its position
             $headerIndex = 0;
             foreach ($csv as $index => $row) {
                 if (! empty($row[0]) && $row[0] !== '' && strpos($row[0], '#') !== 0) {
@@ -143,10 +141,8 @@ class UserController extends Controller
 
             $header = array_map('trim', $csv[$headerIndex]);
 
-            // Remove header and everything before it
             $csv = array_slice($csv, $headerIndex + 1);
 
-            // FIX #1: Pre-load existing emails untuk performance
             $existingEmails = User::pluck('email')->map(function ($email) {
                 return strtolower(trim($email));
             })->toArray();
@@ -156,16 +152,13 @@ class UserController extends Controller
             DB::beginTransaction();
 
             foreach ($csv as $index => $row) {
-                // Calculate actual line number in file
-                // FIX #2: Nomor baris yang benar
                 $actualLineNumber = $headerIndex + $index + 2;
 
-                // Skip empty rows and instruction rows
                 if (empty(array_filter($row)) || (isset($row[0]) && strpos($row[0], '#') === 0)) {
                     continue;
                 }
 
-                // FIX #3: Validate column count before array_combine
+
                 if (count($header) !== count($row)) {
                     $errors[] = "Baris $actualLineNumber: Jumlah kolom tidak sesuai";
 
@@ -190,7 +183,6 @@ class UserController extends Controller
                     continue;
                 }
 
-                // FIX #4: Check duplicate using array instead of query
                 if (in_array(strtolower($email), $existingEmails)) {
                     $errors[] = "Baris $actualLineNumber: Email $email sudah terdaftar";
 
@@ -208,7 +200,7 @@ class UserController extends Controller
                         'category_id'=> 1,
                     ]);
 
-                    // Debug: Cek apakah user berhasil dibuat
+                    // Debuging To Log
                     if ($user && $user->id) {
                         \Log::debug("User created successfully at line $actualLineNumber", [
                             'user_id' => $user->id,
@@ -226,7 +218,7 @@ class UserController extends Controller
                         continue;
                     }
 
-                    // Create subscription for the user with the selected plan
+
                     $subscription = subscription::create([
                         'plan_id' => $request->plan_id,
                         'user_id'=> $user->id,
@@ -243,7 +235,7 @@ class UserController extends Controller
                         'plan_id' => $request->plan_id,
                     ]);
 
-                    // FIX #6: Add email to array to prevent duplicate in same batch
+
                     $existingEmails[] = strtolower($email);
 
                     // Send email if checked
@@ -289,7 +281,6 @@ class UserController extends Controller
         } catch (\Exception $e) {
             DB::rollBack();
 
-            // FIX #7: Add logging untuk debugging
             Log::error('Bulk user import failed', [
                 'error' => $e->getMessage(),
                 'trace' => $e->getTraceAsString(),
@@ -314,10 +305,8 @@ class UserController extends Controller
         $callback = function () {
             $file = fopen('php://output', 'w');
 
-            // Add BOM to fix UTF-8 in Excel
             fprintf($file, chr(0xEF).chr(0xBB).chr(0xBF));
 
-            // Header
             fputcsv($file, ['email', 'name', 'password']);
 
             // Sample data
