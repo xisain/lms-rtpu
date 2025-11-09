@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\category;
 use App\Models\Plan;
 use App\Models\role;
+use App\Models\Subscription;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -12,7 +13,8 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use SweetAlert2\Laravel\Swal;
-use App\Models\Subscription;
+use App\Mail\WelcomeMail;
+use Illuminate\Support\Facades\Mail;
 
 class UserController extends Controller
 {
@@ -158,7 +160,6 @@ class UserController extends Controller
                     continue;
                 }
 
-
                 if (count($header) !== count($row)) {
                     $errors[] = "Baris $actualLineNumber: Jumlah kolom tidak sesuai";
 
@@ -196,8 +197,8 @@ class UserController extends Controller
                         'name' => $name,
                         'email' => $email,
                         'password' => Hash::make($password),
-                        'roles_id'=> 2,
-                        'category_id'=> 1,
+                        'roles_id' => 2,
+                        'category_id' => 1,
                     ]);
 
                     // Debuging To Log
@@ -218,14 +219,13 @@ class UserController extends Controller
                         continue;
                     }
 
-
                     $subscription = subscription::create([
                         'plan_id' => $request->plan_id,
-                        'user_id'=> $user->id,
-                        'payment_method_id'=> 1,
+                        'user_id' => $user->id,
+                        'payment_method_id' => 1,
                         'starts_at' => now(),
                         'ends_at' => now()->addDays($plan->duration_in_days),
-                        'status'=> 'approved',
+                        'status' => 'approved',
                         'payment_proof_link' => 'string',
                     ]);
 
@@ -235,15 +235,17 @@ class UserController extends Controller
                         'plan_id' => $request->plan_id,
                     ]);
 
-
                     $existingEmails[] = strtolower($email);
 
                     // Send email if checked
                     if ($request->send_email) {
-                        // Queue email untuk performance yang lebih baik
-                        // dispatch(new SendWelcomeEmail($user, $password));
-                        // Atau tetap langsung:
-                        // Mail::to($user->email)->send(new WelcomeMail($user, $password));
+                        try {
+                            Mail::to($user->email)->send(new WelcomeMail($user, $subscription, $plan));
+                        } catch (\Exception $e) {
+                            \Log::error("Failed to send welcome email to {$user->email}", [
+                                'error' => $e->getMessage(),
+                            ]);
+                        }
                     }
 
                     $successCount++;
