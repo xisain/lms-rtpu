@@ -4,7 +4,7 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use App\Models\Course;
-use App\Models\Material;
+use App\Models\material;
 
 class MaterialSeeders extends Seeder
 {
@@ -32,7 +32,7 @@ class MaterialSeeders extends Seeder
                 ],
             ];
 
-            Material::insert($materials);
+            material::insert($materials);
         }
     }
 }

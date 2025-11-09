@@ -27,7 +27,7 @@ class course extends Model
 
     public function material()
     {
-        return $this->hasMany(Material::class, 'course_id', 'id');
+        return $this->hasMany(material::class, 'course_id', 'id');
     }
 
     public function enrollment() {

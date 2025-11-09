@@ -3,8 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Jobs\GenerateCertificateJob;
-use App\Models\Certificate;
-use App\Models\Course;
+use App\Models\certificate;
+use App\Models\course;
 use App\Models\progress;
 use App\Models\quiz_attempt;
 use App\Models\User;
@@ -56,7 +56,7 @@ class CertificateController extends Controller
         }
 
         // Check if certificate already exists
-        $certificate = Certificate::where('user_id', $user->id)
+        $certificate = certificate::where('user_id', $user->id)
             ->where('course_id', $course->id)
             ->first();
 
@@ -79,7 +79,7 @@ class CertificateController extends Controller
         $certificateNumber = 'CERT-' . Str::upper(Str::random(8));
 
         // Create certificate record
-        $certificate = Certificate::create([
+        $certificate = certificate::create([
             'user_id' => $user->id,
             'course_id' => $course->id,
             'certificate_number' => $certificateNumber,

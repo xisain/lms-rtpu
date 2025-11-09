@@ -16,7 +16,7 @@ class material extends Model
     }
 public function submaterial()
 {
-    return $this->hasMany(Submaterial::class, 'material_id', 'id');
+    return $this->hasMany(submaterial::class, 'material_id', 'id');
 }
 
     public function progress() {

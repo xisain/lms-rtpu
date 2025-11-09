@@ -3,8 +3,8 @@
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
-use App\Models\Quiz;
-use App\Models\Material;
+use App\Models\quiz;
+use App\Models\material;
 use App\Models\quiz_option;
 use App\Models\quiz_question;
 

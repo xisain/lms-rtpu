@@ -4,7 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Certificate extends Model
+class certificate extends Model
 {
     protected $fillable = [
         'user_id',
@@ -25,6 +25,6 @@ class Certificate extends Model
 
     public function course()
     {
-        return $this->belongsTo(Course::class);
+        return $this->belongsTo(course::class);
     }
 }

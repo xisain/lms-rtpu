@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Category;
+use App\Models\category;
 use Illuminate\Http\Request;
 use SweetAlert2\Laravel\Swal;
 
@@ -10,7 +10,7 @@ class CategoryController extends Controller
 {
     public function index()
     {
-        $categories = Category::latest()->paginate(10);
+        $categories = category::latest()->paginate(10);
         return view('admin.category.index', compact('categories'));
     }
 
@@ -26,7 +26,7 @@ class CategoryController extends Controller
             'description' => 'nullable|string',
         ]);
 
-        Category::create($validated);
+        category::create($validated);
 
         return redirect()->route('admin.category.index')
             ->with('success', 'Category created successfully.');
@@ -44,7 +44,7 @@ class CategoryController extends Controller
             'description' => 'nullable|string',
         ]);
 
-        $category = Category::findOrFail($id);
+        $category = category::findOrFail($id);
         $category->update($validated);
 
         return redirect()->route('admin.category.index')
@@ -54,7 +54,7 @@ class CategoryController extends Controller
     public function destroy($id)
     {
 
-        $category = Category::findOrFail($id);
+        $category = category::findOrFail($id);
         Swal::success([
             "title"=> 'Berhasil',
             'text' => 'Kategori "'. $category->category . '" Berhasil di hapus'

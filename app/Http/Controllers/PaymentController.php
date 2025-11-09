@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Payment;
+use App\Models\payment;
 use Illuminate\Http\Request;
 
 class PaymentController extends Controller
@@ -12,7 +12,7 @@ class PaymentController extends Controller
      */
     public function index()
     {
-        $payment = Payment::get();
+        $payment = payment::get();
         return view('admin.payment.index', compact('payment'));
     }
 
@@ -42,7 +42,7 @@ class PaymentController extends Controller
             'status.in' => 'Status harus aktif atau nonaktif',
         ]);
 
-        Payment::create($validated);
+        payment::create($validated);
 
         return redirect()->route('admin.payment.index')
             ->with('success', 'Metode pembayaran berhasil ditambahkan');
@@ -53,7 +53,7 @@ class PaymentController extends Controller
      */
     public function edit($id)
     {
-        $payment = Payment::findOrFail($id);
+        $payment = payment::findOrFail($id);
         return view('admin.payment.edit', compact('payment'));
     }
 
@@ -75,7 +75,7 @@ class PaymentController extends Controller
             'status.in' => 'Status harus aktif atau nonaktif',
         ]);
 
-        $payment = Payment::findOrFail($id);
+        $payment = payment::findOrFail($id);
         $payment->update($validated);
 
         return redirect()->route('admin.payment.index')
@@ -87,7 +87,7 @@ class PaymentController extends Controller
      */
     public function destroy($id)
     {
-        $payment = Payment::findOrFail($id);
+        $payment = payment::findOrFail($id);
         $payment->delete();
 
         return redirect()->route('admin.payment.index')

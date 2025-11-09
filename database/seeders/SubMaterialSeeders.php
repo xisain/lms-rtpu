@@ -3,8 +3,8 @@
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
-use App\Models\Material;
-use App\Models\SubMaterial;
+use App\Models\material;
+use App\Models\submaterial;
 
 class SubMaterialSeeders extends Seeder
 {

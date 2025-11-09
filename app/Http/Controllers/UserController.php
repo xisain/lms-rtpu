@@ -3,9 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\category;
-use App\Models\Plan;
+use App\Models\plan;
 use App\Models\role;
-use App\Models\Subscription;
+use App\Models\subscription;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;

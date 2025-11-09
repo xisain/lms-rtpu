@@ -3,8 +3,8 @@
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
-use App\Models\Course;
-use App\Models\Category;
+use App\Models\course;
+use App\Models\category;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Str;
 

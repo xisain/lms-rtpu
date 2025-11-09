@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Jobs\GenerateCertificateJob;
 use App\Models\category;
-use App\Models\Certificate;
+use App\Models\certificate;
 use App\Models\course;
 use App\Models\enrollment;
 use App\Models\material;
@@ -306,7 +306,7 @@ class CourseController extends Controller
 
             if ($allCompleted) {
                 // Cek status sertifikat
-                $certificate = Certificate::where('user_id', Auth::id())
+                $certificate = certificate::where('user_id', Auth::id())
                     ->where('course_id', $course->id)
                     ->first();
 
@@ -892,14 +892,14 @@ public function myCourse(Request $request)
 
         // Jika semua materi selesai, generate sertifikat
         if ($allCompleted) {
-            $existingCertificate = Certificate::where('user_id', Auth::id())
+            $existingCertificate = certificate::where('user_id', Auth::id())
                 ->where('course_id', $course->id)
                 ->first();
 
             if (! $existingCertificate) {
                 // Generate sertifikat
                 $certificateNumber = 'CERT-'.Str::upper(Str::random(8));
-                $certificate = Certificate::create([
+                $certificate = certificate::create([
                     'user_id' => Auth::id(),
                     'course_id' => $course->id,
                     'certificate_number' => $certificateNumber,

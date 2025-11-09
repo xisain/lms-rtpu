@@ -2,7 +2,7 @@
 
 namespace App\Jobs;
 
-use App\Models\Certificate;
+use App\Models\certificate;
 use App\Models\Course;
 use App\Models\User;
 use Carbon\Carbon;
