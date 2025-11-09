@@ -26,6 +26,10 @@ Route::middleware('guest')->group(function () {
     Route::post('/login', [AuthController::class, 'login']);
     Route::get('/register', [AuthController::class, 'showRegister'])->name('register');
     Route::post('/register', [AuthController::class, 'register']);
+    Route::get('/forget-password',[AuthController::class,'showForgetPassword'])->name('forgetpassword');
+    Route::post('/forget-password',[AuthController::class,'forgetPassword'])->name('forgetpassword.request');
+    Route::get('/reset-password/{token}/',[AuthController::class,'showResetPassword'])->name('resetpassword');
+    Route::post('/reset-password/',[AuthController::class,'resetPassword'])->name('resetpassword.store');
     Route::get('/daftar-kelas', [CourseController::class, 'guestDaftarKelas'])->name('list.kelas');
 });
 
