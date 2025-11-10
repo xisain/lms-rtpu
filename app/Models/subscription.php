@@ -29,7 +29,7 @@ class subscription extends Model
         return $this->belongsTo(plan::class);
     }
     public function payment() : BelongsTo {
-        return $this->belongsTo(Payment::class,'payment_method_id');
+        return $this->belongsTo(payment::class,'payment_method_id');
     }
 
 }
