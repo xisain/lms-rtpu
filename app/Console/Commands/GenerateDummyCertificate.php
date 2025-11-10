@@ -6,8 +6,8 @@ use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Storage;
 use Spatie\Browsershot\Browsershot;
 use App\Models\User;
-use App\Models\Course;
-use App\Models\Certificate;
+use App\Models\course;
+use App\Models\certificate;
 use Carbon\Carbon;
 
 class GenerateDummyCertificate extends Command
@@ -21,8 +21,8 @@ class GenerateDummyCertificate extends Command
 
         // ambil atau buat data dummy sederhana
         $user = User::first() ?? (object) ['name' => 'Student Dummy'];
-        $course = Course::first() ?? (object) ['nama_course' => 'Belajar Dasar Pemrograman Web', 'teacher' => (object) ['name' => 'admin']];
-        $certificate = Certificate::first() ?? (object) [
+        $course = course::first() ?? (object) ['nama_course' => 'Belajar Dasar Pemrograman Web', 'teacher' => (object) ['name' => 'admin']];
+        $certificate = certificate::first() ?? (object) [
             'id' => 'dummy',
             'certificate_number' => 'CERT-DUMMY-12345',
             'issued_date' => Carbon::now(),

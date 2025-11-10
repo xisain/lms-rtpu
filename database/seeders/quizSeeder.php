@@ -8,11 +8,11 @@ use App\Models\material;
 use App\Models\quiz_option;
 use App\Models\quiz_question;
 
-class QuizSeeder extends Seeder
+class quizSeeder extends Seeder
 {
     public function run(): void
     {
-        $materials = Material::all();
+        $materials = material::all();
 
         if ($materials->isEmpty()) {
             $this->command->warn('Belum ada material, jalankan MaterialSeeders dulu!');
@@ -21,7 +21,7 @@ class QuizSeeder extends Seeder
 
         foreach ($materials as $material) {
             // Buat quiz untuk setiap material
-            $quiz = Quiz::create([
+            $quiz = quiz::create([
                 'material_id' => $material->id,
                 'judul_quiz' => 'Quiz: ' . $material->nama_materi,
                 'is_required' => (bool) rand(0, 1),
