@@ -112,7 +112,7 @@ Route::middleware('auth')->group(function () {
             Route::get('/edit/{id}', [PaymentController::class, 'edit'])->name('admin.payment.edit');
             Route::post('/', [PaymentController::class, 'store'])->name('admin.payment.store');
             Route::put('{id}/update', [PaymentController::class, 'update'])->name('admin.payment.update');
-            Route::delete('/', [PaymentController::class, 'destroy'])->name('admin.payment.destroy');
+            Route::delete('/{id}', [PaymentController::class, 'destroy'])->name('admin.payment.destroy');
         });
     });
 
