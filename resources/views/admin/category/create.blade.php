@@ -6,7 +6,7 @@
         <div class="bg-white rounded-lg shadow-md overflow-hidden">
             <!-- Header -->
             <div class="bg-gradient-to-r from-teal-500 to-teal-700 px-6 py-4">
-                <h4 class="text-xl font-bold text-white">Add New Category</h4>
+                <h4 class="text-xl font-bold text-white">Tambah Category Baru</h4>
             </div>
 
             <div class="p-6">
