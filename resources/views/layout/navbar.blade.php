@@ -117,7 +117,7 @@
                             x-transition:leave="transition ease-in duration-150 transform"
                             x-transition:leave-start="opacity-100 translate-y-0"
                             x-transition:leave-end="opacity-0 -translate-y-2" @click.away="openDropdown = false"
-                            class="absolute left-0 mt-4 w-48 bg-white rounded-md shadow-lg ring-1 ring-black ring-opacity-5">
+                            class="absolute left-0 mt-6 w-48 bg-white rounded-lg shadow-xl">
                             @php
                             $enrollments = auth()->user()->enrollment()->with('course')->get();
                             @endphp
@@ -135,9 +135,17 @@
                             @endif
                         </div>
                     </div>
+                        @php
+                            $hasApprovedSubscription = auth()->user()
+                                ->subscriptions()
+                                ->where('status', 'approved')
+                                ->exists();
+                        @endphp
 
-                    <a href="{{ route('plan') }}" class="text-base font-medium text-gray-700 hover:text-[#0f5757]">Plan</a>
-                </div>
+                        @unless($hasApprovedSubscription)
+                            <a href="{{ route('plan') }}" class="text-base font-medium text-gray-700 hover:text-[#0f5757]">Plan</a>
+                        @endunless
+                    </div>
                 @endauth
 
         <!-- User/Login section kanan -->
@@ -146,7 +154,7 @@
             <div class="relative" x-data="{ userOpen: false }">
                 <button
                     @click="userOpen = !userOpen"
-                    class="flex items-center text-gray-700 hover:text-[#0f5757] focus:outline-none transition-all duration-300 px-2 py-1">
+                    class="flex items-center text-gray-700 hover:text-[#0f5757] focus:outline-none transition-all duration-300 px-2 py-1 rounded-md">
                     <span class="mr-2 font-medium">{{ auth()->user()->name }}</span>
                     <svg
                         class="h-5 w-5 transform transition-transform duration-300"
@@ -161,7 +169,7 @@
 
 
                 <div x-show="userOpen" x-transition @click.away="userOpen = false"
-                    class="absolute right-0 mt-4 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5">
+                    class="absolute right-0 mt-6 w-48 rounded-md shadow-xl bg-white">
                     @if(auth()->user()->role->name == "admin")
                     <a href="{{ route('admin.home') }}"
                         class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Admin Dashboard</a>

@@ -30,30 +30,31 @@
                         <div class="grid sm:grid-cols-2 gap-4">
                             @forelse($paymentMethod as $method)
                             <label class="relative cursor-pointer">
-                                <input type="radio"
-                                       name="payment_method_id"
-                                       value="{{ $method->id }}"
-                                       class="peer sr-only"
-                                       required>
-                                <div class="border-2 border-gray-200 rounded-xl p-4 hover:border-teal-400 transition-all
-                                            peer-checked:border-teal-600 peer-checked:bg-teal-50 peer-checked:shadow-md">
-                                    <div class="flex items-center justify-between mb-2">
-                                        <span class="font-semibold text-gray-900">{{ $method->nama }}</span>
-                                        <div class="w-5 h-5 rounded-full border-2 border-gray-300 peer-checked:border-teal-600
-                                                    peer-checked:bg-teal-600 flex items-center justify-center">
-                                            <svg class="w-3 h-3 text-white hidden peer-checked:block" fill="currentColor" viewBox="0 0 12 12">
-                                                <path d="M10 3L4.5 8.5L2 6"></path>
-                                            </svg>
-                                        </div>
-                                    </div>
-                                    @if($method->account_number)
-                                    <p class="text-sm text-gray-600">{{ $method->account_number }}</p>
-                                    @endif
-                                    @if($method->account_name)
-                                    <p class="text-xs text-gray-500 mt-1">a.n {{ $method->account_name }}</p>
-                                    @endif
-                                </div>
-                            </label>
+    <input type="radio"
+           name="payment_method_id"
+           value="{{ $method->id }}"
+           class="peer sr-only"
+           required>
+    <div class="border-2 border-gray-200 rounded-xl p-4 hover:border-[#009999] transition-all
+                peer-checked:border-[#009999] peer-checked:bg-[#009999]/10 peer-checked:shadow-md">
+        <div class="flex items-center justify-between mb-2">
+            <span class="font-semibold text-gray-900">{{ $method->nama }}</span>
+            <div class="w-5 h-5 rounded-full border-2 border-gray-300
+                        peer-checked:border-[#009999] peer-checked:bg-[#009999]
+                        flex items-center justify-center">
+                <svg class="w-3 h-3 text-white hidden peer-checked:block" fill="currentColor" viewBox="0 0 12 12">
+                    <path d="M10 3L4.5 8.5L2 6"></path>
+                </svg>
+            </div>
+        </div>
+        @if($method->account_number)
+        <p class="text-sm text-gray-600">{{ $method->account_number }}</p>
+        @endif
+        @if($method->account_name)
+        <p class="text-xs text-gray-500 mt-1">a.n {{ $method->account_name }}</p>
+        @endif
+    </div>
+</label>
                             @empty
                             <div class="col-span-2 text-center py-8 text-gray-500">
                                 <p>Belum ada metode pembayaran tersedia</p>
@@ -293,9 +294,20 @@ document.getElementById('paymentForm').addEventListener('submit', function(e) {
 
 <style>
     /* Custom radio button styling */
-    input[type="radio"]:checked + div {
-        animation: scaleIn 0.2s ease-out;
-    }
+input[type="radio"]:checked + div {
+    animation: scaleIn 0.2s ease-out;
+    border-color: #009999;
+    background-color: rgba(0, 153, 153, 0.08);
+}
+
+.peer:checked + div .peer-checked\:border-\[\#009999\] {
+    border-color: #009999 !important;
+}
+
+.peer:checked + div .peer-checked\:bg-\[\#009999\] {
+    background-color: #009999 !important;
+}
+
 
     @keyframes scaleIn {
         from {

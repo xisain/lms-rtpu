@@ -170,7 +170,7 @@
                 </svg>
             </button>
             <div x-show="userOpen" x-transition @click.away="userOpen = false"
-                 class="absolute bottom-20 left-4 w-56 bg-white rounded-md shadow-lg ring-1 ring-black ring-opacity-5 z-50 mb-2">
+                 class="absolute bottom-20 left-4 w-56 bg-white rounded-md shadow-xl z-50 mb-2">
                 @if(auth()->user()->role->name == "admin")
                 <a href="{{ route('admin.home') }}"
                    class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
@@ -179,7 +179,7 @@
                 @endif
                 <a href="{{ route('home') }}"
                    class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                   Profile
+                   Home
                 </a>
                 <form method="POST" action="{{ route('logout') }}">
                     @csrf

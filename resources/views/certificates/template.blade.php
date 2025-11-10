@@ -21,7 +21,7 @@
             padding: 0;
             width: 297mm;
             height: 210mm;
-            background: linear-gradient(135deg, #05a575 0%, #057755 100%);
+            background: linear-gradient(135deg, #009999 0%, #057755 100%);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -41,7 +41,7 @@
             position: absolute;
             width: 150px;
             height: 150px;
-            border: 3px solid #05a575;
+            border: 3px solid #009999;
         }
 
         .corner-tl {
@@ -89,7 +89,7 @@
         .circle-2 {
             width: 200px;
             height: 200px;
-            background: #05a575;
+            background: #009999;
             bottom: -50px;
             left: -50px;
         }
@@ -105,14 +105,11 @@
             margin-bottom: 25px;
         }
 
-        .header-badge {
-            display: inline-block;
+        .header-badge img {
             width: 80px;
             height: 80px;
-            background: linear-gradient(135deg, #05a575 0%, #057755 100%);
             border-radius: 50%;
             margin-bottom: 15px;
-            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.3);
             line-height: 80px;
             color: white;
             font-size: 40px;
@@ -125,7 +122,7 @@
             letter-spacing: 3px;
             text-transform: uppercase;
             margin-bottom: 10px;
-            background: linear-gradient(135deg, #05a575 0%, #057755 100%);
+            background: linear-gradient(135deg, #009999 0%, #057755 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
@@ -164,7 +161,7 @@
             transform: translateX(-50%);
             width: 80%;
             height: 2px;
-            background: linear-gradient(90deg, transparent, #05a575, transparent);
+            background: linear-gradient(90deg, transparent, #009999, transparent);
         }
 
         .completion-text {
@@ -177,7 +174,7 @@
         .course-name {
             font-size: 32px;
             font-weight: bold;
-            color: #05a575;
+            color: #009999;
             margin: 20px 0 30px 0;
         }
 
@@ -201,6 +198,7 @@
             text-transform: uppercase;
             font-size: 11px;
             letter-spacing: 1px;
+            margin: 0px 90px 0px 90px
         }
 
         .detail-value {
@@ -246,7 +244,7 @@
             left: 60px;
             width: 80px;
             height: 80px;
-            border: 3px solid #05a575;
+            border: 3px solid #009999;
             border-radius: 50%;
             display: flex;
             align-items: center;
@@ -258,7 +256,7 @@
         .seal-text {
             font-size: 10px;
             font-weight: bold;
-            color: #05a575;
+            color: #009999;
             text-align: center;
             line-height: 1.2;
             letter-spacing: 1px;
@@ -286,7 +284,9 @@
 
         <div class="certificate-content">
             <div class="header">
-                <div class="header-badge">★</div>
+                <div class="header-badge">
+                <img src="{{ public_path('images/logo-pnj.png') }}" alt="Logo" class="logo">
+                </div>
                 <div class="certificate-title">Certificate</div>
                 <div class="subtitle">of Completion</div>
             </div>
