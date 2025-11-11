@@ -21,9 +21,9 @@ class paymentFactory extends Factory
             'nama' => fake()->text(),
             'account_number' => fake()->text(),
             'account_name' => fake()->name(),
-            'status' => fake()->text(),
-            'created_at' => fake()->text(),
-            'updated_at' => fake()->text(),
+            'status' => $this->faker->randomElement(['aktif', 'nonaktif']),
+            'created_at' => now(),
+            'updated_at' => now(),
         ];
     }
 }

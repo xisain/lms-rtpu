@@ -177,7 +177,7 @@
                     <a href="{{ route('dosen.home') }}"
                         class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Dosen Dashboard</a>
                     @endif
-                    <a href="{{ route('home') }}"
+                    <a href="{{ route('profile') }}"
                         class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Profile</a>
                     <form method="POST" action="{{ route('logout') }}">
                         @csrf

@@ -11,6 +11,7 @@ use App\Http\Controllers\QuizController;
 use App\Http\Controllers\CertificateController;
 use App\Http\Controllers\SubscriptionController;
 use App\Http\Controllers\PaymentController;
+use App\Http\Controllers\profileController;
 use App\Http\Middleware\adminMiddleware;
 use App\Http\Middleware\courseMiddleware;
 use App\Http\Middleware\dosenMiddleware;
@@ -38,9 +39,12 @@ Route::middleware('auth')->group(function () {
 
     Route::prefix('plan')->group(function(){
 
-    Route::get('{id}/checkout',[SubscriptionController::class,'checkout'])->name('plan.checkout');
-    Route::post('/',[SubscriptionController::class,'purchases'])->name('plan.purchases');
+        Route::get('{id}/checkout',[SubscriptionController::class,'checkout'])->name('plan.checkout');
+        Route::post('/',[SubscriptionController::class,'purchases'])->name('plan.purchases');
 
+    });
+    Route::prefix('profile')->group(function(){
+        Route::get('/',[profileController::class,'show'])->name('profile');
     });
     // Protected routes here
     Route::prefix('course')->group(function () {

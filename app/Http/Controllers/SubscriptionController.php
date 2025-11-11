@@ -50,22 +50,20 @@ class SubscriptionController extends Controller
             'is_active' => 'required|boolean',
         ]);
 
-        // Convert features string to array
         $features = ! empty($validated['features'])
             ? array_map('trim', explode(',', $validated['features']))
             : [];
 
-        // Simpan course sebagai array of integers
+
         $courseIds = array_map('intval', $validated['course']);
 
-        // Create plan
         Plan::create([
             'name' => $validated['name'],
             'description' => $validated['description'],
             'price' => $validated['price'],
             'duration_in_days' => $validated['duration_in_days'],
             'features' => $features,
-            'course' => $courseIds,  // simpan array IDs
+            'course' => $courseIds,
             'is_active' => $validated['is_active'],
         ]);
 
@@ -94,7 +92,7 @@ class SubscriptionController extends Controller
      */
     public function update(Request $request, plan $plan)
     {
-        // dd($plan);
+
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'description' => 'required|string',
@@ -105,19 +103,19 @@ class SubscriptionController extends Controller
             'course.*' => 'exists:courses,id',
             'is_active' => 'required|boolean',
         ]);
-        // Convert features string to array
+
         $features = array_map('trim', explode(',', $validated['features']));
 
-        // Simpan course sebagai array of integers
+
         $courseIds = array_map('intval', $validated['course']);
-        // Update plan
+
         $plan->update([
             'name' => $validated['name'],
             'description' => $validated['description'],
             'price' => $validated['price'],
             'duration_in_days' => $validated['duration_in_days'],
             'features' => $features,
-            'course' => $courseIds,  // update array IDs
+            'course' => $courseIds,
             'is_active' => $validated['is_active'],
         ]);
 
@@ -215,14 +213,17 @@ class SubscriptionController extends Controller
             // Validate the request
             $request->validate([
                 'status' => 'required|in:approved,rejected',
+                'notes' => 'required_if:status,rejected'
+
             ]);
 
-            // Update subscription status
             $subscription->status = $request->status;
 
             if ($request->status == 'approved') {
                 $subscription->starts_at = Carbon::now();
                 $subscription->ends_at = Carbon::now()->addDays($duration);
+            } else {
+                $subscription->notes = $request->notes;
             }
 
             $subscription->save();

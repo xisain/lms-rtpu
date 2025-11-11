@@ -4,9 +4,11 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Casts\Attribute;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class plan extends Model
 {
+    use HasFactory;
     protected $fillable = [
         'name',
         'description',
@@ -27,7 +29,7 @@ class plan extends Model
     // Relasi ke Subscription
     public function subscriptions(): HasMany
     {
-        return $this->hasMany(Subscription::class);
+        return $this->hasMany(subscription::class);
     }
 
     // Helper method untuk mendapatkan Course objects dari array IDs
@@ -37,7 +39,7 @@ class plan extends Model
             return collect([]);
         }
 
-        return \App\Models\Course::whereIn('id', $this->course)->get();
+        return \App\Models\course::whereIn('id', $this->course)->get();
     }
 
     // Helper method untuk cek apakah plan punya course tertentu

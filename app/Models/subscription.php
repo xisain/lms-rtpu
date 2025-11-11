@@ -13,6 +13,7 @@ class subscription extends Model
         'payment_method_id',
         'starts_at',
         'ends_at',
+        'notes',
         'status',
         'payment_proof_link',
     ];
