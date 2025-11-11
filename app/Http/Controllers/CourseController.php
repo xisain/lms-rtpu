@@ -9,7 +9,7 @@ use App\Models\course;
 use App\Models\enrollment;
 use App\Models\material;
 use App\Models\progress;
-use App\Models\Quiz;
+use App\Models\quiz;
 use App\Models\quiz_attempt;
 use App\Models\quiz_option;
 use App\Models\quiz_question;
