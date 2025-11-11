@@ -340,7 +340,7 @@ class CourseController extends Controller
      */
     public function edit($id)
     {
-        $course = Course::with('material.submaterial', 'material.quiz.questions.options')->findOrFail($id);
+        $course = course::with('material.submaterial', 'material.quiz.questions.options')->findOrFail($id);
 
         // Check if user has permission to edit this course
         if (auth()->user()->role->id == 2 && $course->teacher_id != auth()->id()) {
@@ -349,7 +349,7 @@ class CourseController extends Controller
 
         if (auth()->user()->role->id == 1) {
             // Admin view
-            $category = Category::all();
+            $category = category::all();
             $teachers = User::whereHas('role', fn ($q) => $q->where('name', 'dosen'))->get();
 
             return view('admin.course.edit', [
@@ -359,7 +359,7 @@ class CourseController extends Controller
             ]);
         } else {
             // Dosen view
-            $category = Category::all();
+            $category = category::all();
 
             return view('dosen.course.edit', [
                 'course' => $course,
@@ -374,7 +374,7 @@ class CourseController extends Controller
     public function update(Request $request, $id)
     {
         // Fix: Update tanpa menghapus id lama
-        $course = Course::findOrFail($id);
+        $course = course::findOrFail($id);
         if (Auth::user()->role->id == 2 && $course->teacher_id != Auth::id()) {
             return back()->with('error', 'Anda tidak memiliki akses untuk mengedit course ini.');
         }
@@ -559,7 +559,7 @@ class CourseController extends Controller
 
                     if ($quizId) {
                         // UPDATE existing quiz
-                        $quiz = Quiz::findOrFail($quizId);
+                        $quiz = quiz::findOrFail($quizId);
                         $quiz->update([
                             'judul_quiz' => $mat['quiz']['judul_quiz'],
                             'is_required' => true,
@@ -623,7 +623,7 @@ class CourseController extends Controller
             // Delete removed materials
             $deletedMaterials = array_diff($existingMaterialIds, $updatedMaterialIds);
             if (! empty($deletedMaterials)) {
-                Material::whereIn('id', $deletedMaterials)->delete();
+                material::whereIn('id', $deletedMaterials)->delete();
             }
 
             DB::commit();
@@ -646,7 +646,7 @@ class CourseController extends Controller
     public function destroy(string $id)
     {
         //    $deletedCourse = course::with(['material', 'material.submaterial','material.quiz', 'material.quiz.questions','material.quiz.questions.options'])->findOrFail($id);
-        $deletedCourse = Course::findOrFail($id);
+        $deletedCourse = course::findOrFail($id);
         $deletedCourse->delete();
         $redirectRoute = Auth::user()->role->id == 1 ? 'admin.course.index' : 'dosen.course.index';
 
@@ -655,7 +655,7 @@ class CourseController extends Controller
 
     public function showCourse(Request $request)
     {
-        $query = Course::where('public', true);
+        $query = course::where('public', true);
 
         // Apply filters if present
         if ($request->filled('search')) {
@@ -678,7 +678,7 @@ class CourseController extends Controller
         }
 
         $course = $query->get();
-        $categories = Category::all();
+        $categories = category::all();
 
         return view('course.index', [
             'course' => $course,
@@ -688,7 +688,7 @@ class CourseController extends Controller
 
     public function filterCourse(Request $request)
     {
-        $query = Course::where('public', true);
+        $query = course::where('public', true);
 
         // Search filter
         if ($request->filled('search')) {
@@ -722,7 +722,7 @@ public function myCourse(Request $request)
 {
     $userId = auth()->user()->id;
 
-    $query = Course::where('public', true);
+    $query = course::where('public', true);
 
     // Apply filters if present
     if ($request->filled('search')) {
@@ -744,7 +744,7 @@ public function myCourse(Request $request)
         $query->whereDate('end_date', '<=', $request->end_date);
     }
 
-    $course = Course::whereHas('enrollment', function($q) use ($userId) {
+    $course = course::whereHas('enrollment', function($q) use ($userId) {
         $q->where('user_id', $userId);
     })
     ->with(['enrollment', 'material.submaterial'])
@@ -772,7 +772,7 @@ public function myCourse(Request $request)
         return $item;
     });
 
-    $categories = Category::all();
+    $categories = category::all();
 
     return view('course.index', [
         'course' => $course,
@@ -916,8 +916,8 @@ public function myCourse(Request $request)
 
     public function quizSubmit(Request $request, string $slug, int $material)
     {
-        $course = Course::where('slugs', $slug)->firstOrFail();
-        $materi = Material::with('quiz.questions.options')->findOrFail($material);
+        $course = course::where('slugs', $slug)->firstOrFail();
+        $materi = material::with('quiz.questions.options')->findOrFail($material);
         $quiz = $materi->quiz;
 
         if (! $quiz) {

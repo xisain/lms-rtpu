@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\course;
-use App\Models\Payment;
+use App\Models\payment;
 use App\Models\plan;
 use App\Models\subscription;
 use Carbon\Carbon;
@@ -16,7 +16,7 @@ class SubscriptionController extends Controller
      */
     public function index()
     {
-        $plan = Plan::orderBy('id', 'asc')->paginate(10);
+        $plan = plan::orderBy('id', 'asc')->paginate(10);
 
         return view('admin.plan.index', compact('plan'));
 
@@ -192,7 +192,7 @@ class SubscriptionController extends Controller
 
     public function transactionTable(Request $request)
     {
-        $query = Subscription::query();
+        $query = subscription::query();
 
         // Filter by status if provided
         if ($request->has('status') && $request->status != '') {
@@ -208,7 +208,7 @@ class SubscriptionController extends Controller
     public function approval(Request $request, $id)
     {
         try {
-            $subscription = Subscription::findOrFail($id);
+            $subscription = subscription::findOrFail($id);
             $plan = plan::where('id', $subscription->plan_id)->first();
             $duration = $plan->duration_in_days;
 

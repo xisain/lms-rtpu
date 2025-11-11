@@ -33,7 +33,7 @@ class EnrollmentController extends Controller
             return back();
         }
         // Cek apakah sudah terdaftar
-        $existing = Enrollment::where('user_id', $userId)
+        $existing = enrollment::where('user_id', $userId)
             ->where('course_id', $course->id)
             ->first();
 
@@ -41,7 +41,7 @@ class EnrollmentController extends Controller
             return back()->with('message', 'Kamu sudah terdaftar di course ini.');
         }
 
-        Enrollment::create([
+        enrollment::create([
             'user_id' => $userId,
             'course_id' => $course->id,
             'enrolled_at' => now(),
