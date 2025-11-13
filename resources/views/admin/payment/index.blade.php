@@ -22,7 +22,11 @@
                     </a>
                 </div>
                 <div class="overflow-x-auto p-4">
+                    @if ($payment->isEmpty())
+                    <table class="display w-full">
+                    @else
                     <table class="display w-full" id="paymentTable">
+                    @endif
                         <thead>
                             <tr>
                                 <th>#</th>
@@ -63,7 +67,7 @@
                                                 @csrf
                                                 @method('DELETE')
                                                 <button type="button"
-                                                class="text-red-600 hover:underline ml-4 btn-delete"                                                   
+                                                class="text-red-600 hover:underline ml-4 btn-delete"
                                                 data-id="{{ $p->id }}"
                                                 data-nama="{{ $p->nama }}"
                                                 title="Hapus" alt="Hapus"><i class="fa-solid fa-trash fa-lg"></i>

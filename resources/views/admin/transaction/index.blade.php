@@ -40,7 +40,11 @@
                 </h4>
             </div>
             <div class="overflow-x-auto p-4">
+                @if($subscriptions->isEmpty())
+                <table class="min-w-full divide-y divide-gray-200">
+                @else
                 <table class="min-w-full divide-y divide-gray-200" id="transactionTable">
+                @endif
                     <thead class="bg-gray-50">
                         <tr>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">#

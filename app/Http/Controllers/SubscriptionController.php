@@ -16,8 +16,7 @@ class SubscriptionController extends Controller
      */
     public function index()
     {
-        $plan = plan::orderBy('id', 'asc')->paginate(10);
-
+        $plan = plan::orderBy('id', 'asc')->get();
         return view('admin.plan.index', compact('plan'));
 
     }

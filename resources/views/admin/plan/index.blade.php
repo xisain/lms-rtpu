@@ -27,7 +27,12 @@
 
 
                 <div class="overflow-x-auto p-4">
+
+                    @if ($plan->isEmpty())
+                    <table class="min-w-full divide-y divide-gray-200">
+                    @else
                     <table class="min-w-full divide-y divide-gray-200" id="planTable">
+                    @endif
                         <thead class="bg-gray-50">
                             <tr class="">
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray uppercase tracking-wider">ID
@@ -52,7 +57,7 @@
                             @forelse($plan as $plans)
                                 <tr class="hover:bg-gray-50 transition duration-150">
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                        {{ $loop->iteration + ($plan->currentPage() - 1) * $plan->perPage() }}
+                                        {{$plans->index + 1 }}
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap">
                                         {{ $plans->name }}
@@ -105,9 +110,6 @@
                             @endforelse
                         </tbody>
                     </table>
-                </div>
-                <div class="px-6 py-4">
-                    {{ $plan->links() }}
                 </div>
             </div>
         </div>
