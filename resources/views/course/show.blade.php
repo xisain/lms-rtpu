@@ -56,12 +56,20 @@
                                             @endif
                                         </button>
                                     @else
-                                        <form action="{{ route('course.enroll', $courseData->slugs) }}" method="POST">
-                                            @csrf
-                                            <button type="submit" class="w-full hover:bg-[#0f5757] bg-[#009999] text-white font-semibold py-3 px-4 rounded-lg transition duration-200 shadow-md">
-                                                Enroll In Course
-                                            </button>
-                                        </form>
+                                        @if($courseData->is_paid)
+                                            {{-- Course berbayar - tombol Buy --}}
+                                            <a href="{{ route('course.purchase.checkout', $courseData->slugs) }}" class="w-full block text-center hover:bg-[#0f5757] bg-[#009999] text-white font-semibold py-3 px-4 rounded-lg transition duration-200 shadow-md">
+                                                Buy Course (Rp {{ number_format($courseData->price, 0, ',', '.') }})
+                                            </a>
+                                        @else
+                                            {{-- Course gratis - tombol Enroll --}}
+                                            <form action="{{ route('course.enroll', $courseData->slugs) }}" method="POST">
+                                                @csrf
+                                                <button type="submit" class="w-full hover:bg-[#0f5757] bg-[#009999] text-white font-semibold py-3 px-4 rounded-lg transition duration-200 shadow-md">
+                                                    Enroll In Course
+                                                </button>
+                                            </form>
+                                        @endif
                                     @endif
                                 @endif
                             @else

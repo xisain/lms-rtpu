@@ -3,11 +3,14 @@
 namespace App\Http\Controllers;
 
 use App\Models\course;
+use App\Models\CoursePurchase;
+use App\Models\enrollment;
 use App\Models\payment;
 use App\Models\plan;
 use App\Models\subscription;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class SubscriptionController extends Controller
 {
@@ -171,7 +174,7 @@ class SubscriptionController extends Controller
             'payment_proof.mimes' => 'Format file bukti pembayaran harus berupa JPG, JPEG, PNG, atau PDF.',
             'payment_proof.max' => 'Ukuran file bukti pembayaran tidak boleh lebih dari 2 MB.',
         ]);
-        $validated['user_id'] = auth()->user()->id;
+        $validated['user_id'] = Auth::id();
         $image_path = '';
         if ($request->hasFile('payment_proof')) {
             $image_path = $request->file('payment_proof')->store('payment_proof', 'public');
@@ -196,10 +199,15 @@ class SubscriptionController extends Controller
             $query->where('status', $request->status);
         }
 
-        // Get subscriptions with user relation (assuming subscription belongs to user)
+
         $subscriptions = $query->with(['payment', 'user', 'plan'])->latest()->paginate(15);
 
-        return view('admin.transaction.index', compact('subscriptions'));
+        $purchasesQuery = CoursePurchase::query();
+        if ($request->has('status') && $request->status != '') {
+            $purchasesQuery->where('status', $request->status);
+        }
+        $coursePurchases = $purchasesQuery->with(['payment', 'user', 'course'])->latest()->paginate(15, ['*'], 'purchases_page');
+        return view('admin.transaction.index', compact('subscriptions', 'coursePurchases'));
     }
 
     public function approval(Request $request, $id)
@@ -212,7 +220,7 @@ class SubscriptionController extends Controller
             // Validate the request
             $request->validate([
                 'status' => 'required|in:approved,rejected',
-                'notes' => 'required_if:status,rejected'
+                'notes' => 'required_if:status,rejected',
 
             ]);
 
@@ -236,6 +244,50 @@ class SubscriptionController extends Controller
 
         } catch (\Exception $e) {
             return redirect()->back()->with('error', 'Gagal memproses transaksi: '.$e->getMessage());
+        }
+    }
+
+    /**
+     * Approve or reject course purchase
+     */
+    public function approvePurchase(Request $request, $id)
+    {
+        try {
+            $purchase = CoursePurchase::findOrFail($id);
+
+            $request->validate([
+                'status' => 'required|in:approved,rejected',
+                'notes' => 'required_if:status,rejected',
+            ]);
+
+            $purchase->status = $request->status;
+
+            if ($request->status == 'approved') {
+
+                $existingEnrollment = enrollment::where('user_id', $purchase->user_id)
+                    ->where('course_id', $purchase->course_id)
+                    ->first();
+
+                if (! $existingEnrollment) {
+                    enrollment::create([
+                        'user_id' => $purchase->user_id,
+                        'course_id' => $purchase->course_id,
+                    ]);
+                }
+            } else {
+                $purchase->notes = $request->notes;
+            }
+
+            $purchase->save();
+
+            $message = $request->status == 'approved'
+                ? 'Pembelian course berhasil disetujui!'
+                : 'Pembelian course berhasil ditolak!';
+
+            return redirect()->back()->with('success', $message);
+
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Gagal memproses pembelian: '.$e->getMessage());
         }
     }
 }

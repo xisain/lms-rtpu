@@ -62,13 +62,14 @@ class CourseController extends Controller
      */
     public function store(Request $request)
     {
-
         $validated = $request->validate([
             'category_id' => 'required|exists:categories,id',
             'nama_course' => 'required|string|max:255',
             'description' => 'required|string',
             'image_link' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
             'isLimitedCourse' => 'boolean',
+            'is_paid' => 'boolean',
+            'price' => 'required_if:is_paid,1|integer|min:5000',
             'start_date' => 'nullable|required_if:isLimitedCourse,1|date',
             'end_date' => 'nullable|required_if:isLimitedCourse,1|date|after:start_date',
             'maxEnrollment' => 'nullable|required_if:isLimitedCourse,1|integer|min:1',
@@ -95,7 +96,14 @@ class CourseController extends Controller
         if ($request->hasFile('image_link')) {
             $imagePath = $request->file('image_link')->store('course/images', 'public');
         }
+        if ($request->has('is_paid')) {
+            $validated['is_paid'] = true;
+            $validated['price'] = $request->price;
+        }
 
+        $price = (! empty($validated['is_paid']) && $validated['is_paid']) ? $validated['price'] : null;
+
+        // Buat course
         $course = course::create([
             'category_id' => $validated['category_id'],
             'nama_course' => $validated['nama_course'],
@@ -108,6 +116,8 @@ class CourseController extends Controller
             'public' => $validated['public'] ?? false,
             'image_link' => $imagePath,
             'teacher_id' => $validated['teacher_id'],
+            'is_paid' => $validated['is_paid'] ?? false,
+            'price' => $price,
         ]);
 
         foreach ($validated['materials'] as $materialIndex => $mat) {
@@ -181,15 +191,18 @@ class CourseController extends Controller
             ->with('success', 'Course berhasil dibuat beserta material dan submaterialnya!');
     }
 
-    public function manageCourse($id){
-        $course = course::with(['material','material.submaterial', 'material.quiz'])->find($id);
+    public function manageCourse($id)
+    {
+        $course = course::with(['material', 'material.submaterial', 'material.quiz'])->find($id);
         // $course = course::find($id);
-        $enrollmentUser = enrollment::where('course_id',$course->id)->with('user')->paginate(10);
+        $enrollmentUser = enrollment::where('course_id', $course->id)->with('user')->paginate(10);
+
         return view('admin.course.manageCourse',
-        [
-        'course'=> $course,
-        'enrolluser' =>$enrollmentUser]);
+            [
+                'course' => $course,
+                'enrolluser' => $enrollmentUser]);
     }
+
     /**
      * Display the specified resource.
      */
@@ -718,67 +731,67 @@ class CourseController extends Controller
         return view('course.partials.course-cards', compact('course'));
     }
 
-public function myCourse(Request $request)
-{
-    $userId = auth()->user()->id;
+    public function myCourse(Request $request)
+    {
+        $userId = auth()->user()->id;
 
-    $query = course::where('public', true);
+        $query = course::where('public', true);
 
-    // Apply filters if present
-    if ($request->filled('search')) {
-        $query->where(function ($q) use ($request) {
-            $q->where('nama_course', 'like', '%'.$request->search.'%')
-                ->orWhere('description', 'like', '%'.$request->search.'%');
-        });
-    }
-
-    if ($request->filled('category')) {
-        $query->where('category_id', $request->category);
-    }
-
-    if ($request->filled('start_date')) {
-        $query->whereDate('start_date', '>=', $request->start_date);
-    }
-
-    if ($request->filled('end_date')) {
-        $query->whereDate('end_date', '<=', $request->end_date);
-    }
-
-    $course = course::whereHas('enrollment', function($q) use ($userId) {
-        $q->where('user_id', $userId);
-    })
-    ->with(['enrollment', 'material.submaterial'])
-    ->get()
-    ->map(function ($item) use ($userId) {
-        // Hitung total submaterial dalam course
-        $totalSubmaterials = $item->material->sum(function ($material) {
-            return $material->submaterial->count();
-        });
-
-        // Hitung submaterial yang sudah completed
-        $completedSubmaterials = 0;
-        foreach ($item->material as $material) {
-            $completedSubmaterials += progress::where('user_id', $userId)
-                ->whereIn('submaterial_id', $material->submaterial->pluck('id'))
-                ->where('status', 'completed')
-                ->count();
+        // Apply filters if present
+        if ($request->filled('search')) {
+            $query->where(function ($q) use ($request) {
+                $q->where('nama_course', 'like', '%'.$request->search.'%')
+                    ->orWhere('description', 'like', '%'.$request->search.'%');
+            });
         }
 
-        // Hitung persentase
-        $item->progress = $totalSubmaterials > 0
-            ? round(($completedSubmaterials / $totalSubmaterials) * 100)
-            : 0;
+        if ($request->filled('category')) {
+            $query->where('category_id', $request->category);
+        }
 
-        return $item;
-    });
+        if ($request->filled('start_date')) {
+            $query->whereDate('start_date', '>=', $request->start_date);
+        }
 
-    $categories = category::all();
+        if ($request->filled('end_date')) {
+            $query->whereDate('end_date', '<=', $request->end_date);
+        }
 
-    return view('course.index', [
-        'course' => $course,
-        'categories' => $categories,
-    ]);
-}
+        $course = course::whereHas('enrollment', function ($q) use ($userId) {
+            $q->where('user_id', $userId);
+        })
+            ->with(['enrollment', 'material.submaterial'])
+            ->get()
+            ->map(function ($item) use ($userId) {
+                // Hitung total submaterial dalam course
+                $totalSubmaterials = $item->material->sum(function ($material) {
+                    return $material->submaterial->count();
+                });
+
+                // Hitung submaterial yang sudah completed
+                $completedSubmaterials = 0;
+                foreach ($item->material as $material) {
+                    $completedSubmaterials += progress::where('user_id', $userId)
+                        ->whereIn('submaterial_id', $material->submaterial->pluck('id'))
+                        ->where('status', 'completed')
+                        ->count();
+                }
+
+                // Hitung persentase
+                $item->progress = $totalSubmaterials > 0
+                    ? round(($completedSubmaterials / $totalSubmaterials) * 100)
+                    : 0;
+
+                return $item;
+            });
+
+        $categories = category::all();
+
+        return view('course.index', [
+            'course' => $course,
+            'categories' => $categories,
+        ]);
+    }
 
     public function guestDaftarKelas()
     {

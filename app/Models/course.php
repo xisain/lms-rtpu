@@ -18,10 +18,13 @@ class course extends Model
         'end_date',
         'maxEnrollment',
         'public',
+        'price',
+        'is_paid',
         'teacher_id',
     ];
 
-    public function category() {
+    public function category()
+    {
         return $this->belongsTo(category::class);
     }
 
@@ -30,26 +33,41 @@ class course extends Model
         return $this->hasMany(material::class, 'course_id', 'id');
     }
 
-    public function enrollment() {
+    public function enrollment()
+    {
         return $this->hasMany(enrollment::class);
     }
-    public function teacher(){
+
+    public function teacher()
+    {
         return $this->belongsTo(User::class, 'teacher_id');
     }
-    public function expireCourse() {
-        if(!$this->end_date){
+
+    public function purchases()
+    {
+        return $this->hasMany(CoursePurchase::class);
+    }
+
+    public function expireCourse()
+    {
+        if (! $this->end_date) {
             return false;
         }
+
         return Carbon::now()->isAfter($this->end_date);
     }
-    public function maxSlotEnrollment() {
-         if (!$this->isLimitedCourse) {
+
+    public function maxSlotEnrollment()
+    {
+        if (! $this->isLimitedCourse) {
             return false;
         }
 
         return $this->enrollment()->count() >= $this->maxEnrollment;
     }
-    public function countEnrollment(){
+
+    public function countEnrollment()
+    {
         return $this->enrollment()->count();
     }
 }

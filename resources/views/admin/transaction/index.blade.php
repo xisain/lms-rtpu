@@ -39,7 +39,19 @@
                     Tabel Transaksi
                 </h4>
             </div>
-            <div class="overflow-x-auto p-4">
+
+            <!-- Tabs -->
+            <div class="flex border-b border-gray-200">
+                <button onclick="switchTab('plans')" id="plans-tab" class="flex-1 px-4 py-3 font-semibold text-[#009999] border-b-2 border-[#009999]">
+                    Plan Subscriptions
+                </button>
+                <button onclick="switchTab('courses')" id="courses-tab" class="flex-1 px-4 py-3 font-semibold text-gray-600 border-b-2 border-transparent hover:text-gray-800">
+                    Course Purchases
+                </button>
+            </div>
+
+            <!-- Plans Tab -->
+            <div id="plans-content" class="overflow-x-auto p-4">
                 @if($subscriptions->isEmpty())
                 <table class="min-w-full divide-y divide-gray-200">
                 @else
@@ -137,7 +149,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="7" class="px-6 py-4 text-center text-gray-500">
+                                <td colspan="9" class="px-6 py-4 text-center text-gray-500">
                                     Tidak ada data transaksi
                                 </td>
                             </tr>
@@ -146,14 +158,176 @@
                 </table>
             </div>
 
-            <!-- Pagination -->
+            <!-- Pagination Plans -->
             <div class="px-6 py-4 bg-gray-50">
                 {{ $subscriptions->links() }}
+            </div>
+
+            <!-- Courses Tab Content -->
+            <div id="courses-content" class="hidden">
+                <div class="overflow-x-auto p-4">
+                    @if($coursePurchases->isEmpty())
+                    <table class="min-w-full divide-y divide-gray-200">
+                    @else
+                    <table class="min-w-full divide-y divide-gray-200" id="coursePurchaseTable">
+                    @endif
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">#</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Course</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">User</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Price</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Payment Method</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Proof</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody class="bg-white divide-y divide-gray-200">
+                            @forelse ($coursePurchases as $item)
+                                <tr class="hover:bg-gray-50 transition duration-150">
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ $item->id }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ $item->course->nama_course }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ $item->user->name }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                        Rp {{ number_format($item->price_paid, 0, ',', '.') }}
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ $item->payment->nama }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                        <button onclick="openModal('{{ asset('storage/' . $item->payment_proof_link) }}')"
+                                            class="text-blue-600 hover:text-blue-800 underline">
+                                            View
+                                        </button>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm">
+                                        @if ($item->status == 'waiting_approval')
+                                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                                                Waiting Approval
+                                            </span>
+                                        @elseif ($item->status == 'approved')
+                                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                                Approved
+                                            </span>
+                                        @else
+                                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                                                Rejected
+                                            </span>
+                                        @endif
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm space-x-2">
+                                        @if ($item->status == 'waiting_approval')
+                                            <button onclick="openApproveCourseModal({{ $item->id }})"
+                                                class="text-green-600 hover:text-green-800 font-semibold">
+                                                Approve
+                                            </button>
+                                            <button onclick="openRejectCourseModal({{ $item->id }})"
+                                                class="text-red-600 hover:text-red-800 font-semibold">
+                                                Reject
+                                            </button>
+                                        @endif
+                                    </td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="8" class="px-6 py-4 text-center text-gray-500">
+                                        No course purchase data
+                                    </td>
+                                </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                </div>
+                <!-- Pagination Courses -->
+                <div class="px-6 py-4 bg-gray-50">
+                    {{ $coursePurchases->links('pagination::bootstrap-4') }}
+                </div>
             </div>
         </div>
     </div>
 
-    <!-- Modal untuk Bukti Pembayaran -->
+    <!-- Modal untuk Reject Course Purchase -->
+    <div id="rejectCoursePurchaseModal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
+        <div class="relative top-20 mx-auto p-5 border w-11/12 md:w-1/2 shadow-lg rounded-md bg-white">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-lg font-medium text-gray-900">Reject Course Purchase</h3>
+                <button type="button" onclick="closeRejectCourseModal()"
+                    class="text-gray-400 hover:text-gray-500">
+                    <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+
+            <form id="rejectCoursePurchaseForm" method="POST">
+                @csrf
+                @method('PUT')
+                <input type="hidden" name="status" value="rejected">
+
+                <div class="mb-4">
+                    <label for="course_notes" class="block text-sm font-medium text-gray-700 mb-2">Reason for Rejection
+                        <span class="text-red-500">*</span>
+                    </label>
+                    <textarea
+                        id="course_notes"
+                        name="notes"
+                        rows="4"
+                        required
+                        class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500"
+                        placeholder="Enter rejection reason...">
+                    </textarea>
+                </div>
+
+                <div class="flex justify-end space-x-3">
+                    <button type="button" onclick="closeRejectCourseModal()"
+                        class="px-4 py-2 bg-gray-300 text-gray-700 rounded hover:bg-gray-400">
+                        Cancel
+                    </button>
+                    <button type="submit"
+                        class="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600">
+                        Reject
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal untuk Approve Course Purchase -->
+    <div id="approveCoursePurchaseModal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
+        <div class="relative top-20 mx-auto p-5 border w-11/12 md:w-1/2 shadow-lg rounded-md bg-white">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-lg font-medium text-gray-900">Approve Course Purchase</h3>
+                <button type="button" onclick="closeApproveCourseModal()"
+                    class="text-gray-400 hover:text-gray-500">
+                    <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+
+            <div class="mb-4 p-3 bg-green-50 border border-green-200 rounded">
+                <p class="text-sm text-green-800">
+                    This action will approve the course purchase and automatically enroll the user in the course.
+                </p>
+            </div>
+
+            <form id="approveCoursePurchaseForm" method="POST">
+                @csrf
+                @method('PUT')
+                <input type="hidden" name="status" value="approved">
+
+                <div class="flex justify-end space-x-3">
+                    <button type="button" onclick="closeApproveCourseModal()"
+                        class="px-4 py-2 bg-gray-300 text-gray-700 rounded hover:bg-gray-400">
+                        Cancel
+                    </button>
+                    <button type="submit"
+                        class="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600">
+                        Approve
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
     <div id="paymentProofModal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
         <div class="relative top-20 mx-auto p-5 border w-11/12 md:w-3/4 lg:w-1/2 shadow-lg rounded-md bg-white">
             <div class="flex justify-between items-center mb-4">
@@ -249,7 +423,52 @@
                         [0, 'asc']
                     ]
                 });
+
+                $('#coursePurchaseTable').DataTable({
+                    language: {
+                        processing: 'Loading...',
+                        search: 'Search:',
+                        lengthMenu: 'Show _MENU_ records',
+                        info: 'Showing _START_ to _END_ of _TOTAL_ records',
+                        infoEmpty: 'Showing 0 to 0 of 0 records',
+                        infoFiltered: '(filtered from _MAX_ total records)',
+                        zeroRecords: 'No matching records found',
+                        emptyTable: 'No data available',
+                        paginate: {
+                            first: '<<',
+                            last: '>>',
+                            next: '>',
+                            previous: '<'
+                        }
+                    },
+                    order: [
+                        [0, 'asc']
+                    ]
+                });
             })
+
+            function switchTab(tab) {
+                const plansTab = document.getElementById('plans-tab');
+                const coursesTab = document.getElementById('courses-tab');
+                const plansContent = document.getElementById('plans-content');
+                const coursesContent = document.getElementById('courses-content');
+
+                if (tab === 'plans') {
+                    plansTab.classList.add('border-b-2', 'border-[#009999]', 'text-[#009999]');
+                    plansTab.classList.remove('border-transparent', 'text-gray-600');
+                    coursesTab.classList.remove('border-b-2', 'border-[#009999]', 'text-[#009999]');
+                    coursesTab.classList.add('border-transparent', 'text-gray-600');
+                    plansContent.classList.remove('hidden');
+                    coursesContent.classList.add('hidden');
+                } else {
+                    coursesTab.classList.add('border-b-2', 'border-[#009999]', 'text-[#009999]');
+                    coursesTab.classList.remove('border-transparent', 'text-gray-600');
+                    plansTab.classList.remove('border-b-2', 'border-[#009999]', 'text-[#009999]');
+                    plansTab.classList.add('border-transparent', 'text-gray-600');
+                    coursesContent.classList.remove('hidden');
+                    plansContent.classList.add('hidden');
+                }
+            }
         </script>
     @endpush
 
@@ -290,11 +509,48 @@
             }
         });
 
+        // Course Purchase Modal Functions
+        function openApproveCourseModal(purchaseId) {
+            const form = document.getElementById('approveCoursePurchaseForm');
+            form.action = '/admin/transaction/course-purchase/' + purchaseId + '/approve';
+            document.getElementById('approveCoursePurchaseModal').classList.remove('hidden');
+        }
+
+        function closeApproveCourseModal() {
+            document.getElementById('approveCoursePurchaseModal').classList.add('hidden');
+        }
+
+        function openRejectCourseModal(purchaseId) {
+            const form = document.getElementById('rejectCoursePurchaseForm');
+            form.action = '/admin/transaction/course-purchase/' + purchaseId + '/approve';
+            document.getElementById('course_notes').value = '';
+            document.getElementById('rejectCoursePurchaseModal').classList.remove('hidden');
+        }
+
+        function closeRejectCourseModal() {
+            document.getElementById('rejectCoursePurchaseModal').classList.add('hidden');
+            document.getElementById('course_notes').value = '';
+        }
+
+        document.getElementById('rejectCoursePurchaseModal')?.addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeRejectCourseModal();
+            }
+        });
+
+        document.getElementById('approveCoursePurchaseModal')?.addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeApproveCourseModal();
+            }
+        });
+
         // Close modals with ESC key
         document.addEventListener('keydown', function(e) {
             if (e.key === 'Escape') {
                 closeModal();
                 closeRejectModal();
+                closeRejectCourseModal();
+                closeApproveCourseModal();
             }
         });
     </script>

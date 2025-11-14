@@ -1,54 +1,55 @@
 <?php
 
 use App\Http\Controllers\adminController;
-use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\AuthController;
-use App\Http\Controllers\CourseController;
 use App\Http\Controllers\CategoryController;
-use App\Http\Controllers\UserController;
-use App\Http\Controllers\EnrollmentController;
-use App\Http\Controllers\QuizController;
 use App\Http\Controllers\CertificateController;
-use App\Http\Controllers\SubscriptionController;
+use App\Http\Controllers\CourseController;
+use App\Http\Controllers\CoursePurchaseController;
+use App\Http\Controllers\EnrollmentController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\profileController;
-use App\Http\Middleware\adminMiddleware;
-use App\Http\Middleware\courseMiddleware;
+use App\Http\Controllers\SubscriptionController;
+use App\Http\Controllers\UserController;
 use App\Http\Middleware\dosenMiddleware;
-use App\Models\subscription;
+use Illuminate\Support\Facades\Route;
 
 // Unguarded Route
 Route::get('certificate/{certificate}/download', [CertificateController::class, 'download'])->name('certificate.download');
 Route::get('/filter', [CourseController::class, 'filterCourse'])->name('course.filter');
-Route::get('/plan',[SubscriptionController::class,'viewPlan'])->name('plan');
+Route::get('/plan', [SubscriptionController::class, 'viewPlan'])->name('plan');
 
 Route::middleware('guest')->group(function () {
     Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
     Route::post('/login', [AuthController::class, 'login']);
     Route::get('/register', [AuthController::class, 'showRegister'])->name('register');
     Route::post('/register', [AuthController::class, 'register']);
-    Route::get('/forget-password',[AuthController::class,'showForgetPassword'])->name('forgetpassword');
-    Route::post('/forget-password',[AuthController::class,'forgetPassword'])->name('forgetpassword.request');
-    Route::get('/reset-password/{token}/',[AuthController::class,'showResetPassword'])->name('resetpassword');
-    Route::post('/reset-password/',[AuthController::class,'resetPassword'])->name('resetpassword.store');
+    Route::get('/forget-password', [AuthController::class, 'showForgetPassword'])->name('forgetpassword');
+    Route::post('/forget-password', [AuthController::class, 'forgetPassword'])->name('forgetpassword.request');
+    Route::get('/reset-password/{token}/', [AuthController::class, 'showResetPassword'])->name('resetpassword');
+    Route::post('/reset-password/', [AuthController::class, 'resetPassword'])->name('resetpassword.store');
     Route::get('/daftar-kelas', [CourseController::class, 'guestDaftarKelas'])->name('list.kelas');
 });
 
 Route::middleware('auth')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
-    Route::prefix('plan')->group(function(){
+    Route::prefix('plan')->group(function () {
 
-        Route::get('{id}/checkout',[SubscriptionController::class,'checkout'])->name('plan.checkout');
-        Route::post('/',[SubscriptionController::class,'purchases'])->name('plan.purchases');
+        Route::get('{id}/checkout', [SubscriptionController::class, 'checkout'])->name('plan.checkout');
+        Route::post('/', [SubscriptionController::class, 'purchases'])->name('plan.purchases');
 
     });
-    Route::prefix('profile')->group(function(){
-        Route::get('/',[profileController::class,'show'])->name('profile');
+    Route::prefix('course-purchase')->group(function () {
+        Route::get('{slug}/checkout', [CoursePurchaseController::class, 'checkout'])->name('course.purchase.checkout');
+        Route::post('/', [CoursePurchaseController::class, 'purchase'])->name('course.purchase');
+    });
+    Route::prefix('profile')->group(function () {
+        Route::get('/', [profileController::class, 'show'])->name('profile');
     });
     // Protected routes here
     Route::prefix('course')->group(function () {
-        Route::get('my',[CourseController::class,'myCourse'])->name('course.my');
+        Route::get('my', [CourseController::class, 'myCourse'])->name('course.my');
         Route::get('/', [CourseController::class, 'showCourse'])->name('course.index');
 
         Route::get('{slug}', [CourseController::class, 'show'])->name('course.show');
@@ -66,6 +67,7 @@ Route::middleware('auth')->group(function () {
     Route::prefix('admin')->middleware('admin')->group(function () {
         Route::post('/sidebar/toggle', function (Illuminate\Http\Request $request) {
             $request->session()->put('sidebar_open', $request->input('open'));
+
             return response()->json(['success' => true]);
         })->name('sidebar.toggle');
         Route::get('/', [adminController::class, 'index'])->name('admin.home');
@@ -106,11 +108,12 @@ Route::middleware('auth')->group(function () {
             Route::put('update/{plan}', [SubscriptionController::class, 'update'])->name('admin.plan.update');
             Route::delete('{subs}/delete', [SubscriptionController::class, 'destroy'])->name('admin.plan.destroy');
         });
-        Route::prefix('transaction')->group(function (){
-            Route::get('/',[SubscriptionController::class,'transactionTable'])->name('admin.transaction.index');
-            Route::put('{id}/approval',[SubscriptionController::class,'approval'])->name('admin.transaction.approval');
+        Route::prefix('transaction')->group(function () {
+            Route::get('/', [SubscriptionController::class, 'transactionTable'])->name('admin.transaction.index');
+            Route::put('{id}/approval', [SubscriptionController::class, 'approval'])->name('admin.transaction.approval');
+            Route::put('course-purchase/{id}/approve', [SubscriptionController::class, 'approvePurchase'])->name('admin.course-purchase.approve');
         });
-        Route::prefix('payment')->group( function(){
+        Route::prefix('payment')->group(function () {
             Route::get('/', [PaymentController::class, 'index'])->name('admin.payment.index');
             Route::get('/create', [PaymentController::class, 'create'])->name('admin.payment.create');
             Route::get('/edit/{id}', [PaymentController::class, 'edit'])->name('admin.payment.edit');
@@ -135,7 +138,6 @@ Route::middleware('auth')->group(function () {
 Route::get('/', function () {
     return view('index');
 })->name('home');
-
 
 Route::get('views/course/view', function () {
     return view('course/view');

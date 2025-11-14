@@ -24,7 +24,7 @@
         </div>
 
         <!-- Subscription Accordion -->
-        @if($user->subscriptions)
+        @if(!$user->subscriptions->isEmpty())
         <div class="bg-white rounded-lg shadow-md mb-6">
             <button onclick="toggleAccordion('subscription')"
                 class="w-full px-6 py-4 flex items-center justify-between text-left hover:bg-gray-50 transition-colors">
@@ -278,6 +278,7 @@
     </div>
 </div>
 
+@push('styles')
 <script>
     function toggleAccordion(section) {
     const content = document.getElementById(section + '-content');
@@ -292,4 +293,5 @@
     }
 }
 </script>
+@endpush
 @endsection
