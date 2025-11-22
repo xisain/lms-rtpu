@@ -17,9 +17,9 @@ class paymentFactory extends Factory
     public function definition(): array
     {
         return [
-            'id' => $this->faker->numberBetween(1, 1000),
-            'nama' => fake()->text(),
-            'account_number' => fake()->text(),
+            'id' => $this->faker->unique()->numberBetween(1, 999999999999999),
+            'nama' => fake()->name(1),
+            'account_number' => $this->faker->unique()->numberBetween(1000000000, 9999999999),
             'account_name' => fake()->name(),
             'status' => $this->faker->randomElement(['aktif', 'nonaktif']),
             'created_at' => now(),

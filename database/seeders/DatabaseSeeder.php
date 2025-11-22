@@ -7,7 +7,6 @@ use App\Models\plan;
 use App\Models\User;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\Hash;
 
 class DatabaseSeeder extends Seeder
 {
@@ -17,8 +16,8 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         // User::factory(10)->create();
-        plan::factory(5)->create();
-        payment::factory(5)->create();
+        // plan::factory(3)->create();
+        // payment::factory(3)->create();
 
         $this->call([
             RoleSeeder::class,
@@ -27,7 +26,9 @@ class DatabaseSeeder extends Seeder
             CourseSeeders::class,
             MaterialSeeders::class,
             SubMaterialSeeders::class,
-            quizSeeder::class
+            quizSeeder::class,
+            planSeeders::class,
+            paymentSeeders::class,
         ]);
 
     }

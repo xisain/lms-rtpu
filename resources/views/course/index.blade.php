@@ -134,7 +134,7 @@ function courseFilter() {
             window.history.pushState({}, '', newUrl);
 
             try {
-                const url = `{{ route('course.filter') }}?${params}`;
+                const url = `{{ route('course.filter.my') }}?${params}`;
                 console.log('Fetching:', url); // Debug
 
                 const response = await fetch(url, {

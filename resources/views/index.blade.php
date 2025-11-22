@@ -1,5 +1,4 @@
 @extends('layout.navbar')
-
 @section('content')
 <div class="min-h-screen bg-gradient-to-b from-[#f0f7ff] to-white flex items-center justify-center">
     <div class="flex flex-col md:flex-row items-center justify-between max-w-6xl mx-auto">
@@ -49,5 +48,16 @@
         </div>
     </div>
 </div>
+@if(session()->has('success'))
+<script>
+    toastr.options = {
+        "closeButton": true,
+        "progressBar": true,
+        "timeOut": 3000,
+        "positionClass": "toast-top-full-width"
+    };
 
+    toastr.success("{{ session('success') }}");
+</script>
+@endif
 @endsection

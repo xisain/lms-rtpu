@@ -46,10 +46,22 @@ Route::middleware('auth')->group(function () {
     });
     Route::prefix('profile')->group(function () {
         Route::get('/', [profileController::class, 'show'])->name('profile');
+        Route::prefix('transaction')->group(function(){
+            Route::get('/',[profileController::class,'transactionList'])->name('profile.transaction.history');
+            Route::get('/detail/{id}',[profileController::class,'transactionDetail'])->name('profile.transaction.history.detail');
+        });
+        Route::prefix('subscription')->group(function (){
+            Route::get('/',[profileController::class,'subscriptionList'])->name('profile.subscription.history');;
+            Route::get('/detail/{id}',[profileController::class,'subscriptionDetail'])->name('profile.subscription.history.detail');
+        });
     });
     // Protected routes here
     Route::prefix('course')->group(function () {
-        Route::get('my', [CourseController::class, 'myCourse'])->name('course.my');
+        Route::prefix('my')->group(function(){
+            Route::get('/filter', [CourseController::class, 'myfilterCourse'])->name('course.filter.my');
+            Route::get('/', [CourseController::class, 'myCourse'])->name('course.my');
+
+        });
         Route::get('/', [CourseController::class, 'showCourse'])->name('course.index');
 
         Route::get('{slug}', [CourseController::class, 'show'])->name('course.show');
@@ -142,3 +154,26 @@ Route::get('/', function () {
 Route::get('views/course/view', function () {
     return view('course/view');
 })->name('view');
+
+// Route::get('/error/{error_code}', function($error_code) {
+//     // Daftar error code yang diizinkan beserta pesan kustom
+//     $errors = [
+//         400 => 'Bad Request: Permintaan tidak valid.',
+//         401 => 'Unauthorized: Anda perlu login untuk mengakses halaman ini.',
+//         403 => 'Forbidden: Anda tidak memiliki izin untuk mengakses halaman ini.',
+//         404 => 'Not Found: Halaman tidak ditemukan.',
+//         419 => 'Page Expired: Halaman telah kadaluwarsa.',
+//         429 => 'Too Many Requests: Terlalu banyak permintaan, silakan coba lagi nanti.',
+//         500 => 'Internal Server Error: Terjadi kesalahan di server.',
+//         503 => 'Service Unavailable: Server sedang dalam perawatan atau sibuk.'
+//     ];
+
+//     // Validasi apakah error code diizinkan
+//     if (!array_key_exists($error_code, $errors)) {
+//         abort(404, 'Not Found: Halaman tidak ditemukan.');
+//     }
+
+//     // Abort dengan error code dan pesan kustom
+//     abort($error_code, $errors[$error_code]);
+// });
+

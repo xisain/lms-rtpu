@@ -70,4 +70,5 @@ class course extends Model
     {
         return $this->enrollment()->count();
     }
+    
 }

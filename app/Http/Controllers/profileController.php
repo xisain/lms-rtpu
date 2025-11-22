@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\course;
+use App\Models\CoursePurchase;
 use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\progress;
@@ -39,9 +41,8 @@ class profileController extends Controller
     {
 
         $auth = auth()->user()->id;
-        $user = User::with(['enrollment.course.material.submaterial', 'subscriptions','subscriptions.plan','subscriptions.payment'])
+        $user = User::with(['enrollment.course.material.submaterial', 'subscriptions','subscriptions.plan','subscriptions.payment','coursePurchase'])
             ->find($auth);
-
         // Hitung progress per course
         $courseProgress = [];
         $totalCourses = $user->enrollment->count();
@@ -83,6 +84,19 @@ class profileController extends Controller
         $averageProgress = $totalCourses > 0 ? round($totalPercentage / $totalCourses, 0) : 0;
 
         return view('profile.show', compact('user', 'courseProgress', 'totalCourses', 'completedCourses', 'averageProgress'));
+    }
+
+    public function transactionList(){
+        $transaction = CoursePurchase::where('user_id', auth()->user()->id)->get();
+        return view('profile.transaction.index',['transactions'=> $transaction]);
+    }
+
+    public function transactionDetail($id){
+        $transaction = CoursePurchase::where('user_id', auth()->user()->id)->where('id', $id)->first();
+        return view('profile.transaction.detail',
+        [
+         'transaction'=> $transaction,
+        ]);
     }
 
     /**

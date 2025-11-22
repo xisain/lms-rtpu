@@ -48,9 +48,26 @@ class GenerateCertificateJob implements ShouldQueue
                 'user' => $this->user,
                 'course' => $this->course
             ])->render();
-
+            // shell_exec('whoiam');
             // Generate PDF dengan Browsershot
             Browsershot::html($html)
+                ->setChromePath('/usr/local/bin/chromium-wrapper.sh')
+                ->setNodeBinary('/usr/bin/node')
+                ->setNpmBinary('/usr/bin/npm')
+                ->setOption('args', [
+                    '--no-sandbox',
+                    '--disable-setuid-sandbox',
+                    '--disable-dev-shm-usage',
+                    '--disable-gpu',
+                    '--disable-software-rasterizer',
+                    '--disable-extensions',
+                    '--disable-web-security',
+                    '--disable-features=IsolateOrigins,site-per-process',
+                    '--no-first-run',
+                    '--no-zygote',
+                    '--single-process',
+                    '--disable-crashpad',
+                ])
                 ->margins(0, 0, 0, 0)
                 ->landscape()
                 ->format('A4')

@@ -9,4 +9,6 @@ Route::get('/user', function (Request $request) {
 })->middleware('auth:sanctum');
 
 // Route::apiResource('/course',CoureAPI::class);
+Route::middleware(['throttle:api'])->group(function(){
 Route::get('/course',[CourseAPI::class, 'index']);
+});

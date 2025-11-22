@@ -23,6 +23,7 @@
         "barryvdh/laravel-debugbar": "^3.16",
         "fakerphp/faker": "^1.23",
         "laravel/boost": "^1.3",
+        "laravel/nightwatch": "^1.18",
         "laravel/pail": "^1.2.2",
         "laravel/pint": "^1.24",
         "laravel/sail": "^1.41",
@@ -76,7 +77,21 @@
         ],
         "pre-package-uninstall": [
             "Illuminate\\Foundation\\ComposerScripts::prePackageUninstall"
+        ],
+        "langsung" : [
+            "Composer\\Config::disableProcessTimeout",
+            "npx concurrently -c \"#1500ff,#c4b5fd,#fdba74\" \"php artisan serve --no-reload\" \"php artisan queue:listen --tries=1\" \"php artisan nightwatch:agent\" --names='Server,Queue,Nightwatch'"
+        ],
+        "dev-watch" :[
+        "Composer\\Config::disableProcessTimeout",
+        "npx concurrently -c \"#1500ff,#c4b5fd,#fdba74\" \"php artisan serve --no-reload\" \"php artisan nightwatch:agent\" \"php artisan route:list\" --names='Server,NW,Routes'"
+
+        ],
+        "agent" : [
+            "Composer\\Config::disableProcessTimeout",
+            "npx concurrently -c \"#1500ff,#c4b5fd\" \"php artisan nightwatch:agent\" \"php artisan queue:listen --tries=1\" --names='Nightwatch,Queue'"
         ]
+
     },
     "extra": {
         "laravel": {

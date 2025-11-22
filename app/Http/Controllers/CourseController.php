@@ -197,10 +197,13 @@ class CourseController extends Controller
         // $course = course::find($id);
         $enrollmentUser = enrollment::where('course_id', $course->id)->with('user')->paginate(10);
 
-        return view('admin.course.manageCourse',
+        return view(
+            'admin.course.manageCourse',
             [
                 'course' => $course,
-                'enrolluser' => $enrollmentUser]);
+                'enrolluser' => $enrollmentUser
+            ]
+        );
     }
 
     /**
@@ -363,7 +366,7 @@ class CourseController extends Controller
         if (auth()->user()->role->id == 1) {
             // Admin view
             $category = category::all();
-            $teachers = User::whereHas('role', fn ($q) => $q->where('name', 'dosen'))->get();
+            $teachers = User::whereHas('role', fn($q) => $q->where('name', 'dosen'))->get();
 
             return view('admin.course.edit', [
                 'course' => $course,
@@ -647,12 +650,12 @@ class CourseController extends Controller
                 ->with('success', 'Course berhasil diupdate!');
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::error('Course Update Error: '.$e->getMessage());
-            Log::error('Stack trace: '.$e->getTraceAsString());
+            Log::error('Course Update Error: ' . $e->getMessage());
+            Log::error('Stack trace: ' . $e->getTraceAsString());
 
             return redirect()->back()
                 ->withInput()
-                ->withErrors(['error' => 'Gagal mengupdate course: '.$e->getMessage()]);
+                ->withErrors(['error' => 'Gagal mengupdate course: ' . $e->getMessage()]);
         }
     }
 
@@ -673,8 +676,8 @@ class CourseController extends Controller
         // Apply filters if present
         if ($request->filled('search')) {
             $query->where(function ($q) use ($request) {
-                $q->where('nama_course', 'like', '%'.$request->search.'%')
-                    ->orWhere('description', 'like', '%'.$request->search.'%');
+                $q->where('nama_course', 'like', '%' . $request->search . '%')
+                    ->orWhere('description', 'like', '%' . $request->search . '%');
             });
         }
 
@@ -706,8 +709,45 @@ class CourseController extends Controller
         // Search filter
         if ($request->filled('search')) {
             $query->where(function ($q) use ($request) {
-                $q->where('nama_course', 'like', '%'.$request->search.'%')
-                    ->orWhere('description', 'like', '%'.$request->search.'%');
+                $q->where('nama_course', 'like', '%' . $request->search . '%')
+                    ->orWhere('description', 'like', '%' . $request->search . '%');
+            });
+        }
+
+        // Category filter
+        if ($request->filled('category')) {
+            $query->where('category_id', $request->category);
+        }
+
+        // Date range filter
+        if ($request->filled('start_date')) {
+            $query->whereDate('start_date', '>=', $request->start_date);
+        }
+
+        if ($request->filled('end_date')) {
+            $query->whereDate('end_date', '<=', $request->end_date);
+        }
+
+        $course = $query->get();
+
+        // Return partial view for AJAX request
+        return view('course.partials.course-cards', compact('course'));
+    }
+    public function myfilterCourse(Request $request)
+    {
+        $userId = auth()->id();
+        // dd($userId);
+        // Build the query with filters
+        $query = Course::where('public', true)
+            ->whereHas('enrollment', function ($q) use ($userId) {
+                $q->where('user_id', $userId);
+            });
+
+        // Search filter
+        if ($request->filled('search')) {
+            $query->where(function ($q) use ($request) {
+                $q->where('nama_course', 'like', '%' . $request->search . '%')
+                    ->orWhere('description', 'like', '%' . $request->search . '%');
             });
         }
 
@@ -733,15 +773,19 @@ class CourseController extends Controller
 
     public function myCourse(Request $request)
     {
-        $userId = auth()->user()->id;
-
-        $query = course::where('public', true);
+        $userId = auth()->id();
+        // dd($userId);
+        // Build the query with filters
+        $query = Course::where('public', true)
+            ->whereHas('enrollment', function ($q) use ($userId) {
+                $q->where('user_id', $userId);
+            });
 
         // Apply filters if present
         if ($request->filled('search')) {
             $query->where(function ($q) use ($request) {
-                $q->where('nama_course', 'like', '%'.$request->search.'%')
-                    ->orWhere('description', 'like', '%'.$request->search.'%');
+                $q->where('nama_course', 'like', '%' . $request->search . '%')
+                    ->orWhere('description', 'like', '%' . $request->search . '%');
             });
         }
 
@@ -757,9 +801,8 @@ class CourseController extends Controller
             $query->whereDate('end_date', '<=', $request->end_date);
         }
 
-        $course = course::whereHas('enrollment', function ($q) use ($userId) {
-            $q->where('user_id', $userId);
-        })
+        // Execute the query with relationships and calculate progress
+        $course = $query
             ->with(['enrollment', 'material.submaterial'])
             ->get()
             ->map(function ($item) use ($userId) {
@@ -771,7 +814,7 @@ class CourseController extends Controller
                 // Hitung submaterial yang sudah completed
                 $completedSubmaterials = 0;
                 foreach ($item->material as $material) {
-                    $completedSubmaterials += progress::where('user_id', $userId)
+                    $completedSubmaterials += Progress::where('user_id', $userId)
                         ->whereIn('submaterial_id', $material->submaterial->pluck('id'))
                         ->where('status', 'completed')
                         ->count();
@@ -785,7 +828,7 @@ class CourseController extends Controller
                 return $item;
             });
 
-        $categories = category::all();
+        $categories = Category::all();
 
         return view('course.index', [
             'course' => $course,
@@ -821,8 +864,8 @@ class CourseController extends Controller
         // Ambil materi
         $materi = $material
             ? material::where('id', $material)
-                ->where('course_id', $course->id)
-                ->firstOrFail()
+            ->where('course_id', $course->id)
+            ->firstOrFail()
             : $course->material->first();
         $isQuiz = $submaterial === 'quiz';
 
@@ -848,8 +891,8 @@ class CourseController extends Controller
         // Ambil submateri
         $submateri = $submaterial
             ? submaterial::where('id', $submaterial)
-                ->where('material_id', $materi->id)
-                ->firstOrFail()
+            ->where('material_id', $materi->id)
+            ->firstOrFail()
             : ($materi ? $materi->submaterial->first() : null);
 
         if (! $materi || ! $submateri) {
@@ -892,8 +935,7 @@ class CourseController extends Controller
             if ($m->quiz) {
                 $quizAttempt = quiz_attempt::where('user_id', Auth::id())
                     ->where('quiz_id', $m->quiz->id)
-                    ->where('status', 'completed')
-                    ->where('score', '>=', 70) // Nilai minimum untuk lulus
+                    ->where('status', 'completed') // Nilai minimum untuk lulus
                     ->exists();
 
                 if (! $quizAttempt) {
@@ -911,7 +953,7 @@ class CourseController extends Controller
 
             if (! $existingCertificate) {
                 // Generate sertifikat
-                $certificateNumber = 'CERT-'.Str::upper(Str::random(8));
+                $certificateNumber = 'CERT-' . Str::upper(Str::random(8));
                 $certificate = certificate::create([
                     'user_id' => Auth::id(),
                     'course_id' => $course->id,
@@ -920,7 +962,15 @@ class CourseController extends Controller
                 ]);
 
                 // Generate PDF di background
-                GenerateCertificateJob::dispatch(Auth::user(), $course, $certificate);
+                try {
+                    // Coba dispatch ke queue
+                    GenerateCertificateJob::dispatchSync(Auth::user(), $course, $certificate);
+                    \Log::warning('Queue Success, generating certificate synchronously');
+                } catch (\Exception $e) {
+                    // Fallback: generate langsung jika queue gagal
+                    \Log::warning('Queue failed, generating certificate synchronously');
+                    (new GenerateCertificateJob(Auth::user(), $course, $certificate))->handle();
+                }
             }
         }
 

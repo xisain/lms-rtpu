@@ -65,8 +65,49 @@ class User extends Authenticatable
     {
         return $this->hasMany(subscription::class);
     }
-    public function hasSubscription(){
-        return $this->subscriptions()->latest();
+    public function hasPendingSubscription(?int $planId = null): bool
+    {
+        $query = $this->subscriptions()->where('status', 'waiting_approval');
+
+        if ($planId) {
+            $query->where('plan_id', $planId);
+        }
+
+        return $query->exists();
     }
 
+
+    public function hasActiveSubscription(?int $planId = null): bool
+    {
+        $query = $this->subscriptions()
+            ->where('status', 'approved')
+            ->where('ends_at', '>', now());
+
+        if ($planId) {
+            $query->where('plan_id', $planId);
+        }
+
+        return $query->exists();
+    }
+
+
+    public function getPendingSubscriptions()
+    {
+        return $this->subscriptions()
+            ->where('status', 'waiting_approval')
+            ->with(['plan', 'paymentMethod'])
+            ->get();
+    }
+
+
+    public function getActiveSubscription()
+    {
+        return $this->subscriptions()
+            ->where('status', 'approved')
+            ->where('ends_at', '>', now())
+            ->first();
+    }
+    public function coursePurchase(){
+        return $this->hasMany(CoursePurchase::class);
+    }
 }

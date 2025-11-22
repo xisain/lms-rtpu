@@ -19,7 +19,7 @@ class adminMiddleware
         if($request->user()->role->name == "admin") {
             return $next($request);
         } else {
-            abort(403, 'Unauthorized action.');
+            abort(403, 'Tidak Memiliki Akses');
         }
     }
 }

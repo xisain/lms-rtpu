@@ -7,6 +7,7 @@ use App\Models\CoursePurchase;
 use App\Models\payment;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use SweetAlert2\Laravel\Swal;
 
 class CoursePurchaseController extends Controller
 {
@@ -17,7 +18,7 @@ class CoursePurchaseController extends Controller
     {
         $course = course::where('slugs', $slug)->firstOrFail();
 
-        // Only show if course is paid and active
+
         if (! $course->is_paid || ! $course->public) {
             return back()->with('error', 'Course tidak tersedia untuk dibeli.');
         }
@@ -53,7 +54,7 @@ class CoursePurchaseController extends Controller
         $validated['price_paid'] = $course->price;
         $validated['status'] = 'waiting_approval';
 
-        // Check if user already has pending or approved purchase
+
         $existingPurchase = CoursePurchase::where('user_id', $validated['user_id'])
             ->where('course_id', $validated['course_id'])
             ->whereIn('status', ['waiting_approval', 'approved'])
@@ -77,7 +78,6 @@ class CoursePurchaseController extends Controller
             'payment_proof_link' => $image_path,
             'notes' => $validated['notes'] ?? null,
         ]);
-
         return redirect()->route('home')->with('success', 'Pembelian course berhasil. Sedang menunggu approval dari admin.');
     }
 }

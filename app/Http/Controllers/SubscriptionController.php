@@ -56,7 +56,6 @@ class SubscriptionController extends Controller
             ? array_map('trim', explode(',', $validated['features']))
             : [];
 
-
         $courseIds = array_map('intval', $validated['course']);
 
         Plan::create([
@@ -107,7 +106,6 @@ class SubscriptionController extends Controller
         ]);
 
         $features = array_map('trim', explode(',', $validated['features']));
-
 
         $courseIds = array_map('intval', $validated['course']);
 
@@ -199,7 +197,6 @@ class SubscriptionController extends Controller
             $query->where('status', $request->status);
         }
 
-
         $subscriptions = $query->with(['payment', 'user', 'plan'])->latest()->paginate(15);
 
         $purchasesQuery = CoursePurchase::query();
@@ -207,6 +204,7 @@ class SubscriptionController extends Controller
             $purchasesQuery->where('status', $request->status);
         }
         $coursePurchases = $purchasesQuery->with(['payment', 'user', 'course'])->latest()->paginate(15, ['*'], 'purchases_page');
+
         return view('admin.transaction.index', compact('subscriptions', 'coursePurchases'));
     }
 

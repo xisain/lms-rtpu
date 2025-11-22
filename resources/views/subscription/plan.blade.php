@@ -13,17 +13,17 @@
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-7xl mx-auto">
         @forelse($plans as $plan)
         <div class="bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-shadow duration-300 overflow-hidden border border-gray-200 flex flex-col
-            {{ $plan->name === 'Premium' ? 'ring-2 ring-blue-500 transform scale-105' : '' }}">
+            {{ str_contains($plan->name, 'Premium') ? 'ring-2 ring-blue-500 transform scale-105' : '' }}">
 
             <!-- Popular Badge (untuk plan tertentu) -->
-            @if($plan->name === 'Premium')
+            @if(str_contains($plan->name, 'Premium'))
             <div class="bg-blue-500 text-white text-center py-2 px-4 font-semibold text-sm">
                 ⭐ PALING POPULER
             </div>
             @endif
 
             <!-- Plan Header -->
-            <div class="p-8 text-center {{ $plan->name === 'Premium' ? 'bg-gradient-to-br from-blue-50 to-indigo-50' : 'bg-gray-50' }}">
+            <div class="p-8 text-center {{ str_contains($plan->name, 'Premium') ? 'bg-gradient-to-br from-blue-50 to-indigo-50' : 'bg-gray-50' }}">
                 <h2 class="text-2xl font-bold text-gray-900 mb-2">{{ $plan->name }}</h2>
                 <p class="text-gray-600 text-sm mb-4">{{ $plan->description }}</p>
 
@@ -34,7 +34,7 @@
 
                 <!-- Duration Badge -->
                 <div class="inline-block px-4 py-2 rounded-full text-sm font-medium shadow-sm
-                    {{ $plan->name ===  'Premium'
+                    {{ str_contains($plan->name, 'Premium')
                         ? 'bg-gradient-to-r from-yellow-400 via-orange-400 to-red-400 text-white animate-fire'
                         : 'bg-white text-gray-700' }}">
                     🔥 Akses {{ $plan->duration_in_days }} hari

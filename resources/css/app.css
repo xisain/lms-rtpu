@@ -1,6 +1,7 @@
 @import 'tailwindcss';
 @import "trix/dist/trix.css";
 @import "choices.js/public/assets/styles/choices.css";
+@import "./dataTables.tailwindcss.css";
 
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
 @source '../../storage/framework/views/*.php';
