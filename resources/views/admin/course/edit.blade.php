@@ -84,6 +84,24 @@
                             class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
                     </div>
 
+                     <div class="col-span-2">
+                        <label class="flex items-center cursor-pointer">
+                            <input type="checkbox" name="is_paid" id="is_paid" value="1" {{ $course->is_paid? 'checked' : '' }}
+                                class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
+                            <span class="ml-2 text-sm font-medium text-gray-700">Course Berbayar</span>
+                        </label>
+                    </div>
+
+                    <!-- Price Field -->
+                    <div id="priceField" class="col-span-2 {{ $course->is_paid ? '' : 'hidden' }}">
+                        <label for="price" class="block text-sm font-medium text-gray-700 mb-2">Harga (Rp) *</label>
+                        <input type="number" name="price" id="price" min="0" step="1000"
+                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                            placeholder="Contoh: 150000" value="{{ $course->price }}">
+                        @error('price')
+                        <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                        @enderror
+                    </div>
                     <!-- Limited Course -->
                     <div class="col-span-2">
                         <label class="flex items-center cursor-pointer">
@@ -343,7 +361,19 @@ let questionCounters = {};
     submaterialCounters[{{ $mIndex }}] = {{ count($material->submaterial) }};
     questionCounters[{{ $mIndex }}] = {{ $material->quiz ? count($material->quiz->questions) : 0 }};
 @endforeach
+document.getElementById('is_paid').addEventListener('change', function() {
+    const priceField = document.getElementById('priceField');
+    const priceInput = document.getElementById('price');
 
+    if (this.checked) {
+        priceField.classList.remove('hidden');
+        priceInput.required = true;
+    } else {
+        priceField.classList.add('hidden');
+        priceInput.required = false;
+        priceInput.value = '';
+    }
+});
 // Toggle limited course fields
 document.getElementById('isLimitedCourse').addEventListener('change', function() {
     const limitedFields = document.getElementById('limitedFields');

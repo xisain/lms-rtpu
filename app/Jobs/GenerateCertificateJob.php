@@ -50,7 +50,7 @@ class GenerateCertificateJob implements ShouldQueue
             ])->render();
             // shell_exec('whoiam');
             // Generate PDF dengan Browsershot
-            Browsershot::html($html)
+            Browsershot::html($html) // Matiin  setChromePath, setNodeBinary, setNPMBinary yg dibawah kalo mau pake dev local
                 ->setChromePath('/usr/local/bin/chromium-wrapper.sh')
                 ->setNodeBinary('/usr/bin/node')
                 ->setNpmBinary('/usr/bin/npm')

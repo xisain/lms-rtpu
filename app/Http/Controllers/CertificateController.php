@@ -87,7 +87,7 @@ class CertificateController extends Controller
         ]);
 
         // Dispatch job to generate PDF
-        GenerateCertificateJob::dispatch($user, $course, $certificate);
+        GenerateCertificateJob::dispatchSync($user, $course, $certificate);
 
         return response()->json([
             'message' => 'Certificate generation has been queued',

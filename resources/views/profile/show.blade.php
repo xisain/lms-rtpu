@@ -113,6 +113,7 @@
                                     </div>
                                 </div>
 
+                                @endforeach
                                 <div class="mt-6 flex space-x-4">
                                     <button class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
                                         Manage Subscription
@@ -121,7 +122,6 @@
                                         View Invoices
                                     </button>
                                 </div>
-                            @endforeach
                         </div>
                     </div>
                 </div>
@@ -186,12 +186,9 @@
 
                                         @if($progress['percentage'] == 100)
                                             <div class="flex space-x-2">
-                                                <a href="{{ route('course.show', $course->id) }}" class="flex-1 px-4 py-2 bg-{{ $color['text'] }} text-white rounded-lg hover:bg-{{ $color['hover'] }} transition-colors text-sm text-center">
+                                                <a href="{{ route('course.show', $course->slugs) }}" class="flex-1 px-4 py-2 bg-{{ $color['text'] }} text-white rounded-lg hover:bg-{{ $color['hover'] }} transition-colors text-sm text-center">
                                                     Review
                                                 </a>
-                                                <button class="px-4 py-2 border border-{{ $color['text'] }} text-{{ $color['text'] }} rounded-lg hover:bg-green-50 transition-colors text-sm">
-                                                    Certificate
-                                                </button>
                                             </div>
                                         @else
                                             <a href="{{ route('course.show', $course->slugs) }}" class="block w-full px-4 py-2 bg-{{ $color['text'] }} text-white rounded-lg hover:bg-{{ $color['hover'] }} transition-colors text-sm text-center">

@@ -62,6 +62,7 @@ class CourseController extends Controller
      */
     public function store(Request $request)
     {
+        // dd(request()->all());
         $validated = $request->validate([
             'category_id' => 'required|exists:categories,id',
             'nama_course' => 'required|string|max:255',
@@ -69,7 +70,7 @@ class CourseController extends Controller
             'image_link' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
             'isLimitedCourse' => 'boolean',
             'is_paid' => 'boolean',
-            'price' => 'required_if:is_paid,1|integer|min:5000',
+            'price' => 'nullable|required_if:is_paid,1|integer|min:5000',
             'start_date' => 'nullable|required_if:isLimitedCourse,1|date',
             'end_date' => 'nullable|required_if:isLimitedCourse,1|date|after:start_date',
             'maxEnrollment' => 'nullable|required_if:isLimitedCourse,1|integer|min:1',
@@ -99,9 +100,11 @@ class CourseController extends Controller
         if ($request->has('is_paid')) {
             $validated['is_paid'] = true;
             $validated['price'] = $request->price;
+        } else {
+
+
         }
 
-        $price = (! empty($validated['is_paid']) && $validated['is_paid']) ? $validated['price'] : null;
 
         // Buat course
         $course = course::create([
@@ -117,7 +120,7 @@ class CourseController extends Controller
             'image_link' => $imagePath,
             'teacher_id' => $validated['teacher_id'],
             'is_paid' => $validated['is_paid'] ?? false,
-            'price' => $price,
+            'price' => $validated['price'] ?? null,
         ]);
 
         foreach ($validated['materials'] as $materialIndex => $mat) {
@@ -395,12 +398,15 @@ class CourseController extends Controller
             return back()->with('error', 'Anda tidak memiliki akses untuk mengedit course ini.');
         }
 
+
         // Base validation rules
         $rules = [
             'category_id' => 'required|exists:categories,id',
             'nama_course' => 'required|string|max:255',
             'description' => 'required|string',
             'image_link' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+            'is_paid'=> 'boolean',
+            'price'=> 'nullable|required_if:is_paid,1|integer|min:5000',
             'isLimitedCourse' => 'boolean',
             'start_date' => 'nullable|required_if:isLimitedCourse,1|date',
             'end_date' => 'nullable|required_if:isLimitedCourse,1|date|after:start_date',
@@ -438,6 +444,8 @@ class CourseController extends Controller
                 'nama_course' => $validated['nama_course'],
                 'slugs' => Str::slug($validated['nama_course']),
                 'description' => $validated['description'],
+                'is_paid'=> $validated['is_paid'] ?? null,
+                'price'=> $validated['price'],
                 'isLimitedCourse' => $validated['isLimitedCourse'] ?? false,
                 'start_date' => $validated['start_date'] ?? null,
                 'end_date' => $validated['end_date'] ?? null,

@@ -199,33 +199,53 @@
         </div>
 
         <!-- Menu Mobile (Dropdown) -->
-        <div x-show="open" x-transition:enter="transition ease-out duration-300 transform"
-            x-transition:enter-start="opacity-0 -translate-y-3" x-transition:enter-end="opacity-100 translate-y-0"
-            x-transition:leave="transition ease-in duration-200 transform"
-            x-transition:leave-start="opacity-100 translate-y-0" x-transition:leave-end="opacity-0 -translate-y-3"
-            class="lg:hidden px-4 pb-4 space-y-2 bg-white border-t border-gray-200">
-            <a href="{{ route('home') }}" class="block text-gray-700 hover:text-[#0f5757]">Home</a>
-            <a href="{{ route('course.index') }}" class="block text-gray-700 hover:text-[#0f5757]">Dashboard</a>
+     <div x-show="open"
+     x-transition:enter="transition ease-out duration-300 transform"
+     x-transition:enter-start="opacity-0 -translate-y-3"
+     x-transition:enter-end="opacity-100 translate-y-0"
+     x-transition:leave="transition ease-in duration-200 transform"
+     x-transition:leave-start="opacity-100 translate-y-0"
+     x-transition:leave-end="opacity-0 -translate-y-3"
+     @click.away="open = false"
+     class="lg:hidden bg-white border-t border-gray-200 shadow-lg">
 
-            <div class="border-t border-gray-100 pt-2">
-                <p class="text-sm font-semibold text-gray-500 mb-1">Kelas Ku</p>
-                <a href="{{ route('course.index') }}" class="block text-gray-700 hover:text-[#0f5757]">Kelas Pemula</a>
-                <a href="{{ route('course.index') }}" class="block text-gray-700 hover:text-[#0f5757]">Kelas
-                    Menengah</a>
-                <a href="{{ route('course.index') }}" class="block text-gray-700 hover:text-[#0f5757]">Kelas
-                    Lanjutan</a>
-            </div>
+    <div class="px-4 py-3 space-y-1">
+        <!-- Home Link -->
+        <a href="{{ route('home') }}"
+           class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-[#0f5757] hover:bg-gray-50 transition-colors duration-150">
+            Home
+        </a>
 
-            <a href="{{ route('course.index') }}" class="block text-gray-700 hover:text-[#0f5757]">Event</a>
+        <!-- Dashboard Link -->
+        <a href="{{ route('course.index') }}"
+           class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-[#0f5757] hover:bg-gray-50 transition-colors duration-150">
+            Dashboard
+        </a>
+
+        <!-- Kelas Ku Dropdown Section -->
+       
+        <!-- Auth Section -->
+        <div class="border-t border-gray-200 pt-3 mt-3">
             @auth
-            <form method="POST" action="{{ route('logout') }}">
-                @csrf
-                <button type="submit" class="block w-full text-left text-gray-700 hover:text-[#0f5757]">Logout</button>
-            </form>
+                <a href="{{ route('course.index') }}"
+                   class="flex items-center px-3 py-2 rounded-md text-base font-medium text-white bg-[#0f5757] hover:bg-[#0d4848] transition-colors duration-150">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+                    </svg>
+                    Dashboard
+                </a>
             @else
-            <a href="{{ route('login') }}" class="block text-gray-700 hover:text-[#0f5757]">Login</a>
+                <a href="{{ route('login') }}"
+                   class="flex items-center px-3 py-2 rounded-md text-base font-medium text-white bg-[#0f5757] hover:bg-[#0d4848] transition-colors duration-150">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"/>
+                    </svg>
+                    Login
+                </a>
             @endauth
         </div>
+    </div>
+</div>
     </nav>
 
     <div class="min-h-screen">

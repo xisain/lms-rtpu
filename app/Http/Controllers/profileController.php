@@ -7,6 +7,7 @@ use App\Models\CoursePurchase;
 use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\progress;
+use App\Models\subscription;
 
 class profileController extends Controller
 {
@@ -41,8 +42,10 @@ class profileController extends Controller
     {
 
         $auth = auth()->user()->id;
-        $user = User::with(['enrollment.course.material.submaterial', 'subscriptions','subscriptions.plan','subscriptions.payment','coursePurchase'])
+        $user = User::with(['enrollment.course.material.submaterial', 'subscriptions','subscriptions.plan','subscriptions.payment'])
             ->find($auth);
+        // $subscription = subscription::where('user_id', $user->id)->with(['plan','payment'])->first();
+        // dd($subscription->plan->nama);
         // Hitung progress per course
         $courseProgress = [];
         $totalCourses = $user->enrollment->count();
