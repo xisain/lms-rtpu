@@ -91,6 +91,7 @@ class CourseController extends Controller
             'materials.*.submaterials.*.nama_submateri' => 'required|string|max:255',
             'materials.*.submaterials.*.type' => 'required|in:text,video,pdf',
             'materials.*.submaterials.*.isi_materi' => 'required_if:materials.*.submaterials.*.type,text,video|nullable',
+            'materials.*.submaterials.*.hidden' => 'nullable',
         ]);
 
         $imagePath = null;
@@ -102,9 +103,7 @@ class CourseController extends Controller
             $validated['price'] = $request->price;
         } else {
 
-
         }
-
 
         // Buat course
         $course = course::create([
@@ -151,6 +150,7 @@ class CourseController extends Controller
                         'nama_submateri' => $sub['nama_submateri'],
                         'type' => $sub['type'],
                         'isi_materi' => $content,
+                        'hidden' => $sub['hidden'] ?? false,
                     ]);
                 }
             }
@@ -204,7 +204,7 @@ class CourseController extends Controller
             'admin.course.manageCourse',
             [
                 'course' => $course,
-                'enrolluser' => $enrollmentUser
+                'enrolluser' => $enrollmentUser,
             ]
         );
     }
@@ -251,7 +251,7 @@ class CourseController extends Controller
         Log::info('Status enrollment:', ['isEnrolled' => $isEnrolled]);
 
         $firstMaterial = $course->material->first();
-        $firstSubmaterial = $firstMaterial?->submaterial->first();
+        $firstSubmaterial = $firstMaterial?->submaterial->where('hidden', false)->first();
 
         Log::info('First material:', [
             'id' => $firstMaterial?->id,
@@ -264,9 +264,9 @@ class CourseController extends Controller
         if (! $isEnrolled) {
             Log::info('User belum enroll, mencari preview submaterial...');
 
-            // Cari previewSubmaterial tanpa peduli enroll
+            // Cari previewSubmaterial tanpa peduli enroll (hanya yang tidak hidden)
             foreach ($course->material as $material) {
-                $textSubmaterial = $material->submaterial->where('type', 'text')->first();
+                $textSubmaterial = $material->submaterial->where('type', 'text')->where('hidden', false)->first();
                 if ($textSubmaterial) {
                     $previewSubmaterial = $textSubmaterial;
                     break;
@@ -275,7 +275,7 @@ class CourseController extends Controller
 
             if (! $previewSubmaterial) {
                 foreach ($course->material as $material) {
-                    $firstSub = $material->submaterial->first();
+                    $firstSub = $material->submaterial->where('hidden', false)->first();
                     if ($firstSub) {
                         $previewSubmaterial = $firstSub;
                         break;
@@ -295,8 +295,8 @@ class CourseController extends Controller
             // Cek apakah semua materi sudah selesai
             $allCompleted = true;
             foreach ($course->material as $m) {
-                // Cek submaterial completion
-                foreach ($m->submaterial as $sub) {
+                // Cek submaterial completion (hanya yang tidak hidden)
+                foreach ($m->submaterial->where('hidden', false) as $sub) {
                     $progress = progress::where('user_id', Auth::id())
                         ->where('submaterial_id', $sub->id)
                         ->where('status', 'completed')
@@ -369,7 +369,7 @@ class CourseController extends Controller
         if (auth()->user()->role->id == 1) {
             // Admin view
             $category = category::all();
-            $teachers = User::whereHas('role', fn($q) => $q->where('name', 'dosen'))->get();
+            $teachers = User::whereHas('role', fn ($q) => $q->where('name', 'dosen'))->get();
 
             return view('admin.course.edit', [
                 'course' => $course,
@@ -397,16 +397,15 @@ class CourseController extends Controller
         if (Auth::user()->role->id == 2 && $course->teacher_id != Auth::id()) {
             return back()->with('error', 'Anda tidak memiliki akses untuk mengedit course ini.');
         }
-
-
+        // dd($request->all());
         // Base validation rules
         $rules = [
             'category_id' => 'required|exists:categories,id',
             'nama_course' => 'required|string|max:255',
             'description' => 'required|string',
             'image_link' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
-            'is_paid'=> 'boolean',
-            'price'=> 'nullable|required_if:is_paid,1|integer|min:5000',
+            'is_paid' => 'boolean',
+            'price' => 'nullable|required_if:is_paid,1|integer|min:5000',
             'isLimitedCourse' => 'boolean',
             'start_date' => 'nullable|required_if:isLimitedCourse,1|date',
             'end_date' => 'nullable|required_if:isLimitedCourse,1|date|after:start_date',
@@ -428,10 +427,16 @@ class CourseController extends Controller
             'materials.*.submaterials.*.nama_submateri' => 'required|string|max:255',
             'materials.*.submaterials.*.type' => 'required|in:text,video,pdf',
             'materials.*.submaterials.*.isi_materi' => 'nullable',
+            'materials.*.submaterials.*.hidden' => 'nullable|boolean',
         ];
 
         if (auth()->user()->role->id == 1) {
             $rules['teacher_id'] = 'required|exists:users,id';
+        }
+
+        if ($request->has('is_paid')) {
+            $validated['is_paid'] = true;
+            $validated['price'] = $request->price;
         }
 
         $validated = $request->validate($rules);
@@ -444,8 +449,8 @@ class CourseController extends Controller
                 'nama_course' => $validated['nama_course'],
                 'slugs' => Str::slug($validated['nama_course']),
                 'description' => $validated['description'],
-                'is_paid'=> $validated['is_paid'] ?? null,
-                'price'=> $validated['price'],
+                'is_paid' => $validated['is_paid'] ?? false,
+                'price' => $validated['price'],
                 'isLimitedCourse' => $validated['isLimitedCourse'] ?? false,
                 'start_date' => $validated['start_date'] ?? null,
                 'end_date' => $validated['end_date'] ?? null,
@@ -549,6 +554,7 @@ class CourseController extends Controller
                                 'nama_submateri' => $sub['nama_submateri'],
                                 'type' => $sub['type'],
                                 'isi_materi' => $content,
+                                'hidden' => $sub['hidden'] ?? false,
                             ]);
                         } else {
                             // CREATE new submaterial
@@ -556,6 +562,7 @@ class CourseController extends Controller
                                 'nama_submateri' => $sub['nama_submateri'],
                                 'type' => $sub['type'],
                                 'isi_materi' => $content,
+                                'hidden' => $sub['hidden'] ?? false,
                             ]);
                         }
 
@@ -658,12 +665,12 @@ class CourseController extends Controller
                 ->with('success', 'Course berhasil diupdate!');
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::error('Course Update Error: ' . $e->getMessage());
-            Log::error('Stack trace: ' . $e->getTraceAsString());
+            Log::error('Course Update Error: '.$e->getMessage());
+            Log::error('Stack trace: '.$e->getTraceAsString());
 
             return redirect()->back()
                 ->withInput()
-                ->withErrors(['error' => 'Gagal mengupdate course: ' . $e->getMessage()]);
+                ->withErrors(['error' => 'Gagal mengupdate course: '.$e->getMessage()]);
         }
     }
 
@@ -684,8 +691,8 @@ class CourseController extends Controller
         // Apply filters if present
         if ($request->filled('search')) {
             $query->where(function ($q) use ($request) {
-                $q->where('nama_course', 'like', '%' . $request->search . '%')
-                    ->orWhere('description', 'like', '%' . $request->search . '%');
+                $q->where('nama_course', 'like', '%'.$request->search.'%')
+                    ->orWhere('description', 'like', '%'.$request->search.'%');
             });
         }
 
@@ -717,8 +724,8 @@ class CourseController extends Controller
         // Search filter
         if ($request->filled('search')) {
             $query->where(function ($q) use ($request) {
-                $q->where('nama_course', 'like', '%' . $request->search . '%')
-                    ->orWhere('description', 'like', '%' . $request->search . '%');
+                $q->where('nama_course', 'like', '%'.$request->search.'%')
+                    ->orWhere('description', 'like', '%'.$request->search.'%');
             });
         }
 
@@ -741,6 +748,7 @@ class CourseController extends Controller
         // Return partial view for AJAX request
         return view('course.partials.course-cards', compact('course'));
     }
+
     public function myfilterCourse(Request $request)
     {
         $userId = auth()->id();
@@ -754,8 +762,8 @@ class CourseController extends Controller
         // Search filter
         if ($request->filled('search')) {
             $query->where(function ($q) use ($request) {
-                $q->where('nama_course', 'like', '%' . $request->search . '%')
-                    ->orWhere('description', 'like', '%' . $request->search . '%');
+                $q->where('nama_course', 'like', '%'.$request->search.'%')
+                    ->orWhere('description', 'like', '%'.$request->search.'%');
             });
         }
 
@@ -792,8 +800,8 @@ class CourseController extends Controller
         // Apply filters if present
         if ($request->filled('search')) {
             $query->where(function ($q) use ($request) {
-                $q->where('nama_course', 'like', '%' . $request->search . '%')
-                    ->orWhere('description', 'like', '%' . $request->search . '%');
+                $q->where('nama_course', 'like', '%'.$request->search.'%')
+                    ->orWhere('description', 'like', '%'.$request->search.'%');
             });
         }
 
@@ -872,8 +880,8 @@ class CourseController extends Controller
         // Ambil materi
         $materi = $material
             ? material::where('id', $material)
-            ->where('course_id', $course->id)
-            ->firstOrFail()
+                ->where('course_id', $course->id)
+                ->firstOrFail()
             : $course->material->first();
         $isQuiz = $submaterial === 'quiz';
 
@@ -896,12 +904,13 @@ class CourseController extends Controller
             return view('course.quiz', compact('course', 'materi', 'quiz', 'lastAttempt'));
         }
 
-        // Ambil submateri
+        // Ambil submateri (filter hidden=false)
         $submateri = $submaterial
             ? submaterial::where('id', $submaterial)
-            ->where('material_id', $materi->id)
-            ->firstOrFail()
-            : ($materi ? $materi->submaterial->first() : null);
+                ->where('material_id', $materi->id)
+                ->where('hidden', false)
+                ->firstOrFail()
+            : ($materi ? $materi->submaterial->where('hidden', false)->first() : null);
 
         if (! $materi || ! $submateri) {
             return redirect()->route('course.show', $slug)
@@ -926,8 +935,8 @@ class CourseController extends Controller
         // Cek apakah semua materi dan quiz sudah selesai
         $allCompleted = true;
         foreach ($course->material as $m) {
-            // Cek submaterial completion
-            foreach ($m->submaterial as $sub) {
+            // Cek submaterial completion (hanya yang tidak hidden)
+            foreach ($m->submaterial->where('hidden', false) as $sub) {
                 $progress = progress::where('user_id', Auth::id())
                     ->where('submaterial_id', $sub->id)
                     ->where('status', 'completed')
@@ -943,7 +952,7 @@ class CourseController extends Controller
             if ($m->quiz) {
                 $quizAttempt = quiz_attempt::where('user_id', Auth::id())
                     ->where('quiz_id', $m->quiz->id)
-                    ->where('status', 'completed') // Nilai minimum untuk lulus
+                    ->where('status', 'completed')
                     ->exists();
 
                 if (! $quizAttempt) {
@@ -961,7 +970,7 @@ class CourseController extends Controller
 
             if (! $existingCertificate) {
                 // Generate sertifikat
-                $certificateNumber = 'CERT-' . Str::upper(Str::random(8));
+                $certificateNumber = 'CERT-'.Str::upper(Str::random(8));
                 $certificate = certificate::create([
                     'user_id' => Auth::id(),
                     'course_id' => $course->id,

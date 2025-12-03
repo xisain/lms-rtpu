@@ -64,40 +64,59 @@
                                 $isActive = isset($submateri) && $submateri->id === $sub->id;
                                 $isCompleted = App\Models\progress::isCompleted(auth()->id(), $sub->id);
                                 $canAccess = App\Models\progress::canAccess(auth()->id(), $sub->id);
+                                $isHidden = $sub->hidden;
                                 @endphp
-                                <div class="{{ !$canAccess ? 'opacity-60' : '' }}">
-                                    <a href="{{ $canAccess ? route('course.mulai', ['slug' => $course->slugs, 'material' => $module->id, 'submaterial' => $sub->id]) : '#' }}"
-                                        class="submodule-item flex items-center gap-3 px-4 py-3 bg-white rounded-lg transition-all border-l-4
-                                                {{ $isActive ? 'border-teal-600' : ($isCompleted ? 'border-green-500' : 'border-transparent') }}
-                                                {{ $canAccess ? 'cursor-pointer hover:shadow-md' : 'cursor-not-allowed' }}"
-                                        @if(!$canAccess) title="Selesaikan materi sebelumnya terlebih dahulu" @endif>
-                                        <div class="checkbox w-5 h-5 rounded-full border-2
-                                                    {{ $isCompleted ? 'border-green-500 bg-green-500' : ($isActive ? 'border-teal-600 bg-teal-600' : 'border-gray-300') }}
-                                                    flex items-center justify-center transition-all">
-                                            @if($isCompleted || $isActive)
-                                            <svg class="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
-                                                <path fill-rule="evenodd"
-                                                    d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                                                    clip-rule="evenodd" />
-                                            </svg>
-                                            @elseif(!$canAccess)
-                                            <svg class="w-3 h-3 text-gray-400" fill="none" stroke="currentColor"
-                                                viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                    d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-                                            </svg>
-                                            @endif
+                                <div class="{{ (!$canAccess || $isHidden) ? 'opacity-60' : '' }}">
+                                    @if($isHidden)
+                                        {{-- Hidden submaterial - tampilkan header tapi dengan lock icon --}}
+                                        <div class="submodule-item flex items-center gap-3 px-4 py-3 bg-gray-50 rounded-lg border-l-4 border-gray-300 cursor-not-allowed"
+                                            title="Konten ini sedang tidak tersedia">
+                                            <div class="checkbox w-5 h-5 rounded-full border-2 border-gray-400 flex items-center justify-center">
+                                                <svg class="w-3 h-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                        d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                                                </svg>
+                                            </div>
+                                            <div class="flex-1">
+                                                <span class="text-sm text-gray-600 font-medium">{{ $sub->nama_submateri }}</span>
+                                                <p class="text-xs text-gray-500">Konten tidak dapat diakses</p>
+                                            </div>
                                         </div>
-                                        <div class="flex-1">
-                                            <span
-                                                class="text-sm {{ $isCompleted ? 'text-green-700 font-medium' : 'text-gray-700' }}">
-                                                {{ $sub->nama_submateri }}
-                                            </span>
-                                            @if(!$canAccess)
-                                            <p class="text-xs text-red-500">Selesaikan materi sebelumnya</p>
-                                            @endif
-                                        </div>
-                                    </a>
+                                    @else
+                                        {{-- Non-hidden submaterial - tampilkan normal --}}
+                                        <a href="{{ $canAccess ? route('course.mulai', ['slug' => $course->slugs, 'material' => $module->id, 'submaterial' => $sub->id]) : '#' }}"
+                                            class="submodule-item flex items-center gap-3 px-4 py-3 bg-white rounded-lg transition-all border-l-4
+                                                    {{ $isActive ? 'border-teal-600' : ($isCompleted ? 'border-green-500' : 'border-transparent') }}
+                                                    {{ $canAccess ? 'cursor-pointer hover:shadow-md' : 'cursor-not-allowed' }}"
+                                            @if(!$canAccess) title="Selesaikan materi sebelumnya terlebih dahulu" @endif>
+                                            <div class="checkbox w-5 h-5 rounded-full border-2
+                                                        {{ $isCompleted ? 'border-green-500 bg-green-500' : ($isActive ? 'border-teal-600 bg-teal-600' : 'border-gray-300') }}
+                                                        flex items-center justify-center transition-all">
+                                                @if($isCompleted || $isActive)
+                                                <svg class="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                                    <path fill-rule="evenodd"
+                                                        d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                                                        clip-rule="evenodd" />
+                                                </svg>
+                                                @elseif(!$canAccess)
+                                                <svg class="w-3 h-3 text-gray-400" fill="none" stroke="currentColor"
+                                                    viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                        d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                                                </svg>
+                                                @endif
+                                            </div>
+                                            <div class="flex-1">
+                                                <span
+                                                    class="text-sm {{ $isCompleted ? 'text-green-700 font-medium' : 'text-gray-700' }}">
+                                                    {{ $sub->nama_submateri }}
+                                                </span>
+                                                @if(!$canAccess)
+                                                <p class="text-xs text-red-500">Selesaikan materi sebelumnya</p>
+                                                @endif
+                                            </div>
+                                        </a>
+                                    @endif
                                 </div>
                                 @endforeach
 

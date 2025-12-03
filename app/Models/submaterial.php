@@ -11,10 +11,11 @@ class submaterial extends Model
         'nama_submateri',
         'type',
         'isi_materi',
+        'hidden',
     ];
-public function material()
-{
-    return $this->belongsTo(Material::class, 'material_id', 'id');
-}
 
+    public function material()
+    {
+        return $this->belongsTo(Material::class, 'material_id', 'id');
+    }
 }
