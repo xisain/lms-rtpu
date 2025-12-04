@@ -102,6 +102,9 @@ Route::middleware('auth')->group(function () {
             Route::put('/edit/{user}/update', [UserController::class, 'update'])->name('admin.user.update');
             Route::post('/bulk/store', [UserController::class, 'storeBulkUser'])->name('admin.user.bulk.store');
             Route::get('/bulk/template', [UserController::class, 'downloadTemplate'])->name('admin.user.bulk.template');
+            Route::get('/activate',[UserController::class,'activate'])->name('admin.user.active');
+            Route::post('/activate/{id}/approved', [UserController::class,'approved'])->name('admin.user.approved');
+            Route::post('/activate/{id}/rejected', [UserController::class,'rejected'])->name('admin.user.rejected');
         });
         Route::prefix('course')->group(function () {
             Route::get('/', [CourseController::class, 'index'])->name('admin.course.index');

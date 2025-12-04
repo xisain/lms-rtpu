@@ -6,13 +6,28 @@
             <div class="bg-white rounded-lg shadow-md overflow-hidden">
                 <div class="bg-[#009999] px-6 py-4 flex justify-between items-center">
                     <h4 class="text-xl font-bold text-white">Pengguna</h4>
-                    <a href="{{ route('admin.user.create') }}"
-                        class="bg-white text-dark hover:bg-gray-200 px-4 py-2 rounded-lg font-semibold transition duration-200 flex items-center gap-2">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-                        </svg>
-                        Tambah Banyak Pengguna
-                    </a>
+                    <div class="flex gap-2">
+                        <a href="{{ route('admin.user.active') }}"
+                            class="bg-white text-dark hover:bg-gray-200 px-4 py-2 rounded-lg font-semibold transition duration-200 flex items-center gap-2">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            Aktivasi
+                            @if(isset($userNeedActivate) && $userNeedActivate > 0)
+                                <span class="bg-red-500 text-white rounded-full px-2 py-0.5 text-xs font-bold">
+                                    {{ $userNeedActivate }}
+                                </span>
+                            @endif
+                        </a>
+                        <a href="{{ route('admin.user.create') }}"
+                            class="bg-white text-dark hover:bg-gray-200 px-4 py-2 rounded-lg font-semibold transition duration-200 flex items-center gap-2">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                            </svg>
+                            Tambah Pengguna
+                        </a>
+                    </div>
+                </div>
                 </div>
 
                 <div class="overflow-x-auto p-4">

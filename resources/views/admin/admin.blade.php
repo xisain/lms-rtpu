@@ -11,7 +11,7 @@
     <!-- Stats Cards -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
         <!-- Total Users -->
-        <div class="bg-white rounded-lg shadow-md p-6 border-l-4 border-blue-500">
+         <div class="bg-white rounded-lg shadow-md p-6 border-l-4 border-blue-500">
             <div class="flex items-center justify-between">
                 <div>
                     <p class="text-gray-500 text-sm font-medium">Total Users</p>
@@ -29,6 +29,30 @@
                 </div>
             </div>
         </div>
+        <div class="bg-white rounded-lg shadow-md p-6 border-l-4 border-blue-500">
+    <div class="flex items-center justify-between">
+        <div>
+            <div class="flex items-center gap-3">
+                <p class="text-gray-500 text-sm font-medium">Pendaftar Baru</p>
+                <a href="{{ route('admin.user.active') }}"
+                   class="text-blue-600 hover:text-blue-800 text-sm font-medium hover:underline transition duration-150">
+                    Lihat
+                </a>
+            </div>
+            <h3 class="text-3xl font-bold text-gray-800 mt-2">{{ $userNeedActivate ?? 0 }}</h3>
+            <p class="text-green-600 text-sm mt-2">
+                <span class="font-semibold">User Ini Memerlukan Verifikasi Admin untuk memulai LMS</span>
+            </p>
+        </div>
+        <div class="bg-blue-100 rounded-full p-3">
+            <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z">
+                </path>
+            </svg>
+        </div>
+    </div>
+</div>
 
         <!-- Total Courses -->
         <div class="bg-white rounded-lg shadow-md p-6 border-l-4 border-green-500">
@@ -50,25 +74,6 @@
             </div>
         </div>
 
-        <!-- Total Categories -->
-        <div class="bg-white rounded-lg shadow-md p-6 border-l-4 border-yellow-500">
-            <div class="flex items-center justify-between">
-                <div>
-                    <p class="text-gray-500 text-sm font-medium">Total Categories</p>
-                    <h3 class="text-3xl font-bold text-gray-800 mt-2">{{ $totalCategories ?? 0 }}</h3>
-                    <p class="text-gray-600 text-sm mt-2">
-                        <span class="font-semibold">{{ $categoriesWithCourses ?? 0 }}</span> kategori dengan course
-                    </p>
-                </div>
-                <div class="bg-yellow-100 rounded-full p-3">
-                    <svg class="w-8 h-8 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z">
-                        </path>
-                    </svg>
-                </div>
-            </div>
-        </div>
 
         <!-- Total Enrollments -->
         <div class="bg-white rounded-lg shadow-md p-6 border-l-4 border-purple-500">

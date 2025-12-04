@@ -56,7 +56,7 @@ class adminController extends Controller
                            ->latest()
                            ->take(5)
                            ->get();
-
+        $userNeedActivate = User::where('isActive', false)->count();
 
         return view('admin.admin', compact(
             'totalUsers',
@@ -69,7 +69,8 @@ class adminController extends Controller
             'totalEnrollments',
             'popularCourses',
             'topCategories',
-            'recentUsers'
+            'recentUsers',
+            'userNeedActivate'
         ));
     }
 }

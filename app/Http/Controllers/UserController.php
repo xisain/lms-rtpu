@@ -24,8 +24,8 @@ class UserController extends Controller
     public function index()
     {
         $users = User::with('role')->orderBy('id', 'asc')->get();
-
-        return view('admin.users.index', compact('users'));
+        $userNeedActivate = User::where('isActive', false)->count();
+        return view('admin.users.index', compact('users','userNeedActivate'));
     }
 
     /**
@@ -320,5 +320,29 @@ class UserController extends Controller
         };
 
         return response()->stream($callback, 200, $headers);
+    }
+    public function activate() {
+     $users = User::where('isActive','false')->get();
+     return view('admin.users.activate',compact('users'));
+    }
+    public function approved(Request $request, $id){
+        $user = User::find($id);
+        if(!$user){
+            return redirect()->back()->with('error','error');
+        } else {
+            $user->isActive = true;
+            $user->save();
+            return redirect()->back()->with('success','Pembuatan akun Di Setujui');
+        }
+    }
+    public function rejected(Request $request, $id){
+        $user = User::find($id);
+        if(!$user){
+            return redirect()->back()->with('error','error');
+        } else {
+            $user->isActive = false;
+            $user->save();
+            return redirect()->back()->with('success','Pembuatan akun di Tolak, akun akan di hapus');
+        }
     }
 }
