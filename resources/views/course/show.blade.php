@@ -304,7 +304,7 @@
                                                 <li class="flex items-center space-x-2">
                                                     @php
                                                         $materialCompleted = true;
-                                                        foreach($material->submaterial->where('hidden', false) as $sub) {
+                                                        foreach($material->submaterial as $sub) {
                                                             $progress = App\Models\progress::where('user_id', Auth::id())
                                                                 ->where('submaterial_id', $sub->id)
                                                                 ->where('status', 'completed')

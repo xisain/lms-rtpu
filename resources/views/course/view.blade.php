@@ -18,7 +18,7 @@
                     {!! ($submateri->isi_materi) !!}
                 </div>
                 @elseif($type === 'pdf')
-                <iframe src="{{ asset('storage/' . $submateri->isi_materi) }}"
+                <iframe src="{{ asset('storage/' . $submateri->isi_materi) }}#toolbar=0"
                     class="w-full h-[600px] rounded-lg border"></iframe>
                 @elseif($type === 'video')
                 @php
@@ -192,6 +192,26 @@
 
 @push('scripts')
 <script>
+    // Prevent right click
+document.addEventListener('contextmenu', function(e) {
+    if (e.target.tagName === 'IFRAME') {
+        e.preventDefault();
+    }
+});
+
+// Prevent keyboard shortcuts
+document.addEventListener('keydown', function(e) {
+    // Prevent Ctrl+S (Save)
+    if (e.ctrlKey && e.key === 's') {
+        e.preventDefault();
+        return false;
+    }
+    // Prevent Ctrl+P (Print)
+    if (e.ctrlKey && e.key === 'p') {
+        e.preventDefault();
+        return false;
+    }
+});
     function toggleModule(index) {
         const content = document.getElementById(`module-${index}`);
         const icon = document.getElementById(`icon-${index}`);

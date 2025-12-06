@@ -217,6 +217,9 @@ class CourseController extends Controller
         $course = course::where('slugs', $slug)
             ->with(['material.submaterial'])
             ->first();
+        if(!$course){
+            abort(404, "Course tidak di temukan");
+        }
         $courseEnroll = $course->maxSlotEnrollment();
         $courseStudent = $course->countEnrollment();
         $courseExpire = $course->expireCourse();
@@ -296,7 +299,7 @@ class CourseController extends Controller
             $allCompleted = true;
             foreach ($course->material as $m) {
                 // Cek submaterial completion (hanya yang tidak hidden)
-                foreach ($m->submaterial->where('hidden', false) as $sub) {
+                foreach ($m->submaterial as $sub) {
                     $progress = progress::where('user_id', Auth::id())
                         ->where('submaterial_id', $sub->id)
                         ->where('status', 'completed')
@@ -936,7 +939,7 @@ class CourseController extends Controller
         $allCompleted = true;
         foreach ($course->material as $m) {
             // Cek submaterial completion (hanya yang tidak hidden)
-            foreach ($m->submaterial->where('hidden', false) as $sub) {
+            foreach ($m->submaterial as $sub) {
                 $progress = progress::where('user_id', Auth::id())
                     ->where('submaterial_id', $sub->id)
                     ->where('status', 'completed')
