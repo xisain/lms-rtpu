@@ -21,6 +21,7 @@ class course extends Model
         'price',
         'is_paid',
         'teacher_id',
+        'reviewer_id',
     ];
 
     public function category()
@@ -41,6 +42,9 @@ class course extends Model
     public function teacher()
     {
         return $this->belongsTo(User::class, 'teacher_id');
+    }
+    public function reviewer(){
+        return $this->belongsTo(User::class,'reviewer_id');
     }
 
     public function purchases()
@@ -70,5 +74,5 @@ class course extends Model
     {
         return $this->enrollment()->count();
     }
-    
+
 }

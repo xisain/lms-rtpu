@@ -137,6 +137,7 @@
         @else
             <!-- NAVIGATION Dosen -->
             <nav class="px-4 py-2 space-y-2">
+                @if(Route::has('dosen.course.index'))
                 <a href="{{ route('dosen.course.index') }}"
                     class="flex items-center px-3 py-2 rounded-xl transition-all duration-200 {{ request()->routeIs('dosen.course.index') ? 'bg-[#009999] font-semibold' : 'text-gray-900 hover:bg-gray-100' }}"
                     :class="{ 'justify-center': !sidebarOpen, 'justify-start': sidebarOpen }">
@@ -146,6 +147,18 @@
                         Course Anda
                     </span>
                 </a>
+                @endif
+                @if (Route::has('dosen.course.final_task'))
+                <a href="{{ route('dosen.course.final_task') }}"
+                    class="flex items-center px-3 py-2 rounded-xl transition-all duration-200 {{ request()->routeIs('dosen.course.final_task') ? 'bg-[#009999] font-semibold' : 'text-gray-900 hover:bg-gray-100' }}"
+                    :class="{ 'justify-center': !sidebarOpen, 'justify-start': sidebarOpen }">
+                    <i class="fa-solid fa-graduation-cap" :class="{ 'text-lg': !sidebarOpen }"></i>
+                    <span class="ml-3 transition-opacity duration-200"
+                            :class="{ 'opacity-0 hidden': !sidebarOpen, 'opacity-100': sidebarOpen }">
+                        Review Final Task
+                    </span>
+                </a>
+                @endif
             </nav>
         @endif
         </div>

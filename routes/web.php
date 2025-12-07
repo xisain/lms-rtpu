@@ -7,6 +7,7 @@ use App\Http\Controllers\CertificateController;
 use App\Http\Controllers\CourseController;
 use App\Http\Controllers\CoursePurchaseController;
 use App\Http\Controllers\EnrollmentController;
+use App\Http\Controllers\FinalTaskController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\profileController;
 use App\Http\Controllers\SubscriptionController;
@@ -65,11 +66,12 @@ Route::middleware('auth')->group(function () {
         Route::get('/', [CourseController::class, 'showCourse'])->name('course.index');
 
         Route::get('{slug}', [CourseController::class, 'show'])->name('course.show');
+        Route::get('{slug}/final-task/',[FinalTaskController::class,'viewTask'])->name('course.final_task');
+        Route::post('{slug}/final-task/',[FinalTaskController::class,'submitTask'])->name('course.final_task.submit');
         Route::get('{slug}/{material?}/{submaterial?}', [CourseController::class, 'mulai'])->name('course.mulai');
         Route::post('{slug}/enroll', [EnrollmentController::class, 'store'])->name('course.enroll');
         // Buat quiz nanti jangan di apa apain
         Route::post('{slug}/{material}/quiz/submit', [CourseController::class, 'quizSubmit'])->name('quiz.submit');
-
         // Certificate routes
         Route::post('{course}/certificate/{user}', [CertificateController::class, 'generate'])->name('certificate.generate');
         Route::get('certificate/{certificate}/download', [CertificateController::class, 'download'])->name('certificate.download');
@@ -146,6 +148,13 @@ Route::middleware('auth')->group(function () {
             Route::get('/', [CourseController::class, 'index'])->name('dosen.course.index');
             Route::put('edit/{id}/update', [CourseController::class, 'update'])->name('dosen.course.update');
             Route::get('/edit/{id}', [CourseController::class, 'edit'])->name('dosen.course.edit');
+        });
+        Route::prefix('review',)->group(function (){
+            Route::get('/',[FinalTaskController::class,'index'])->name('dosen.course.final_task');
+            Route::get('/{slug}/',[FinalTaskController::class,'listFinalTask'])->name('dosen.course.final_task.list');
+            Route::get('/{slug}/{id}/',[FinalTaskController::class,'reviewTask'])->name('dosen.course.final_task.review');
+            Route::post('{slug}/{id}/',[FinalTaskController::class,'approvalTask'])->name('dosen.course.final_task.approval');
+
         });
     });
 });

@@ -7,6 +7,7 @@ use App\Models\category;
 use App\Models\certificate;
 use App\Models\course;
 use App\Models\enrollment;
+use App\Models\final_task;
 use App\Models\material;
 use App\Models\progress;
 use App\Models\quiz;
@@ -50,10 +51,13 @@ class CourseController extends Controller
         $teacher = User::with('role')->whereHas('role', function ($q) {
             $q->where('id', 2);
         })->get();
-
+        $reviewer = User::with('role')->whereHas('role', function ($q) {
+            $q->where('id', 2);
+        })->get();
         return view('admin.course.create', [
             'categories' => $category,
             'teachers' => $teacher,
+            'reviewers' => $reviewer
         ]);
     }
 
@@ -76,7 +80,7 @@ class CourseController extends Controller
             'maxEnrollment' => 'nullable|required_if:isLimitedCourse,1|integer|min:1',
             'public' => 'boolean',
             'teacher_id' => 'required|exists:users,id',
-
+            'reviewer_id'=> 'required|exists:users,id',
             // Validasi materials
             'materials' => 'required|array|min:1',
             'materials.*.nama_materi' => 'required|string|max:255',
@@ -118,9 +122,16 @@ class CourseController extends Controller
             'public' => $validated['public'] ?? false,
             'image_link' => $imagePath,
             'teacher_id' => $validated['teacher_id'],
+            'reviewer_id'=> $validated['reviewer_id'],
             'is_paid' => $validated['is_paid'] ?? false,
             'price' => $validated['price'] ?? null,
         ]);
+        if($request->has('instruksi')){
+            final_task::create([
+                'course_id'=> $course->id,
+                'instruksi'=> $request->instruksi
+            ]);
+        }
 
         foreach ($validated['materials'] as $materialIndex => $mat) {
             $material = material::create([

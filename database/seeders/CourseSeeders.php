@@ -22,7 +22,8 @@ class CourseSeeders extends Seeder
                 'isLimitedCourse' => 0,
                 'maxEnrollment' => 0,
                 'public' => 1,
-                'teacher_id' => 1,
+                'teacher_id' => 4,
+                'reviewer_id'=> 4,
             ],
             [
                 'nama_course' => 'Pemrograman Python untuk Pemula',
@@ -31,7 +32,8 @@ class CourseSeeders extends Seeder
                 'isLimitedCourse' => 1,
                 'maxEnrollment' => 100,
                 'public' => 1,
-                'teacher_id' => 1,
+                'teacher_id' => 4,
+                'reviewer_id'=> 4,
             ],
             [
                 'nama_course' => 'Pengantar Machine Learning',
@@ -40,7 +42,8 @@ class CourseSeeders extends Seeder
                 'isLimitedCourse' => 1,
                 'maxEnrollment' => 50,
                 'public' => 1,
-                'teacher_id' => 2,
+                'teacher_id' => 4,
+                'reviewer_id'=> 4,
             ],
         ];
 
@@ -57,6 +60,7 @@ class CourseSeeders extends Seeder
                 'maxEnrollment' => $course['maxEnrollment'],
                 'public' => $course['public'],
                 'teacher_id' => $course['teacher_id'],
+                'reviewer_id'=> $course['reviewer_id'],
             ]);
         }
     }

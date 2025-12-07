@@ -97,6 +97,19 @@
                                 <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
                             @enderror
                         </div>
+                        <div class="col-span-2">
+                            <label for="reviewer_id" class="block text-sm font-medium text-gray-700 mb-2">Reviewer Tugas Akhir *</label>
+                            <select name="reviewer_id" id="$reviewer_id" required
+                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                                <option value="">Pilih Reviewer</option>
+                                @foreach($reviewers as $reviewer)
+                                    <option value="{{ $reviewer->id }}">{{ $reviewer->name }}</option>
+                                @endforeach
+                            </select>
+                            @error('reviewer_id')
+                                <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                            @enderror
+                        </div>
 
                         <!-- Is Paid Course -->
                         <div class="col-span-2">
@@ -159,6 +172,43 @@
                                 <span class="ml-2 text-sm font-medium text-gray-700">Publikasikan Course</span>
                             </label>
                         </div>
+
+                        <div class="col-span-2">
+                            <!-- Final Task Section -->
+                            <div class="mt-5 p-4 rounded-lg border border-gray-300 bg-gray-50">
+                                <div class="flex items-center justify-between mb-4 ">
+                                    <h2 class="text-xl font-semibold text-gray-800">Tugas Akhir</h2>
+                                    <label class="inline-flex items-center cursor-pointer">
+                                        <input type="checkbox" id="hasFinalTask"
+                                            class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
+                                        <span class="ml-2 text-sm text-gray-700">Tambahkan Tugas Akhir</span>
+                                    </label>
+                                </div>
+
+                                <div id="finalTaskSection" class="hidden">
+                                    <div class="bg-white border border-gray-200 rounded-lg p-4">
+                                        <label for="instruksi" class="block text-sm font-medium text-gray-700 mb-2">
+                                            Instruksi Tugas Akhir *
+                                        </label>
+                                        <textarea name="instruksi" id="instruksi" rows="6"
+                                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                            placeholder="Jelaskan instruksi untuk tugas akhir course ini...&#10;&#10;Contoh:&#10;1. Buat aplikasi web menggunakan Laravel&#10;2. Implementasikan fitur CRUD&#10;3. Submit link GitHub repository"></textarea>
+                                        @error('instruksi')
+                                            <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                                        @enderror
+                                        <p class="text-sm text-gray-500 mt-2">
+                                            <svg class="inline w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                                <path fill-rule="evenodd"
+                                                    d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
+                                                    clip-rule="evenodd" />
+                                            </svg>
+                                            Instruksi ini akan ditampilkan kepada peserta sebagai panduan untuk mengerjakan tugas akhir.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
                     </div>
                 </div>
 
@@ -196,6 +246,19 @@
         <script>
             let materialCount = 0;
             let submaterialCounters = {};
+            document.getElementById('hasFinalTask').addEventListener('change', function() {
+                const finalTaskSection = document.getElementById('finalTaskSection');
+                const instruksiField = document.getElementById('instruksi');
+
+                if (this.checked) {
+                    finalTaskSection.classList.remove('hidden');
+                    instruksiField.required = true;
+                } else {
+                    finalTaskSection.classList.add('hidden');
+                    instruksiField.required = false;
+                    instruksiField.value = '';
+                }
+            });
             // Toggle paid course field
             document.getElementById('is_paid').addEventListener('change', function () {
                 const priceField = document.getElementById('priceField');
