@@ -23,6 +23,8 @@ class User extends Authenticatable
         'password',
         'roles_id', // default 1
         'category_id', // default 1
+        'instansi_id',
+        'jurusan_id',
         'isActive' // default 0
     ];
 
