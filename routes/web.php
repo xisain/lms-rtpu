@@ -51,11 +51,14 @@ Route::middleware('auth')->group(function () {
             Route::get('/detail/{id}', [profileController::class, 'transactionDetail'])->name('profile.transaction.history.detail');
         });
         Route::prefix('subscription')->group(function () {
-            Route::get('/', [profileController::class, 'subscriptionList'])->name('profile.subscription.history');
-            Route::get('/detail/{id}', [profileController::class, 'subscriptionDetail'])->name('profile.subscription.history.detail');
+            Route::get('/', [profileController::class, 'transactionList'])->name('profile.subscription.history');
+            Route::get('/detail/{id}', [profileController::class, 'transactionDetail'])->name('profile.subscription.history.detail');
         });
         Route::get('/edit', [profileController::class, 'edit'])->name('profile.edit');
         Route::put('/update', [profileController::class, 'update'])->name('profile.update');
+        // AJAX endpoints untuk add instansi dan jurusan dari profile
+        Route::post('/instansi/store', [profileController::class, 'storeInstansi'])->name('profile.instansi.store');
+        Route::post('/jurusan/store', [profileController::class, 'storeJurusan'])->name('profile.jurusan.store');
     });
     // Protected routes here
     Route::prefix('course')->group(function () {
@@ -93,9 +96,10 @@ Route::middleware('auth')->group(function () {
             Route::get('/create', [App\Http\Controllers\JurusanController::class, 'create'])->name('admin.jurusan.create');
             Route::post('/', [App\Http\Controllers\JurusanController::class, 'store'])->name('admin.jurusan.store');
             Route::get('/edit/{jurusan}', [App\Http\Controllers\JurusanController::class, 'edit'])->name('admin.jurusan.edit');
-            Route::put('/{id}', [App\Http\Controllers\JurusanController::class, 'update'])->name('admin.jurusan.update');
-            Route::delete('/{id}', [App\Http\Controllers\JurusanController::class, 'destroy'])->name('admin.jurusan.destroy');
+            Route::put('/{jurusan}', [App\Http\Controllers\JurusanController::class, 'update'])->name('admin.jurusan.update');
+            Route::delete('/{jurusan}', [App\Http\Controllers\JurusanController::class, 'destroy'])->name('admin.jurusan.destroy');
         });
+
 
         Route::prefix('instansi')->group(function () {
             Route::get('/', [App\Http\Controllers\InstansiController::class, 'index'])->name('admin.instansi.index');

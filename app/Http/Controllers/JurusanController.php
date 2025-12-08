@@ -25,8 +25,32 @@ class JurusanController extends Controller
             'nama' => 'required'
         ]);
 
-        Jurusan::create($request->all());
-        return redirect()->route('admin.jurusan.index')->with('success', 'Jurusan berhasil ditambahkan');
+        try {
+            $jurusan = Jurusan::create($request->all());
+            
+            // Jika request AJAX, return JSON
+            if ($request->wantsJson() || $request->header('X-Requested-With') === 'XMLHttpRequest') {
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Jurusan berhasil ditambahkan!',
+                    'data' => $jurusan
+                ]);
+            }
+
+            return redirect()->route('admin.jurusan.index')
+                ->with('success', 'Jurusan berhasil ditambahkan');
+        } catch (\Exception $e) {
+            if ($request->header('X-Requested-With') === 'XMLHttpRequest') {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Terjadi kesalahan: ' . $e->getMessage()
+                ], 400);
+            }
+
+            return redirect()->back()
+                ->withInput()
+                ->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
+        }
     }
 
     public function edit(Jurusan $jurusan)

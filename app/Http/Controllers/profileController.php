@@ -9,6 +9,8 @@ use App\Models\User;
 use App\Models\progress;
 use App\Models\Role;;
 use App\Models\Category;
+use App\Models\Instansi;
+use App\Models\Jurusan;
 
 class profileController extends Controller
 {
@@ -109,10 +111,12 @@ class profileController extends Controller
     public function edit()
     {
         $user = auth()->user();
-        $role = Role::all();           // ⬅ Tambahkan ini agar role tampil di profile.edit
+        $role = Role::all();      
+        $instansi = Instansi::all();
+        $jurusan = Jurusan::all();
         $category = Category::all();   // kalau dipakai
 
-        return view('profile.edit', compact('user', 'role', 'category'));
+        return view('profile.edit', compact('user', 'role', 'category', 'instansi','jurusan'));
     }
 
     /**
@@ -125,11 +129,25 @@ class profileController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email,' . $user->id,
-            'password' => 'nullable|min:6|confirmed'
+            'password' => 'nullable|min:6|confirmed',
+            'instansi_id' => 'nullable|exists:instansi,id',
+            'jurusan_id' => 'nullable|exists:jurusan,id',
+            'roles_id' => 'nullable|exists:roles,id'
         ]);
 
         $user->name = $request->name;
         $user->email = $request->email;
+
+        // Update instansi_id jika diisi
+        if ($request->filled('instansi_id')) {
+            $user->instansi_id = $request->instansi_id;
+        }
+
+        // Update jurusan_id jika diisi
+        if ($request->filled('jurusan_id')) {
+            $user->jurusan_id = $request->jurusan_id;
+        }
+
 
         if ($request->filled('password')) {
             $user->password = bcrypt($request->password);
@@ -140,6 +158,66 @@ class profileController extends Controller
         return redirect()->route('profile')->with('success', 'Profil berhasil diperbarui!');
     }
 
+
+    /**
+     * Store instansi from profile edit
+     */
+    public function storeInstansi(Request $request)
+    {
+        try {
+            $validated = $request->validate([
+                'nama' => 'required|string|max:255',
+                'email' => 'nullable|email|max:255',
+                'alamat' => 'nullable|string|max:500',
+                'telepon' => 'nullable|string|max:20'
+            ]);
+
+            $instansi = Instansi::create($validated);
+            
+            return response()->json([
+                'success' => true,
+                'message' => 'Instansi berhasil ditambahkan!',
+                'data' => $instansi
+            ], 201);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Validation error',
+                'errors' => $e->errors()
+            ], 422);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Terjadi kesalahan: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Store jurusan from profile edit
+     */
+    public function storeJurusan(Request $request)
+    {
+        $validated = $request->validate([
+            'kode' => 'required|unique:jurusan',
+            'nama' => 'required|string|max:255'
+        ]);
+
+        try {
+            $jurusan = Jurusan::create($validated);
+            
+            return response()->json([
+                'success' => true,
+                'message' => 'Jurusan berhasil ditambahkan!',
+                'data' => $jurusan
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Terjadi kesalahan: ' . $e->getMessage()
+            ], 400);
+        }
+    }
 
     /**
      * Remove the specified resource from storage.

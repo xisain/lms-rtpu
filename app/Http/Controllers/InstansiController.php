@@ -17,19 +17,8 @@ class InstansiController extends Controller
     {
         return view('admin.instansi.create');
     }
-public function store(Request $request)
-{
-    // Log paling awal - pastikan method ini dipanggil
-    \Log::info('=== STORE METHOD DIPANGGIL ===');
-    \Log::info('Request Method: ' . $request->method());
-    \Log::info('Request URL: ' . $request->fullUrl());
-    \Log::info('Request Headers:', $request->headers->all());
-    \Log::info('Semua input:', $request->all());
-    \Log::info('CSRF Token: ' . $request->header('X-CSRF-TOKEN'));
-
-    try {
-        \Log::info('Memulai validasi...');
-        
+    public function store(Request $request)
+    {
         $validated = $request->validate([
             'nama' => 'required|string|max:255',
             'email' => 'nullable|email|max:255',
@@ -37,34 +26,33 @@ public function store(Request $request)
             'telepon' => 'nullable|string|max:20'
         ]);
 
-        \Log::info('✓ Validasi berhasil');
-        \Log::info('Data tervalidasi:', $validated);
+        try {
+            $instansi = Instansi::create($validated);
+            
+            // Jika request AJAX, return JSON
+            if ($request->wantsJson() || $request->header('X-Requested-With') === 'XMLHttpRequest') {
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Instansi berhasil ditambahkan!',
+                    'data' => $instansi
+                ]);
+            }
 
-        \Log::info('Mencoba simpan ke database...');
-        $instansi = Instansi::create($validated);
-        
-        \Log::info('✓ BERHASIL SIMPAN! ID: ' . $instansi->id);
-        \Log::info('Data tersimpan:', $instansi->toArray());
+            return redirect()->route('admin.instansi.index')
+                ->with('success', 'Instansi berhasil ditambahkan!');
+        } catch (\Exception $e) {
+            if ($request->header('X-Requested-With') === 'XMLHttpRequest') {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Terjadi kesalahan: ' . $e->getMessage()
+                ], 400);
+            }
 
-        return redirect()->route('admin.instansi.index')
-            ->with('success', 'Instansi berhasil ditambahkan!');
-
-    } catch (\Illuminate\Validation\ValidationException $e) {
-        \Log::error('✗ VALIDASI GAGAL');
-        \Log::error('Errors:', $e->errors());
-        
-        throw $e; // Lempar ulang agar Laravel handle
-
-    } catch (\Exception $e) {
-        \Log::error('✗ ERROR: ' . $e->getMessage());
-        \Log::error('File: ' . $e->getFile() . ':' . $e->getLine());
-        \Log::error('Trace: ' . $e->getTraceAsString());
-
-        return redirect()->back()
-            ->withInput()
-            ->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
+            return redirect()->back()
+                ->withInput()
+                ->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
+        }
     }
-}
 
     public function edit($id)
     {
