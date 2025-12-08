@@ -9,7 +9,6 @@ use App\Models\User;
 use App\Models\progress;
 use App\Models\Role;;
 use App\Models\Category;
-use App\Models\subscription;
 
 class profileController extends Controller
 {
@@ -140,6 +139,7 @@ class profileController extends Controller
 
         return redirect()->route('profile')->with('success', 'Profil berhasil diperbarui!');
     }
+
 
     /**
      * Remove the specified resource from storage.
