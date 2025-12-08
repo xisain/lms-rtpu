@@ -43,8 +43,15 @@ class course extends Model
     {
         return $this->belongsTo(User::class, 'teacher_id');
     }
-    public function reviewer(){
-        return $this->belongsTo(User::class,'reviewer_id');
+
+    public function reviewer()
+    {
+        return $this->belongsTo(User::class, 'reviewer_id');
+    }
+
+    public function finalTask()
+    {
+        return $this->hasOne(final_task::class, 'course_id');
     }
 
     public function purchases()
@@ -74,5 +81,4 @@ class course extends Model
     {
         return $this->enrollment()->count();
     }
-
 }

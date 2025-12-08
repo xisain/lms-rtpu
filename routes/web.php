@@ -47,18 +47,18 @@ Route::middleware('auth')->group(function () {
     });
     Route::prefix('profile')->group(function () {
         Route::get('/', [profileController::class, 'show'])->name('profile');
-        Route::prefix('transaction')->group(function(){
-            Route::get('/',[profileController::class,'transactionList'])->name('profile.transaction.history');
-            Route::get('/detail/{id}',[profileController::class,'transactionDetail'])->name('profile.transaction.history.detail');
+        Route::prefix('transaction')->group(function () {
+            Route::get('/', [profileController::class, 'transactionList'])->name('profile.transaction.history');
+            Route::get('/detail/{id}', [profileController::class, 'transactionDetail'])->name('profile.transaction.history.detail');
         });
-        Route::prefix('subscription')->group(function (){
-            Route::get('/',[profileController::class,'subscriptionList'])->name('profile.subscription.history');;
-            Route::get('/detail/{id}',[profileController::class,'subscriptionDetail'])->name('profile.subscription.history.detail');
+        Route::prefix('subscription')->group(function () {
+            Route::get('/', [profileController::class, 'subscriptionList'])->name('profile.subscription.history');
+            Route::get('/detail/{id}', [profileController::class, 'subscriptionDetail'])->name('profile.subscription.history.detail');
         });
     });
     // Protected routes here
     Route::prefix('course')->group(function () {
-        Route::prefix('my')->group(function(){
+        Route::prefix('my')->group(function () {
             Route::get('/filter', [CourseController::class, 'myfilterCourse'])->name('course.filter.my');
             Route::get('/', [CourseController::class, 'myCourse'])->name('course.my');
 
@@ -66,8 +66,9 @@ Route::middleware('auth')->group(function () {
         Route::get('/', [CourseController::class, 'showCourse'])->name('course.index');
 
         Route::get('{slug}', [CourseController::class, 'show'])->name('course.show');
-        Route::get('{slug}/final-task/',[FinalTaskController::class,'viewTask'])->name('course.final_task');
-        Route::post('{slug}/final-task/',[FinalTaskController::class,'submitTask'])->name('course.final_task.submit');
+        Route::get('{slug}/final-task/', [FinalTaskController::class, 'viewTask'])->name('course.final_task');
+        Route::post('{slug}/final-task/', [FinalTaskController::class, 'submitTask'])->name('course.final_task.submit');
+        Route::post('{slug}/final-task/resubmit', [FinalTaskController::class, 'resubmitTask'])->name('course.final_task.resubmit');
         Route::get('{slug}/{material?}/{submaterial?}', [CourseController::class, 'mulai'])->name('course.mulai');
         Route::post('{slug}/enroll', [EnrollmentController::class, 'store'])->name('course.enroll');
         // Buat quiz nanti jangan di apa apain
@@ -104,9 +105,9 @@ Route::middleware('auth')->group(function () {
             Route::put('/edit/{user}/update', [UserController::class, 'update'])->name('admin.user.update');
             Route::post('/bulk/store', [UserController::class, 'storeBulkUser'])->name('admin.user.bulk.store');
             Route::get('/bulk/template', [UserController::class, 'downloadTemplate'])->name('admin.user.bulk.template');
-            Route::get('/activate',[UserController::class,'activate'])->name('admin.user.active');
-            Route::post('/activate/{id}/approved', [UserController::class,'approved'])->name('admin.user.approved');
-            Route::post('/activate/{id}/rejected', [UserController::class,'rejected'])->name('admin.user.rejected');
+            Route::get('/activate', [UserController::class, 'activate'])->name('admin.user.active');
+            Route::post('/activate/{id}/approved', [UserController::class, 'approved'])->name('admin.user.approved');
+            Route::post('/activate/{id}/rejected', [UserController::class, 'rejected'])->name('admin.user.rejected');
         });
         Route::prefix('course')->group(function () {
             Route::get('/', [CourseController::class, 'index'])->name('admin.course.index');
@@ -149,11 +150,11 @@ Route::middleware('auth')->group(function () {
             Route::put('edit/{id}/update', [CourseController::class, 'update'])->name('dosen.course.update');
             Route::get('/edit/{id}', [CourseController::class, 'edit'])->name('dosen.course.edit');
         });
-        Route::prefix('review',)->group(function (){
-            Route::get('/',[FinalTaskController::class,'index'])->name('dosen.course.final_task');
-            Route::get('/{slug}/',[FinalTaskController::class,'listFinalTask'])->name('dosen.course.final_task.list');
-            Route::get('/{slug}/{id}/',[FinalTaskController::class,'reviewTask'])->name('dosen.course.final_task.review');
-            Route::post('{slug}/{id}/',[FinalTaskController::class,'approvalTask'])->name('dosen.course.final_task.approval');
+        Route::prefix('review')->group(function () {
+            Route::get('/', [FinalTaskController::class, 'index'])->name('dosen.course.final_task');
+            Route::get('/{slug}/', [FinalTaskController::class, 'listFinalTask'])->name('dosen.course.final_task.list');
+            Route::get('/{slug}/{id}/', [FinalTaskController::class, 'reviewTask'])->name('dosen.course.final_task.review');
+            Route::post('{slug}/{id}/', [FinalTaskController::class, 'approvalTask'])->name('dosen.course.final_task.approval');
 
         });
     });
@@ -188,4 +189,3 @@ Route::get('views/course/view', function () {
 //     // Abort dengan error code dan pesan kustom
 //     abort($error_code, $errors[$error_code]);
 // });
-

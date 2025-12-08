@@ -10,8 +10,8 @@
                 <div class="bg-[#009999] px-6 py-4 flex justify-between items-center">
                     <h4 class="text-xl font-bold text-white">Review Tugas Akhir "{{ $course->nama_course }}"</h4>
                 </div>
-                <div class="overflow-x-auto">
-                    <table class="min-w-full divide-y divide-gray-200">
+                <div class="overflow-x-auto p-4">
+                    <table class="min-w-full divide-y divide-gray-200" id="listFinalTask">
                         <thead class="bg-gray-50">
                             <tr>
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-16">#</th>
@@ -48,4 +48,32 @@
             </div>
         </div>
     </div>
+    @push('scripts')
+<script>
+
+$(document).ready(function() {
+            // DataTables
+            $('#listFinalTask').DataTable({
+                language: {
+                    processing: 'Memuat data...',
+                    search: 'Cari:',
+                    lengthMenu: 'Tampilkan _MENU_ data',
+                    info: 'Menampilkan _START_ sampai _END_ dari _TOTAL_ data',
+                    infoEmpty: 'Menampilkan 0 sampai 0 dari 0 data',
+                    infoFiltered: '(difilter dari _MAX_ total data)',
+                    zeroRecords: 'Tidak ada data yang ditemukan',
+                    emptyTable: 'Tidak ada data yang tersedia',
+                    paginate: {
+                        first: '<<',
+                        last: '>>',
+                        next: '>',
+                        previous: '<'
+                    }
+                },
+                order: [[0, 'asc']]
+            });
+})
+</script>
+@endpush
+
 @endsection
