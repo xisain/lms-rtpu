@@ -55,6 +55,21 @@
                 </div>
 
                 <div>
+                    <label for="name" class="block text-sm font-medium text-gray-700">
+                        Full Name
+                    </label>
+                    <div class="mt-1">
+                        <input id="name" name="name" type="text" required autocomplete="name" value="{{ old('name') }}"
+                            class="appearance-none block w-full px-3 py-2 border rounded-md shadow-sm placeholder-gray-400
+                            focus:outline-none focus:ring-teal-500 focus:border-teal-500 sm:text-sm
+                            @error('name') border-red-500 @else border-gray-300 @enderror">
+                    </div>
+                    @error('name')
+                        <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
+                    @enderror
+                </div>
+
+                <div>
                     <label for="password" class="block text-sm font-medium text-gray-700">
                         Password
                     </label>
