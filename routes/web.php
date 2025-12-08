@@ -13,6 +13,7 @@ use App\Http\Controllers\profileController;
 use App\Http\Controllers\SubscriptionController;
 use App\Http\Controllers\UserController;
 use App\Http\Middleware\dosenMiddleware;
+use App\Mail\tolakAccount;
 use App\Models\subscription;
 use App\Models\Jurusan;
 use App\Models\Intansi;
@@ -125,7 +126,7 @@ Route::middleware('auth')->group(function () {
             Route::get('/bulk/template', [UserController::class, 'downloadTemplate'])->name('admin.user.bulk.template');
             Route::get('/activate', [UserController::class, 'activate'])->name('admin.user.active');
             Route::post('/activate/{id}/approved', [UserController::class, 'approved'])->name('admin.user.approved');
-            Route::post('/activate/{id}/rejected', [UserController::class, 'rejected'])->name('admin.user.rejected');
+            Route::delete('/activate/{id}/rejected', [UserController::class, 'rejected'])->name('admin.user.rejected');
         });
         Route::prefix('course')->group(function () {
             Route::get('/', [CourseController::class, 'index'])->name('admin.course.index');
@@ -173,7 +174,11 @@ Route::middleware('auth')->group(function () {
             Route::get('/{slug}/', [FinalTaskController::class, 'listFinalTask'])->name('dosen.course.final_task.list');
             Route::get('/{slug}/{id}/', [FinalTaskController::class, 'reviewTask'])->name('dosen.course.final_task.review');
             Route::post('{slug}/{id}/', [FinalTaskController::class, 'approvalTask'])->name('dosen.course.final_task.approval');
+            Route::get('{slug}/final-task/export-pdf', [FinalTaskController::class, 'exportPDF'])
+                ->name('dosen.course.final_task.export.pdf');
 
+            Route::get('{slug}/final-task/preview-pdf', [FinalTaskController::class, 'previewPDF'])
+                ->name('dosen.course.final_task.preview.pdf');
         });
     });
 });
@@ -182,9 +187,14 @@ Route::get('/', function () {
     return view('index');
 })->name('home');
 
-Route::get('views/course/view', function () {
-    return view('course/view');
-})->name('view');
+// Route::get('test', function () {
+//     Mail::to('husenabs232bogor@gmail.com')->send(new tolakAccount(
+//     "Xisain",
+//     'Dokumen identitas tidak lengkap.',
+// ));
+
+//     return view('index');
+// })->name('view');
 
 // Route::get('/error/{error_code}', function($error_code) {
 //     // Daftar error code yang diizinkan beserta pesan kustom

@@ -7,9 +7,61 @@ use App\Models\final_task;
 use App\Models\final_task_review;
 use App\Models\final_task_submission;
 use Illuminate\Http\Request;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class FinalTaskController extends Controller
 {
+    public function exportPDF($slugs)
+    {
+        $course = Course::where('slugs', $slugs)->firstOrFail();
+        $taskId = final_task::where('course_id', $course->id)->first()->id;
+
+        // Ambil semua submission dengan review
+        $taskList = final_task_submission::where('final_task_id', $taskId)
+            ->with(['user', 'review'])
+            ->get();
+
+        $reviewItems = $this->getReviewItems();
+
+        // Load view untuk PDF dengan margin
+        $pdf = PDF::loadView('dosen.review.pdf', compact('taskList', 'course', 'reviewItems'))
+            ->setPaper('a4', 'landscape')
+            ->setOption('margin-top', 15)       // 15mm margin atas
+            ->setOption('margin-right', 10)     // 10mm margin kanan
+            ->setOption('margin-bottom', 15)    // 15mm margin bawah
+            ->setOption('margin-left', 10)      // 10mm margin kiri
+            ->setOption('dpi', 96)              // DPI untuk kualitas gambar
+            ->setOption('enable-local-file-access', true); // Akses file lokal
+
+        // Download PDF
+        return $pdf->download('review-tugas-akhir-' . $course->slugs . '-' . date('Y-m-d') . '.pdf');
+    }
+
+    // Atau jika ingin preview dulu:
+    public function previewPDF($slugs)
+    {
+        $course = Course::where('slugs', $slugs)->firstOrFail();
+        $taskId = final_task::where('course_id', $course->id)->first()->id;
+
+        $taskList = final_task_submission::where('final_task_id', $taskId)
+            ->with(['user', 'review'])
+            ->get();
+
+        $reviewItems = $this->getReviewItems();
+
+        // Load view untuk PDF dengan margin
+        $pdf = PDF::loadView('dosen.review.pdf', compact('taskList', 'course', 'reviewItems'))
+            ->setPaper('a4', 'landscape')
+            ->setOption('margin-top', 15)       // 15mm margin atas
+            ->setOption('margin-right', 10)     // 10mm margin kanan
+            ->setOption('margin-bottom', 15)    // 15mm margin bawah
+            ->setOption('margin-left', 10)      // 10mm margin kiri
+            ->setOption('dpi', 96)              // DPI untuk kualitas gambar
+            ->setOption('enable-local-file-access', true); // Akses file lokal
+
+        // Tampilkan di browser
+        return $pdf->stream('review-tugas-akhir-' . $course->slugs . '-' . date('Y-m-d') . '.pdf');
+    }
     public function index()
     {
         $reviewer_id = auth()->user()->id;

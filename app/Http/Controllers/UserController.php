@@ -15,6 +15,7 @@ use Illuminate\Support\Str;
 use SweetAlert2\Laravel\Swal;
 use App\Mail\WelcomeMail;
 use Illuminate\Support\Facades\Mail;
+use App\Mail\tolakAccount;
 
 class UserController extends Controller
 {
@@ -197,7 +198,7 @@ class UserController extends Controller
                         'name' => $name,
                         'email' => $email,
                         'password' => Hash::make($password),
-                        'roles_id' => 2,
+                        'roles_id' => 3,
                         'category_id' => 1,
                     ]);
 
@@ -340,7 +341,12 @@ class UserController extends Controller
         if(!$user){
             return redirect()->back()->with('error','error');
         } else {
+            Mail::to($user->email)->send(new tolakAccount(
+                $user->name,
+                'Data identitas tidak lengkap.',
+            ));
             $user->isActive = false;
+            $user->delete();
             $user->save();
             return redirect()->back()->with('success','Pembuatan akun di Tolak, akun akan di hapus');
         }
