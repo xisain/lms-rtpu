@@ -2,35 +2,43 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\final_task;
-use Illuminate\Http\Request;
 use App\Models\course;
+use App\Models\final_task;
 use App\Models\final_task_review;
 use App\Models\final_task_submission;
+use Illuminate\Http\Request;
 
 class FinalTaskController extends Controller
 {
-
     public function index()
     {
         $reviewer_id = auth()->user()->id;
-        $courseWithReview = Course::where('reviewer_id', $reviewer_id)->get();
-        return view("dosen.review.index", compact("courseWithReview"));
+        $courses = Course::where('reviewer_id', $reviewer_id)
+            ->with('finalTask')
+            ->get();
+
+        return view('dosen.review.index', compact('courses'));
     }
+
     public function listFinalTask($slugs)
     {
-        $course = Course::where("slugs", $slugs)->first();
-        $taskId  = final_task::where("course_id", $course->id)->first()->id;
-        $taskList = final_task_submission::where("final_task_id", $taskId)->with('user')->get();
-        return view('dosen.review.list', compact('taskList', "course"));
+        $course = Course::where('slugs', $slugs)->first();
+        $taskId = final_task::where('course_id', $course->id)->first()->id;
+        $taskList = final_task_submission::where('final_task_id', $taskId)->with('user')->get();
+
+        return view('dosen.review.list', compact('taskList', 'course'));
     }
+
     public function reviewTask($slugs, $idSubmission)
     {
-        $course = Course::where("slugs", $slugs)->first();
+        $course = Course::where('slugs', $slugs)->first();
         $submission = final_task_submission::with('user')->find($idSubmission);
-        return view('dosen.review.review', compact('submission','course'));
+
+        return view('dosen.review.review', compact('submission', 'course'));
     }
-    public function approvalTask(Request $request, $courseSlug, $idSubmission){
+
+    public function approvalTask(Request $request, $courseSlug, $idSubmission)
+    {
         // dd($request->all());
         $submission = final_task_submission::find($idSubmission);
         $validated = $request->validate([
@@ -102,40 +110,117 @@ class FinalTaskController extends Controller
         $reviewData = collect($validated)->except(['status'])->toArray();
         $submissionStatus = $validated['status'];
 
-        // Simpan review (tanpa status)
-        $review = final_task_review::create($reviewData);
+        // Update atau create review
+        $submission = final_task_submission::findOrFail($validated['final_task_submission_id']);
+
+        if ($submission->review) {
+            // Update review yang sudah ada
+            $submission->review->update($reviewData);
+        } else {
+            // Buat review baru jika belum ada
+            final_task_review::create($reviewData);
+        }
 
         // Update status di submission
-        $submission = final_task_submission::findOrFail($validated['final_task_submission_id']);
         $submission->update(['status' => $submissionStatus]);
 
-        return redirect()->back()->with('success','Berhasil Menilai Peserta');
+        return redirect()->back()->with('success', 'Berhasil Menilai Peserta');
 
     }
+
     public function viewTask($slug)
     {
-        $course = Course::where("slugs", $slug)->firstOrFail();
-
+        $course = Course::where('slugs', $slug)->firstOrFail();
         $finalTask = final_task::where('course_id', $course->id)->firstOrFail();
-        $submission = final_task_submission::where('final_task_id',$finalTask->id)->first();
-        return view("course.final_task", compact('finalTask', 'course', 'submission'));
+        $submission = final_task_submission::where('final_task_id', $finalTask->id)
+            ->where('user_id', auth()->id())
+            ->first();
+
+        $statusConfig = $this->getStatusConfig();
+        $reviewItems = $this->getReviewItems();
+
+        return view('course.final_task', compact('finalTask', 'course', 'submission', 'statusConfig', 'reviewItems'));
     }
+
     public function submitTask(Request $request)
     {
         $validated = $request->validate([
             'link_google_drive' => 'required|string',
-            'agreement' => 'required'
+            'agreement' => 'required',
         ], [
             'link_google_drive' => 'Harap isi Link Google Drive Dengan Benar',
             'agreement' => 'Tolong Ceklis Agreement Terlebih dahulu',
         ]);
 
-        $finalTask = final_task_submission::create([
+        final_task_submission::create([
             'user_id' => $request->user_id,
             'final_task_id' => $request->final_task_id,
             'link_google_drive' => $validated['link_google_drive'],
-            'status' => 'submitted'
+            'status' => 'submitted',
         ]);
-        return redirect()->back()->with('success', 'Berhasil Mengumpulkan Final task');
+
+        return redirect()->back()->with('success', 'Berhasil Mengumpulkan Tugas Akhir');
+    }
+
+    public function resubmitTask(Request $request)
+    {
+        $validated = $request->validate([
+            'link_google_drive' => 'required|string',
+            'agreement' => 'required',
+            'submission_id' => 'required|exists:final_task_submissions,id',
+        ], [
+            'link_google_drive' => 'Harap isi Link Google Drive Dengan Benar',
+            'agreement' => 'Tolong Ceklis Agreement Terlebih dahulu',
+            'submission_id' => 'ID Pengumpulan tidak ditemukan',
+        ]);
+
+        $submission = final_task_submission::findOrFail($request->submission_id);
+
+        // Pastikan submission milik user yang login
+        if ($submission->user_id !== auth()->id()) {
+            return redirect()->back()->with('error', 'Anda tidak memiliki akses ke pengumpulan ini');
+        }
+
+        $submission->update([
+            'link_google_drive' => $validated['link_google_drive'],
+            'status' => 'submitted',
+        ]);
+
+        return redirect()->back()->with('success', 'Tugas Akhir berhasil diperbarui dan menunggu review');
+    }
+
+    private function getStatusConfig(): array
+    {
+        return [
+            'submitted' => ['bg' => 'bg-yellow-100', 'text' => 'text-yellow-800', 'icon' => 'clock', 'label' => 'Menunggu Review'],
+            'approved' => ['bg' => 'bg-green-100', 'text' => 'text-green-800', 'icon' => 'check-circle', 'label' => 'Disetujui'],
+            'rejected' => ['bg' => 'bg-red-100', 'text' => 'text-red-800', 'icon' => 'x-circle', 'label' => 'Ditolak'],
+            'resubmmit' => ['bg' => 'bg-orange-100', 'text' => 'text-orange-800', 'icon' => 'refresh', 'label' => 'Perlu Diubah'],
+        ];
+    }
+
+    private function getReviewItems(): array
+    {
+        return [
+            'kurikulum_permen_39_2025' => 'Kurikulum Permen 39/2025',
+            'kurikulum_permen_3_2020' => 'Kurikulum Permen 3/2020',
+            'cpl_prodi' => 'CPL Prodi',
+            'distribusi_mata_kuliah_dan_highlight' => 'Distribusi Mata Kuliah dan Highlight',
+            'cpl_prodi_yang_dibebankan_pada_mata_kuliah' => 'CPL Prodi pada Mata Kuliah',
+            'matriks_kajian' => 'Matriks Kajian',
+            'tujuan_belajar' => 'Tujuan Belajar',
+            'peta_kompentensi' => 'Peta Kompetensi',
+            'perhitungan_sks' => 'Perhitungan SKS',
+            'scl' => 'SCL (Student Centered Learning)',
+            'metode_case_study_dan_team_based_project' => 'Metode Case Study & Team Based Project',
+            'rps' => 'RPS',
+            'rancangan_penilaian_dalam_1_semester' => 'Rancangan Penilaian 1 Semester',
+            'rancangan_tugas_1_pertemuan' => 'Rancangan Tugas 1 Pertemuan',
+            'instrumen_penilaian_hasil_belajar' => 'Instrumen Penilaian Hasil Belajar',
+            'rubrik_penilaian' => 'Rubrik Penilaian',
+            'rps_microteaching' => 'RPS Microteaching',
+            'materi_microteaching' => 'Materi Microteaching',
+            'penilaian_microteaching' => 'Penilaian Microteaching',
+        ];
     }
 }

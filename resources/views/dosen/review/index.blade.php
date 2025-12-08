@@ -3,7 +3,8 @@
 
 @endsection
 @section('content')
-    {{-- {{ $courseWithReview }} --}}
+
+    {{-- {{ $findTask }} --}}
     <div class="mx-auto py-2">
         <div class="max-w-10xl mx-auto">
             <div class="bg-white rounded-lg shadow-md overflow-hidden">
@@ -23,13 +24,21 @@
                             </tr>
                         </thead>
                         <tbody class="bg-white divide-x divide-y divide-gray-200">
-                            @forelse ($courseWithReview as $index => $cwr)
+                            @forelse ($courses as $index => $cwr)
                             <tr class="hover:bg-gray-50 transition duration-150">
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                                         {{ $index + 1 }}
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap">{{ $cwr->nama_course }}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap"><a href="{{ route('dosen.course.final_task.list',$cwr->slugs) }}">Lihat</a></td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        @if($cwr->finalTask)
+                                            <a href="{{ route('dosen.course.final_task.list', $cwr->slugs) }}"class="text-blue-600 hover:underline">Lihat</a>
+                                        @else
+                                            <span class="text-red-600 font-semibold">
+                                                Belum ada final task
+                                            </span>
+                                        @endif
+                                    </td>
                             </tr>
                             @empty
 
@@ -40,4 +49,32 @@
             </div>
         </div>
     </div>
+    @push('scripts')
+        <script>
+
+            $(document).ready(function () {
+                // DataTables
+                $('#finalTaskTable').DataTable({
+                    language: {
+                        processing: 'Memuat data...',
+                        search: 'Cari:',
+                        lengthMenu: 'Tampilkan _MENU_ data',
+                        info: 'Menampilkan _START_ sampai _END_ dari _TOTAL_ data',
+                        infoEmpty: 'Menampilkan 0 sampai 0 dari 0 data',
+                        infoFiltered: '(difilter dari _MAX_ total data)',
+                        zeroRecords: 'Tidak ada data yang ditemukan',
+                        emptyTable: 'Tidak ada data yang tersedia',
+                        paginate: {
+                            first: '<<',
+                            last: '>>',
+                            next: '>',
+                            previous: '<'
+                        }
+                    },
+                    order: [[0, 'asc']]
+                });
+            })
+        </script>
+    @endpush
+
 @endsection

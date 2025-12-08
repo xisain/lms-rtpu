@@ -1,6 +1,6 @@
 @extends('layout.navbar')
 
-@section('title', 'Final Task - ' . $course->nama_course)
+@section('title', 'Tugas Akhir - ' . $course->nama_course)
 
 @section('content')
     <div class="min-h-screen bg-gray-100 py-8">
@@ -11,7 +11,7 @@
                 <ol class="inline-flex items-center space-x-1 md:space-x-3">
                     <li class="inline-flex items-center">
                         <a href="{{ route('course.my') }}" class="text-gray-600 hover:text-blue-600">
-                            My Courses
+                            Kursus Saya
                         </a>
                     </li>
                     <li>
@@ -33,7 +33,7 @@
                                     d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
                                     clip-rule="evenodd"></path>
                             </svg>
-                            <span class="text-gray-500">Final Task</span>
+                            <span class="text-gray-500">Tugas Akhir</span>
                         </div>
                     </li>
                 </ol>
@@ -62,7 +62,7 @@
                             <!-- Progress Info -->
                             <div class="border-t pt-4 space-y-3">
                                 <div class="flex items-center justify-between text-sm">
-                                    <span class="text-gray-600">Course Progress</span>
+                                    <span class="text-gray-600">Progres Kursus</span>
                                     <span class="font-semibold text-blue-600">
                                         {{ $userProgress ?? 0 }}%
                                     </span>
@@ -91,8 +91,8 @@
                                 </svg>
                             </div>
                             <div>
-                                <h1 class="text-3xl font-bold text-gray-800">Final Task</h1>
-                                <p class="text-gray-500 text-sm mt-1">Complete your final project submission</p>
+                                <h1 class="text-3xl font-bold text-gray-800">Tugas Akhir</h1>
+                                <p class="text-gray-500 text-sm mt-1">Selesaikan pengumpulan proyek akhir Anda</p>
                             </div>
                         </div>
 
@@ -104,7 +104,7 @@
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                         d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                                 </svg>
-                                Instructions
+                                Petunjuk
                             </h3>
                             <div class="text-gray-700 leading-relaxed whitespace-pre-line">
                                 {{ $finalTask->instruksi }}
@@ -113,7 +113,7 @@
 
                         <!-- Requirements Checklist -->
                         <div class="bg-gray-50 p-6 rounded-lg">
-                            <h3 class="font-semibold text-gray-800 mb-4">Submission Requirements:</h3>
+                            <h3 class="font-semibold text-gray-800 mb-4">Persyaratan Pengumpulan:</h3>
                             <ul class="space-y-2 text-sm text-gray-700">
                                 <li class="flex items-start">
                                     <svg class="w-5 h-5 text-green-500 mr-2 flex-shrink-0 mt-0.5" fill="currentColor"
@@ -122,7 +122,7 @@
                                             d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
                                             clip-rule="evenodd"></path>
                                     </svg>
-                                    Upload your files to Google Drive
+                                    Unggah file Anda ke Google Drive
                                 </li>
                                 <li class="flex items-start">
                                     <svg class="w-5 h-5 text-green-500 mr-2 flex-shrink-0 mt-0.5" fill="currentColor"
@@ -131,7 +131,7 @@
                                             d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
                                             clip-rule="evenodd"></path>
                                     </svg>
-                                    Set sharing permissions to "Anyone with the link can view"
+                                    Atur izin berbagi ke "Siapa pun yang memiliki tautan dapat melihat"
                                 </li>
                                 <li class="flex items-start">
                                     <svg class="w-5 h-5 text-green-500 mr-2 flex-shrink-0 mt-0.5" fill="currentColor"
@@ -140,7 +140,7 @@
                                             d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
                                             clip-rule="evenodd"></path>
                                     </svg>
-                                    Paste the shareable link in the form below
+                                    Tempel tautan yang dapat dibagikan di formulir di bawah
                                 </li>
                             </ul>
                         </div>
@@ -149,17 +149,11 @@
                     <!-- Submission Status Card (if already submitted) -->
                     @if($submission)
                         <div class="bg-white rounded-2xl shadow-lg p-8 mb-6">
-                            <h3 class="text-xl font-bold text-gray-800 mb-4">Submission Status</h3>
+                            <h3 class="text-xl font-bold text-gray-800 mb-4">Status Pengumpulan</h3>
 
                             <!-- Status Badge -->
                             <div class="flex items-center mb-6">
                                 @php
-                                    $statusConfig = [
-                                        'submitted' => ['bg' => 'bg-yellow-100', 'text' => 'text-yellow-800', 'icon' => 'clock', 'label' => 'Under Review'],
-                                        'approved' => ['bg' => 'bg-green-100', 'text' => 'text-green-800', 'icon' => 'check-circle', 'label' => 'Approved'],
-                                        'rejected' => ['bg' => 'bg-red-100', 'text' => 'text-red-800', 'icon' => 'x-circle', 'label' => 'Rejected'],
-                                        'resubmmit' => ['bg' => 'bg-orange-100', 'text' => 'text-orange-800', 'icon' => 'refresh', 'label' => 'Resubmit Required'],
-                                    ];
                                     $status = $statusConfig[$submission->status] ?? $statusConfig['submitted'];
                                 @endphp
 
@@ -168,13 +162,13 @@
                                     {{ $status['label'] }}
                                 </span>
                                 <span class="ml-4 text-sm text-gray-500">
-                                    Submitted {{ $submission->created_at->diffForHumans() }}
+                                    Dikirim {{ $submission->created_at->diffForHumans() }}
                                 </span>
                             </div>
 
                             <!-- Submitted Link -->
                             <div class="bg-gray-50 p-4 rounded-lg mb-4">
-                                <label class="text-sm font-medium text-gray-700 mb-2 block">Your Submission:</label>
+                                <label class="text-sm font-medium text-gray-700 mb-2 block">Pengumpulan Anda:</label>
                                 <a href="{{ $submission->link_google_drive }}" target="_blank"
                                     class="text-blue-600 hover:text-blue-800 break-all flex items-center">
                                     <svg class="w-5 h-5 mr-2 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
@@ -192,34 +186,10 @@
                             <!-- Review Feedback (if reviewed) -->
                             @if($submission->review)
                                 <div class="border-t pt-6 mt-6">
-                                    <h4 class="font-semibold text-gray-800 mb-4">Review Feedback</h4>
+                                    <h4 class="font-semibold text-gray-800 mb-4">Umpan Balik Review</h4>
 
                                     <!-- Review Checklist -->
                                     <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mb-4">
-                                        @php
-                                            $reviewItems = [
-                                                'kurikulum_permen_39_2025' => 'Kurikulum Permen 39/2025',
-                                                'kurikulum_permen_3_2020' => 'Kurikulum Permen 3/2020',
-                                                'cpl_prodi' => 'CPL Prodi',
-                                                'distribusi_mata_kuliah_dan_highlight' => 'Distribusi Mata Kuliah dan Highlight',
-                                                'cpl_prodi_yang_dibebankan_pada_mata_kuliah' => 'CPL Prodi pada Mata Kuliah',
-                                                'matriks_kajian' => 'Matriks Kajian',
-                                                'tujuan_belajar' => 'Tujuan Belajar',
-                                                'peta_kompentensi' => 'Peta Kompetensi',
-                                                'perhitungan_sks' => 'Perhitungan SKS',
-                                                'scl' => 'SCL (Student Centered Learning)',
-                                                'metode_case_study_dan_team_based_project' => 'Metode Case Study & Team Based Project',
-                                                'rps' => 'RPS',
-                                                'rancangan_penilaian_dalam_1_semester' => 'Rancangan Penilaian 1 Semester',
-                                                'rancangan_tugas_1_pertemuan' => 'Rancangan Tugas 1 Pertemuan',
-                                                'instrumen_penilaian_hasil_belajar' => 'Instrumen Penilaian Hasil Belajar',
-                                                'rubrik_penilaian' => 'Rubrik Penilaian',
-                                                'rps_microteaching' => 'RPS Microteaching',
-                                                'materi_microteaching' => 'Materi Microteaching',
-                                                'penilaian_microteaching' => 'Penilaian Microteaching',
-                                            ];
-                                        @endphp
-
                                         @foreach($reviewItems as $key => $label)
                                             <div class="flex items-center text-sm">
                                                 @if($submission->review->$key)
@@ -243,7 +213,7 @@
                                     <!-- Reviewer Notes -->
                                     @if($submission->review->catatan)
                                         <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded">
-                                            <p class="text-sm font-semibold text-yellow-800 mb-2">Reviewer Notes:</p>
+                                            <p class="text-sm font-semibold text-yellow-800 mb-2">Catatan Reviewer:</p>
                                             <p class="text-sm text-yellow-700">{{ $submission->review->catatan }}</p>
                                         </div>
                                     @endif
@@ -254,7 +224,7 @@
                             @if(in_array($submission->status, ['rejected', 'resubmmit']))
                                 <button onclick="document.getElementById('resubmitForm').classList.remove('hidden')"
                                     class="mt-6 w-full bg-orange-600 hover:bg-orange-700 text-white font-semibold py-3 px-6 rounded-lg transition duration-200">
-                                    Submit New Version
+                                    Kirim Versi Baru
                                 </button>
                             @endif
                         </div>
@@ -265,21 +235,25 @@
                         class="{{ $submission && !in_array($submission->status, ['rejected', 'resubmmit']) ? 'hidden' : '' }}">
                         <div class="bg-white rounded-2xl shadow-lg p-8">
                             <h3 class="text-xl font-bold text-gray-800 mb-6">
-                                {{ $submission ? 'Resubmit Your Work' : 'Submit Your Work' }}
+                                {{ $submission ? 'Kirim Ulang Pekerjaan Anda' : 'Kirim Pekerjaan Anda' }}
                             </h3>
 
-                            <form action="{{ route('course.final_task.submit', $course->slugs) }}" method="POST">
+                            <form action="{{ $submission && in_array($submission->status, ['rejected', 'resubmmit']) ? route('course.final_task.resubmit', ['slug' => $course->slugs]) : route('course.final_task.submit', $course->slugs) }}" method="POST">
                                 @csrf
-                                <input type="hidden" name="final_task_id" value="{{ $finalTask->id }}">
-                                <input type="hidden" name="user_id" value="{{ auth()->user()->id}}">
+                                @if($submission && in_array($submission->status, ['rejected', 'resubmmit']))
+                                    <input type="hidden" name="submission_id" value="{{ $submission->id }}">
+                                @else
+                                    <input type="hidden" name="final_task_id" value="{{ $finalTask->id }}">
+                                    <input type="hidden" name="user_id" value="{{ auth()->user()->id }}">
+                                @endif
                                 <div class="mb-6">
                                     <label for="link_google_drive" class="block text-sm font-medium text-gray-700 mb-2">
-                                        Google Drive Link <span class="text-red-500">*</span>
+                                        Tautan Google Drive <span class="text-red-500">*</span>
                                     </label>
                                     <input type="url" name="link_google_drive" id="link_google_drive" required
                                         placeholder="https://drive.google.com/..."
                                         class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
-                                        value="{{ old('link_google_drive') }}">
+                                        value="{{ old('link_google_drive', $submission->link_google_drive ?? '') }}">
                                     @error('link_google_drive')
                                         <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
                                     @enderror
@@ -291,8 +265,7 @@
                                         <input type="checkbox" name="agreement" required
                                             class="mt-1 mr-3 h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
                                         <span class="text-sm text-gray-700">
-                                            I confirm that this is my original work and I have set the appropriate sharing
-                                            permissions on Google Drive.
+                                            Saya mengkonfirmasi bahwa ini adalah karya asli saya dan saya telah menetapkan izin berbagi yang sesuai di Google Drive.
                                         </span>
                                     </label>
                                 </div>
@@ -303,7 +276,7 @@
                                         <button type="button"
                                             onclick="document.getElementById('resubmitForm').classList.add('hidden')"
                                             class="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold py-3 px-6 rounded-lg transition duration-200">
-                                            Cancel
+                                            Batal
                                         </button>
                                     @endif
                                     <button type="submit"
@@ -312,7 +285,7 @@
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                 d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path>
                                         </svg>
-                                        Submit Final Task
+                                        Kirim Tugas Akhir
                                     </button>
                                 </div>
                             </form>
