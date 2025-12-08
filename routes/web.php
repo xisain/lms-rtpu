@@ -13,7 +13,9 @@ use App\Http\Controllers\profileController;
 use App\Http\Controllers\SubscriptionController;
 use App\Http\Controllers\UserController;
 use App\Http\Middleware\dosenMiddleware;
-use Illuminate\Support\Facades\Route;
+use App\Models\subscription;
+use App\Models\Jurusan;
+use App\Models\Intansi;
 
 // Unguarded Route
 Route::get('certificate/{certificate}/download', [CertificateController::class, 'download'])->name('certificate.download');
@@ -41,20 +43,10 @@ Route::middleware('auth')->group(function () {
         Route::post('/', [SubscriptionController::class, 'purchases'])->name('plan.purchases');
 
     });
-    Route::prefix('course-purchase')->group(function () {
-        Route::get('{slug}/checkout', [CoursePurchaseController::class, 'checkout'])->name('course.purchase.checkout');
-        Route::post('/', [CoursePurchaseController::class, 'purchase'])->name('course.purchase');
-    });
     Route::prefix('profile')->group(function () {
         Route::get('/', [profileController::class, 'show'])->name('profile');
-        Route::prefix('transaction')->group(function(){
-            Route::get('/',[profileController::class,'transactionList'])->name('profile.transaction.history');
-            Route::get('/detail/{id}',[profileController::class,'transactionDetail'])->name('profile.transaction.history.detail');
-        });
-        Route::prefix('subscription')->group(function (){
-            Route::get('/',[profileController::class,'subscriptionList'])->name('profile.subscription.history');;
-            Route::get('/detail/{id}',[profileController::class,'subscriptionDetail'])->name('profile.subscription.history.detail');
-        });
+        Route::get('/edit', [profileController::class, 'edit'])->name('profile.edit');
+        Route::put('/update', [profileController::class, 'update'])->name('profile.update');
     });
     // Protected routes here
     Route::prefix('course')->group(function () {
@@ -85,6 +77,24 @@ Route::middleware('auth')->group(function () {
             return response()->json(['success' => true]);
         })->name('sidebar.toggle');
         Route::get('/', [adminController::class, 'index'])->name('admin.home');
+
+        Route::prefix('jurusan')->group(function () {
+            Route::get('/', [App\Http\Controllers\JurusanController::class, 'index'])->name('admin.jurusan.index');
+            Route::get('/create', [App\Http\Controllers\JurusanController::class, 'create'])->name('admin.jurusan.create');
+            Route::post('/', [App\Http\Controllers\JurusanController::class, 'store'])->name('admin.jurusan.store');
+            Route::get('/edit/{jurusan}', [App\Http\Controllers\JurusanController::class, 'edit'])->name('admin.jurusan.edit');
+            Route::put('/{id}', [App\Http\Controllers\JurusanController::class, 'update'])->name('admin.jurusan.update');
+            Route::delete('/{id}', [App\Http\Controllers\JurusanController::class, 'destroy'])->name('admin.jurusan.destroy');
+        });
+
+        Route::prefix('instansi')->group(function () {
+            Route::get('/', [App\Http\Controllers\InstansiController::class, 'index'])->name('admin.instansi.index');
+            Route::get('/create', [App\Http\Controllers\InstansiController::class, 'create'])->name('admin.instansi.create');
+            Route::post('/', [App\Http\Controllers\InstansiController::class, 'store'])->name('admin.instansi.store');
+            Route::get('/edit/{instansi}', [App\Http\Controllers\InstansiController::class, 'edit'])->name('admin.instansi.edit');
+            Route::put('/{id}', [App\Http\Controllers\InstansiController::class, 'update'])->name('admin.instansi.update');
+            Route::delete('/{id}', [App\Http\Controllers\InstansiController::class, 'destroy'])->name('admin.instansi.destroy');
+        });
 
         Route::prefix('category')->group(function () {
             Route::get('/', [CategoryController::class, 'index'])->name('admin.category.index');

@@ -80,6 +80,26 @@
                     </span>
                 </a>
 
+                <a href="{{ route('admin.jurusan.index') }}"
+                   class="flex items-center px-3 py-2 rounded-xl transition-all duration-200 {{ request()->routeIs('admin.jurusan.index') ? 'bg-[#009999] font-semibold' : 'text-gray-900 hover:bg-gray-100' }}"
+                   :class="{ 'justify-center': !sidebarOpen, 'justify-start': sidebarOpen }">
+                    <i class="fa-solid fa-layer-group" :class="{ 'text-lg': !sidebarOpen }"></i>
+                    <span class="ml-3 transition-opacity duration-200"
+                          :class="{ 'opacity-0 hidden': !sidebarOpen, 'opacity-100': sidebarOpen }">
+                        Jurusan
+                    </span>
+                </a>
+
+                <a href="{{ route('admin.instansi.index') }}"
+                   class="flex items-center px-3 py-2 rounded-xl transition-all duration-200 {{ request()->routeIs('admin.instansi.index') ? 'bg-[#009999] font-semibold' : 'text-gray-900 hover:bg-gray-100' }}"
+                   :class="{ 'justify-center': !sidebarOpen, 'justify-start': sidebarOpen }">
+                    <i class="fa-solid fa-building" :class="{ 'text-lg': !sidebarOpen }"></i>
+                    <span class="ml-3 transition-opacity duration-200"
+                          :class="{ 'opacity-0 hidden': !sidebarOpen, 'opacity-100': sidebarOpen }">
+                        Instansi
+                    </span>
+                </a>
+
                 <a href="{{ route('admin.course.index') }}"
                    class="flex items-center px-3 py-2 rounded-xl transition-all duration-200 {{ request()->routeIs('admin.course.index') ? 'bg-[#009999] font-semibold' : 'text-gray-900 hover:bg-gray-100' }}"
                    :class="{ 'justify-center': !sidebarOpen, 'justify-start': sidebarOpen }">
@@ -133,6 +153,7 @@
                     </span>
                 </a>
                 @endif
+
             </nav>
         @else
             <!-- NAVIGATION Dosen -->

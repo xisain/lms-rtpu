@@ -3,8 +3,149 @@
 @section('title', 'My Profile')
 
 @section('content')
+<<<<<<< Updated upstream
     <div class="min-h-screen bg-gray-50 py-8">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+=======
+<div class="min-h-screen bg-gray-50 py-8">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <!-- Profile Header -->
+        <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+            <div class="flex items-center space-x-4">
+                <div class="bg-white p-6 mb-6 relative">
+                    <div class="flex items-center space-x-4">
+
+                        @php
+                            $gradientClass = $user->role->name === 'dosen'
+                                ? 'from-green-500 to-cyan-500'
+                                : 'from-blue-500 to-purple-600';
+                        @endphp
+
+                        <div
+                            class="w-20 h-20 rounded-full flex items-center justify-center text-white text-2xl font-bold font-bold bg-gradient-to-br {{ $gradientClass }}">
+                            {{ strtoupper(substr($user->name, 0, 1)) }}
+                        </div>
+                        <div>
+                            <h1 class="text-2xl font-bold text-gray-900">{{ $user->name }}</h1>
+                            <p class="text-gray-600">{{ $user->email }}</p>
+                            <span
+                                class="inline-block mt-2 px-3 py-1 bg-green-100 text-green-800 text-sm font-medium rounded-full">
+                                Premium Member
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- BUTTON EDIT PROFIL -->
+                    <a href="{{ route('profile.edit') }}"
+                    class="absolute bottom-4 ml-13 bg-white hover:bg-gray-300 text-white p-1 w-8 rounded-full shadow-md transition">
+                        <center><i class="fa fa-pen" style="color: black;"></i></center>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Subscription Accordion -->
+        @if($user->subscriptions)
+        <div class="bg-white rounded-lg shadow-md mb-6">
+            <button onclick="toggleAccordion('subscription')"
+                class="w-full px-6 py-4 flex items-center justify-between text-left hover:bg-gray-50 transition-colors">
+                <div class="flex items-center space-x-3">
+                    <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                    </svg>
+                    <h2 class="text-xl font-semibold text-gray-900">My Subscription</h2>
+                </div>
+                <svg id="subscription-icon" class="w-5 h-5 text-gray-500 transform transition-transform" fill="none"
+                    stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                </svg>
+            </button>
+
+            <div id="subscription-content" class="hidden border-t border-gray-200">
+                <div class="p-6">
+                    @foreach ($user->subscriptions as $subscription)
+                    {{ $subscription->status }}
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <!-- Current Plan -->
+                        <div class="border border-gray-200 rounded-lg p-4">
+                            <h3 class="font-semibold text-gray-900 mb-2">Current Plan</h3>
+                            <p class="text-2xl font-bold text-blue-600 mb-1">{{$subscription->plan->name }}</p>
+                            {{-- <p class="text-gray-600 text-sm">Unlimited access to all courses</p> --}}
+                        </div>
+
+                        <!-- Billing Info -->
+                        <div class="border border-gray-200 rounded-lg p-4">
+                            <h3 class="font-semibold text-gray-900 mb-2">Billing Information</h3>
+                            <p class="text-gray-700">{{ 'Rp ' . number_format($subscription->plan->price, 0, ',', '.')
+                                }}</p>
+                            <p class="text-sm text-gray-500 mt-1">
+                                @if($subscription->ends_at)
+                                {{ $subscription->ends_at }}
+                                @else
+                                Belum Dimulai
+                                @endif
+                            </p>
+                        </div>
+
+                        <!-- Subscription Status -->
+                        <div class="border border-gray-200 rounded-lg p-4">
+                            <h3 class="font-semibold text-gray-900 mb-2">Status</h3>
+                            @if($subscription->status == 'waiting_approval' )
+                            <span
+                                class="inline-flex items-center px-3 py-1 bg-yellow-100 text-yellow-800 text-sm font-medium rounded-full"><span
+                                    class="w-2 h-2 bg-yellow-500 rounded-full mr-2"></span>
+                                Belum di Verifikasi
+                            </span>
+                            @elseif ($subscription->status =='approved')
+                            <span
+                                class="inline-flex items-center px-3 py-1 bg-green-100 text-green-800 text-sm font-medium rounded-full"><span
+                                    class="w-2 h-2 bg-green-500 rounded-full mr-2"></span>
+                                Aktif
+                            </span>
+                            @else
+                            <span
+                                class="inline-flex items-center px-3 py-1 bg-red-100 text-red-800 text-sm font-medium rounded-full"><span
+                                    class="w-2 h-2 bg-red-500 rounded-full mr-2"></span>
+                                Ditolak
+
+                            </span>
+                            <p class="text-sm text-gray-500 mt-2">Alasan : {{ $subscription->notes }}</p>
+                            @endif
+                            @if($subscription->starts_at)
+                            <p class="text-sm text-gray-500 mt-2">Member Sejak: {{ $subscription->starts_at->format('d/m/Y') }}</p>
+                            @else
+                            <p class="text-sm text-gray-500 mt-2">Member Sejak: Belum Di mulai</p>
+                            @endif
+                        </div>
+
+                        <!-- Features -->
+                        <div class="border border-gray-200 rounded-lg p-4">
+                            <h3 class="font-semibold text-gray-900 mb-2">Features</h3>
+
+                            @php
+                            $features = is_array($subscription->plan->features)
+                            ? $subscription->plan->features
+                            : json_decode($subscription->plan->features, true);
+                            @endphp
+
+                            @if (!empty($features))
+                            <ul class="space-y-2 text-sm text-gray-700">
+                                @foreach ($features as $feature)
+                                <li class="flex items-center">
+                                    <svg class="w-4 h-4 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd"
+                                            d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                                            clip-rule="evenodd"></path>
+                                    </svg>
+                                    {{ $feature }}
+                                </li>
+                                @endforeach
+                            </ul>
+                            @else
+                            <p class="text-sm text-gray-500 italic">No features listed.</p>
+                            @endif
+                        </div>
+>>>>>>> Stashed changes
 
             <!-- Profile Header -->
             <div class="bg-white rounded-lg shadow-md p-6 mb-6">

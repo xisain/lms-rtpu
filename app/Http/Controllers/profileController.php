@@ -7,6 +7,8 @@ use App\Models\CoursePurchase;
 use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\progress;
+use App\Models\Role;;
+use App\Models\Category;
 use App\Models\subscription;
 
 class profileController extends Controller
@@ -105,17 +107,38 @@ class profileController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $id)
+    public function edit()
     {
-        //
+        $user = auth()->user();
+        $role = Role::all();           // ⬅ Tambahkan ini agar role tampil di profile.edit
+        $category = Category::all();   // kalau dipakai
+
+        return view('profile.edit', compact('user', 'role', 'category'));
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(Request $request)
     {
-        //
+        $user = auth()->user();
+
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|unique:users,email,' . $user->id,
+            'password' => 'nullable|min:6|confirmed'
+        ]);
+
+        $user->name = $request->name;
+        $user->email = $request->email;
+
+        if ($request->filled('password')) {
+            $user->password = bcrypt($request->password);
+        }
+
+        $user->save();
+
+        return redirect()->route('profile')->with('success', 'Profil berhasil diperbarui!');
     }
 
     /**

@@ -27,6 +27,8 @@ class DatabaseSeeder extends Seeder
             MaterialSeeders::class,
             SubMaterialSeeders::class,
             quizSeeder::class,
+            jurusanSeeder::class,
+            instansiSeeder::class,
             planSeeders::class,
             paymentSeeders::class,
         ]);

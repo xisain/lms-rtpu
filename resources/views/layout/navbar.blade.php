@@ -149,6 +149,7 @@
                         @unless($hasApprovedSubscription)
                             <a href="{{ route('plan') }}" class="text-base font-medium text-gray-700 hover:text-[#0f5757]">Plan</a>
                         @endunless
+                        
                     </div>
                 @endauth
 
