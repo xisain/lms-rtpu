@@ -30,15 +30,15 @@
 
                 <!-- Pilih Plan -->
                 <div class="mb-6">
-                    <label for="plan_id" class="block text-sm font-medium text-gray-700 mb-2">
-                        Pilih Plan <span class="text-red-500">*</span>
+                    <label for="course_id" class="block text-sm font-medium text-gray-700 mb-2">
+                        Pilih Course <span class="text-red-500">*</span>
                     </label>
-                    <select name="plan_id" id="plan_id" required
+                    <select name="course_id" id="course_id" required
                         class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#009999] focus:border-transparent transition">
                         <option value="">-- Pilih Plan --</option>
-                        @foreach($plan as $p)
-                            <option value="{{ $p->id }}" {{ old('plan_id') == $p->id ? 'selected' : '' }}>
-                                {{ $p->name }} - Rp {{ number_format($p->price, 0, ',', '.') }}
+                        @foreach($course as $c)
+                            <option value="{{ $c->id }}" {{ old('course_id') == $c->id ? 'selected' : '' }}>
+                                {{ $c->nama_course }}
                             </option>
                         @endforeach
                     </select>

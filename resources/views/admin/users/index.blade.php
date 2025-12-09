@@ -2,6 +2,18 @@
 @include('sweetalert2::index')
 @section('content')
     <div class="mx-auto py-2">
+          @if(session('success'))
+            <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mb-6 rounded relative" role="alert">
+                        <div class="flex justify-between items-center">
+                            <span>{{ session('success') }}</span>
+                            <button onclick="this.parentElement.parentElement.remove()" class="text-green-700 hover:text-green-900">
+                                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"/>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+            @endif
         <div class="max-w-10xl mx-auto">
             <div class="bg-white rounded-lg shadow-md overflow-hidden">
                 <div class="bg-[#009999] px-6 py-4 flex justify-between items-center">
@@ -30,7 +42,7 @@
                 </div>
                 </div>
 
-                <div class="overflow-x-auto p-4">
+                <div class=" bg-white overflow-x-auto p-4">
                     <table class="min-w-full divide-y divide-gray-200" id="usersTable">
                         <thead class="bg-gray-50">
                             <tr class="">

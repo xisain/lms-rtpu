@@ -87,7 +87,6 @@
                 <div class="hidden lg:flex items-center space-x-4 absolute left-1/2 transform -translate-x-1/2">
                     <a href="{{ route('home') }}" class="text-base font-medium text-gray-700 hover:text-[#0f5757]">Home</a>
                     <a href="{{ route('list.kelas') }}" class="text-base font-medium text-gray-700 hover:text-[#0f5757]">Course</a>
-                    <a href="{{ route('plan') }}" class="text-base font-medium text-gray-700 hover:text-[#0f5757]">Plan</a>
                 </div>
                 @endguest
 
@@ -139,17 +138,6 @@
                             @endif
                         </div>
                     </div>
-                        @php
-                            $hasApprovedSubscription = auth()->user()
-                                ->subscriptions()
-                                ->where('status', 'approved')
-                                ->exists();
-                        @endphp
-
-                        @unless($hasApprovedSubscription)
-                            <a href="{{ route('plan') }}" class="text-base font-medium text-gray-700 hover:text-[#0f5757]">Plan</a>
-                        @endunless
-                        
                     </div>
                 @endauth
 
@@ -224,7 +212,7 @@
         </a>
 
         <!-- Kelas Ku Dropdown Section -->
-       
+
         <!-- Auth Section -->
         <div class="border-t border-gray-200 pt-3 mt-3">
             @auth

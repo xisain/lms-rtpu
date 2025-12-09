@@ -18,17 +18,15 @@ class WelcomeMail extends Mailable
 
     public $user;
     public $resetUrl;
-    public $subscription;
-    public $plan;
+    public $course;
 
     /**
      * Create a new message instance.
      */
-    public function __construct(User $user, $subscription, $plan)
+    public function __construct(User $user, $course)
     {
         $this->user = $user;
-        $this->subscription = $subscription;
-        $this->plan = $plan;
+        $this->course = $course;
 
         // Hapus token lama jika ada
         DB::table('password_reset_tokens')

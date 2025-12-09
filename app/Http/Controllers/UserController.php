@@ -3,10 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Models\category;
+use App\Models\enrollment;
 use App\Models\plan;
 use App\Models\role;
 use App\Models\subscription;
 use App\Models\User;
+use App\Models\course;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
@@ -112,18 +114,18 @@ class UserController extends Controller
 
     public function createBulkUser()
     {
-        $plan = Plan::get();
 
-        return view('admin.users.create', ['plan' => $plan]);
+        $course = Course::get();
+        return view('admin.users.create', ['course' => $course]);
     }
 
     public function storeBulkUser(Request $request)
     {
         $request->validate([
-            'plan_id' => 'required|exists:plans,id',
+            'course_id' => 'required|exists:courses,id',
             'csv_file' => 'required|file|mimes:csv,txt|max:2048',
         ]);
-        $plan = plan::find($request->plan_id);
+        $course = course::find($request->course_id);
         try {
             $file = $request->file('csv_file');
             $csv = array_map('str_getcsv', file($file));
@@ -200,6 +202,7 @@ class UserController extends Controller
                         'password' => Hash::make($password),
                         'roles_id' => 3,
                         'category_id' => 1,
+                        'isActive' => true,
                     ]);
 
                     // Debuging To Log
@@ -219,21 +222,25 @@ class UserController extends Controller
 
                         continue;
                     }
-
-                    $subscription = subscription::create([
-                        'plan_id' => $request->plan_id,
-                        'user_id' => $user->id,
-                        'payment_method_id' => 1,
-                        'starts_at' => now(),
-                        'ends_at' => now()->addDays($plan->duration_in_days),
-                        'status' => 'approved',
-                        'payment_proof_link' => 'string',
+                    $enrolled = enrollment::create([
+                        "course_id"=> $request->course_id,
+                        "user_id"=> $user->id,
                     ]);
 
+                    // $subscription = subscription::create([
+                    //     'plan_id' => $request->plan_id,
+                    //     'user_id' => $user->id,
+                    //     'payment_method_id' => 1,
+                    //     'starts_at' => now(),
+                    //     'ends_at' => now()->addDays($plan->duration_in_days),
+                    //     'status' => 'approved',
+                    //     'payment_proof_link' => 'string',
+                    // ]);
+
                     // Debug: Cek apakah subscription berhasil dibuat
-                    \Log::debug("Subscription created for user {$user->id}", [
-                        'subscription_id' => $subscription->id ?? 'null',
-                        'plan_id' => $request->plan_id,
+                    \Log::debug("Enrollment created for user {$user->id}", [
+                        'enrollment_id' => $enrolled->id ?? 'null',
+                        // 'plan_id' => $request->plan_id,
                     ]);
 
                     $existingEmails[] = strtolower($email);
@@ -241,7 +248,7 @@ class UserController extends Controller
                     // Send email if checked
                     if ($request->send_email) {
                         try {
-                            Mail::to($user->email)->send(new WelcomeMail($user, $subscription, $plan));
+                            Mail::to($user->email)->send(new WelcomeMail($user, $course));
                         } catch (\Exception $e) {
                             \Log::error("Failed to send welcome email to {$user->email}", [
                                 'error' => $e->getMessage(),
@@ -347,7 +354,6 @@ class UserController extends Controller
             ));
             $user->isActive = false;
             $user->delete();
-            $user->save();
             return redirect()->back()->with('success','Pembuatan akun di Tolak, akun akan di hapus');
         }
     }

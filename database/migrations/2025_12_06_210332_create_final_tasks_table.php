@@ -25,7 +25,7 @@ return new class extends Migration
             $table->enum('status',['submitted','approved','rejected','resubmmit'])->default('submitted');
             $table->timestamps();
         });
-        Schema::create('final_task_review', function (Blueprint $table) {
+        Schema::create('final_task_reviews', function (Blueprint $table) {
             $table->id();
 
             // Relasi ke tugas akhir dan submission
@@ -73,7 +73,7 @@ return new class extends Migration
     public function down(): void
     {
         Schema::dropIfExists('final_tasks');
-        Schema::dropIfExists('final_task_submission');
-        Schema::dropIfExists('final_task_review');
+        Schema::dropIfExists('final_task_submissions');
+        Schema::dropIfExists('final_task_reviews');
     }
 };

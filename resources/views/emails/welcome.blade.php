@@ -8,14 +8,12 @@ Akun Anda telah berhasil dibuat. Kami sangat senang Anda bergabung dengan kami.
 **Nama:** {{ $user->name }}
 **Email:** {{ $user->email }}
 
-## Informasi Subscription
+## Informasi Course Anda
 
 @component('mail::panel')
-**Paket:** {{ $plan->name ?? 'N/A' }}
-**Durasi:** {{ $plan->duration_in_days ?? 0 }} hari
-**Status:** {{ ucfirst($subscription->status) }}
-**Mulai:** {{ $subscription->starts_at->format('d M Y, H:i') }}
-**Berakhir:** {{ $subscription->ends_at->format('d M Y, H:i') }}
+**Nama Course:** {{ $course->nama_course ?? 'N/A' }} <br/>
+**Deskripsi:** {{ $course->description ?? 'N/A' }} <br/>
+**Penanggung Jawab:** {{ $course->teacher->name ?? 'N/A' }} <br/>
 @endcomponent
 
 ## Langkah Selanjutnya
