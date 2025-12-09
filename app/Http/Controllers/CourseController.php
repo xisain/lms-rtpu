@@ -2,9 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Jobs\GenerateCertificateJob;
 use App\Models\category;
-use App\Models\certificate;
 use App\Models\course;
 use App\Models\enrollment;
 use App\Models\final_task;
@@ -304,56 +302,7 @@ class CourseController extends Controller
             'type' => $previewSubmaterial?->type,
         ]);
 
-        $certificateStatus = null;
-        if ($isEnrolled) {
-            // Cek apakah semua materi sudah selesai
-            $allCompleted = true;
-            foreach ($course->material as $m) {
-                // Cek submaterial completion (hanya yang tidak hidden)
-                foreach ($m->submaterial as $sub) {
-                    $progress = progress::where('user_id', Auth::id())
-                        ->where('submaterial_id', $sub->id)
-                        ->where('status', 'completed')
-                        ->exists();
-
-                    if (! $progress) {
-                        $allCompleted = false;
-                        break 2;
-                    }
-                }
-
-                // Cek quiz completion jika ada quiz
-                if ($m->quiz) {
-                    $quizAttempt = quiz_attempt::where('user_id', Auth::id())
-                        ->where('quiz_id', $m->quiz->id)
-                        ->where('status', 'completed')
-                        ->where('score', '>=', 70)
-                        ->exists();
-
-                    if (! $quizAttempt) {
-                        $allCompleted = false;
-                        break;
-                    }
-                }
-            }
-
-            if ($allCompleted) {
-                // Cek status sertifikat
-                $certificate = certificate::where('user_id', Auth::id())
-                    ->where('course_id', $course->id)
-                    ->first();
-
-                $certificateStatus = [
-                    'completed' => true,
-                    'certificate' => $certificate,
-                ];
-            } else {
-                $certificateStatus = [
-                    'completed' => false,
-                    'certificate' => null,
-                ];
-            }
-        }
+        // Certificate status removed: certificate handling disabled
 
         return view('course.show', [
             'courseData' => $course,
@@ -364,7 +313,6 @@ class CourseController extends Controller
             'firstMaterial' => $firstMaterial,
             'firstSubmaterial' => $firstSubmaterial,
             'previewSubmaterial' => $previewSubmaterial,
-            'certificateStatus' => $certificateStatus,
         ]);
     }
 
@@ -972,35 +920,6 @@ class CourseController extends Controller
                 if (! $quizAttempt) {
                     $allCompleted = false;
                     break;
-                }
-            }
-        }
-
-        // Jika semua materi selesai, generate sertifikat
-        if ($allCompleted) {
-            $existingCertificate = certificate::where('user_id', Auth::id())
-                ->where('course_id', $course->id)
-                ->first();
-
-            if (! $existingCertificate) {
-                // Generate sertifikat
-                $certificateNumber = 'CERT-'.Str::upper(Str::random(8));
-                $certificate = certificate::create([
-                    'user_id' => Auth::id(),
-                    'course_id' => $course->id,
-                    'certificate_number' => $certificateNumber,
-                    'issued_date' => now(),
-                ]);
-
-                // Generate PDF di background
-                try {
-                    // Coba dispatch ke queue
-                    GenerateCertificateJob::dispatchSync(Auth::user(), $course, $certificate);
-                    \Log::warning('Queue Success, generating certificate synchronously');
-                } catch (\Exception $e) {
-                    // Fallback: generate langsung jika queue gagal
-                    \Log::warning('Queue failed, generating certificate synchronously');
-                    (new GenerateCertificateJob(Auth::user(), $course, $certificate))->handle();
                 }
             }
         }
