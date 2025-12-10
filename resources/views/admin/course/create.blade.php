@@ -32,7 +32,7 @@
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <!-- Category -->
                         <div class="col-span-2">
-                            <label for="category_id" class="block text-sm font-medium text-gray-700 mb-2">Kategori *</label>
+                            <label for="category_id" class="block text-sm font-medium text-gray-700 mb-2">Kategori <span class="text-red-500"> * </span></label>
                             <select name="category_id" id="category_id" required
                                 class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
                                 <option value="">Pilih Kategori</option>
@@ -48,7 +48,7 @@
                         <!-- Nama Course -->
                         <div class="col-span-2">
                             <label for="nama_course" class="block text-sm font-medium text-gray-700 mb-2">Nama Course
-                                *</label>
+                                <span class="text-red-500"> * </span></label>
                             <input type="text" name="nama_course" id="nama_course" required
                                 class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                                 placeholder="Contoh: Laravel Advanced Course">
@@ -60,7 +60,7 @@
                         <!-- Description -->
                         <div class="col-span-2">
                             <label for="description" class="block text-sm font-medium text-gray-700 mb-2">
-                                Deskripsi *
+                                Deskripsi <span class="text-red-500"> * </span>
                             </label>
                             <textarea name="description" id="description" rows="4" required
                                 class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
@@ -76,7 +76,7 @@
                         </div>
                         <div class="col-span-2">
                             <label for="image_link" class="block text-sm font-medium text-gray-700 mb-2">Gambar
-                                Course</label>
+                                Course <span class="text-red-500"> * </span></label>
                             <input type="file" name="image_link" id="image_link" accept="image/*"
                                 class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
                             @error('image_link')
@@ -85,7 +85,7 @@
                         </div>
 
                         <div class="col-span-2">
-                            <label for="teacher_id" class="block text-sm font-medium text-gray-700 mb-2">Teacher *</label>
+                            <label for="teacher_id" class="block text-sm font-medium text-gray-700 mb-2">Teacher <span class="text-red-500"> * </span></label>
                             <select name="teacher_id" id="teacher_id" required
                                 class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
                                 <option value="">Pilih Teacher/PIC</option>
@@ -98,7 +98,7 @@
                             @enderror
                         </div>
                         <div class="col-span-2">
-                            <label for="reviewer_id" class="block text-sm font-medium text-gray-700 mb-2">Reviewer Tugas Akhir *</label>
+                            <label for="reviewer_id" class="block text-sm font-medium text-gray-700 mb-2">Reviewer Tugas Akhir <span class="text-red-500"> * </span></label>
                             <select name="reviewer_id" id="$reviewer_id" required
                                 class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
                                 <option value="">Pilih Reviewer</option>
@@ -122,7 +122,7 @@
 
                         <!-- Price Field -->
                         <div id="priceField" class="col-span-2 hidden">
-                            <label for="price" class="block text-sm font-medium text-gray-700 mb-2">Harga (Rp) *</label>
+                            <label for="price" class="block text-sm font-medium text-gray-700 mb-2">Harga (Rp) <span class="text-red-500"> * </span></label>
                             <input type="number" name="price" id="price" min="0" step="1000"
                                 class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                                 placeholder="Contoh: 150000">
@@ -188,7 +188,7 @@
                                 <div id="finalTaskSection" class="hidden">
                                     <div class="bg-white border border-gray-200 rounded-lg p-4">
                                         <label for="instruksi" class="block text-sm font-medium text-gray-700 mb-2">
-                                            Instruksi Tugas Akhir *
+                                            Instruksi Tugas Akhir <span class="text-red-500"> * </span>
                                         </label>
                                         <textarea name="instruksi" id="instruksi" rows="6"
                                             class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
@@ -307,7 +307,7 @@
                     </div>
 
                     <div class="mb-4">
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Nama Materi *</label>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Nama Materi <span class="text-red-500"> * </span></label>
                         <input type="text" name="materials[${materialIndex}][nama_materi]" required
                             class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                             placeholder="Contoh: Pengenalan Laravel">
@@ -327,7 +327,7 @@
                         <div class="quiz-section hidden" data-material-index="${materialIndex}">
                             <div class="bg-white border border-gray-200 rounded-lg p-4 mb-4">
                                 <div class="mb-3">
-                                    <label class="block text-sm font-medium text-gray-700 mb-1">Judul Quiz *</label>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Judul Quiz <span class="text-red-500"> * </span></label>
                                     <input type="text" name="materials[${materialIndex}][quiz][judul_quiz]"
                                         class="quiz-input w-full px-3 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500"
                                         placeholder="Contoh: Quiz Pengenalan Laravel">
@@ -392,13 +392,13 @@
             </div>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mb-3">
                 <div>
-                    <label class="block text-xs font-medium text-gray-700 mb-1">Nama Submateri *</label>
+                    <label class="block text-xs font-medium text-gray-700 mb-1">Nama Submateri <span class="text-red-500"> * </span></label>
                     <input type="text" name="materials[${materialIndex}][submaterials][${submaterialIndex}][nama_submateri]" required
                         class="w-full px-3 py-2 text-sm border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                         placeholder="Contoh: Pengenalan Laravel">
                 </div>
                 <div>
-                    <label class="block text-xs font-medium text-gray-700 mb-1">Tipe *</label>
+                    <label class="block text-xs font-medium text-gray-700 mb-1">Tipe <span class="text-red-500"> * </span></label>
                     <select name="materials[${materialIndex}][submaterials][${submaterialIndex}][type]"
                             class="sub-type w-full px-3 py-2 text-sm border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                             data-material-index="${materialIndex}"
@@ -445,7 +445,7 @@
                         // Rich Text Editor
                         const trixId = `trix-${materialIndex}-${submaterialIndex}`;
                         parent.innerHTML = `
-                        <label class="block text-xs font-medium text-gray-700 mb-1">Isi Materi (Teks) *</label>
+                        <label class="block text-xs font-medium text-gray-700 mb-1">Isi Materi (Teks) <span class="text-red-500"> * </span></label>
                         <input id="${trixId}" type="hidden"
                             name="materials[${materialIndex}][submaterials][${submaterialIndex}][isi_materi]"
                             required>
@@ -456,14 +456,14 @@
                     `;
                     } else if (typeSelect.value === 'video') {
                         parent.innerHTML = `
-                        <label class="block text-xs font-medium text-gray-700 mb-1">Link YouTube *</label>
+                        <label class="block text-xs font-medium text-gray-700 mb-1">Link YouTube <span class="text-red-500"> * </span></label>
                         <input type="text" name="materials[${materialIndex}][submaterials][${submaterialIndex}][isi_materi]" required
                             class="w-full px-3 py-2 text-sm border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                             placeholder="https://www.youtube.com/watch?v=...">
                     `;
                     } else if (typeSelect.value === 'pdf') {
                         parent.innerHTML = `
-                        <label class="block text-xs font-medium text-gray-700 mb-1">Upload File PDF *</label>
+                        <label class="block text-xs font-medium text-gray-700 mb-1">Upload File PDF <span class="text-red-500"> * </span></label>
                         <input type="file" name="materials[${materialIndex}][submaterials][${submaterialIndex}][isi_materi]"
                             accept="application/pdf" required
                             class="w-full px-3 py-2 text-sm border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent">

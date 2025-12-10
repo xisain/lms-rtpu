@@ -182,16 +182,33 @@ class FinalTaskController extends Controller
 
     public function viewTask($slug)
     {
-        $course = Course::where('slugs', $slug)->firstOrFail();
+        $course = Course::where('slugs', $slug)->with('material.submaterial')->firstOrFail();
         $finalTask = final_task::where('course_id', $course->id)->firstOrFail();
         $submission = final_task_submission::where('final_task_id', $finalTask->id)
             ->where('user_id', auth()->id())
             ->first();
 
+        // Calculate user progress
+        $userId = auth()->id();
+        $totalSubmaterials = 0;
+        $completedSubmaterials = 0;
+
+        foreach ($course->material as $material) {
+            $visibleSubmaterials = $material->submaterial->where('hidden', false);
+            foreach ($visibleSubmaterials as $submaterial) {
+                $totalSubmaterials++;
+                if (\App\Models\progress::isCompleted($userId, $submaterial->id)) {
+                    $completedSubmaterials++;
+                }
+            }
+        }
+
+        $userProgress = $totalSubmaterials > 0 ? round(($completedSubmaterials / $totalSubmaterials) * 100) : 0;
+
         $statusConfig = $this->getStatusConfig();
         $reviewItems = $this->getReviewItems();
 
-        return view('course.final_task', compact('finalTask', 'course', 'submission', 'statusConfig', 'reviewItems'));
+        return view('course.final_task', compact('finalTask', 'course', 'submission', 'statusConfig', 'reviewItems', 'userProgress'));
     }
 
     public function submitTask(Request $request)
@@ -227,7 +244,8 @@ class FinalTaskController extends Controller
         ]);
 
         $submission = final_task_submission::findOrFail($request->submission_id);
-
+        $review = final_task_review::where('final_task_submission_id',$submission->id)->first();
+        $review->delete();
         // Pastikan submission milik user yang login
         if ($submission->user_id !== auth()->id()) {
             return redirect()->back()->with('error', 'Anda tidak memiliki akses ke pengumpulan ini');

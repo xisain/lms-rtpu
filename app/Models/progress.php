@@ -113,4 +113,33 @@ class progress extends Model
 
         return ($completedCount / $totalSubmaterials) * 100;
     }
+     public static function getCourseProgress(int $userId, int $courseId): float
+    {
+        $course = course::with(['material.submaterial', 'material.quiz'])->findOrFail($courseId);
+
+        $totalItems = 0;
+        $completedItems = 0;
+
+        foreach($course->material as $material) {
+            // Hitung submaterial
+            $submaterialCount = $material->submaterial->count();
+            $totalItems += $submaterialCount;
+
+            $completedSubmaterials = static::where('user_id', $userId)
+                ->whereIn('submaterial_id', $material->submaterial->pluck('id'))
+                ->where('status', 'completed')
+                ->count();
+            $completedItems += $completedSubmaterials;
+
+            // Hitung quiz jika ada
+            if($material->quiz) {
+                $totalItems++;
+                if($material->quiz->isCompleted($userId)) {
+                    $completedItems++;
+                }
+            }
+        }
+
+        return $totalItems > 0 ? ($completedItems / $totalItems) * 100 : 0;
+    }
 }

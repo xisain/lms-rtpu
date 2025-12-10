@@ -303,57 +303,57 @@ class CourseController extends Controller
             'title' => $previewSubmaterial?->title,
             'type' => $previewSubmaterial?->type,
         ]);
+        // Fungsi Show Certificate Kalo kedepannya di pakai
+        // $certificateStatus = null;
+        // if ($isEnrolled) {
+        //     // Cek apakah semua materi sudah selesai
+        //     $allCompleted = true;
+        //     foreach ($course->material as $m) {
+        //         // Cek submaterial completion (hanya yang tidak hidden)
+        //         foreach ($m->submaterial as $sub) {
+        //             $progress = progress::where('user_id', Auth::id())
+        //                 ->where('submaterial_id', $sub->id)
+        //                 ->where('status', 'completed')
+        //                 ->exists();
 
-        $certificateStatus = null;
-        if ($isEnrolled) {
-            // Cek apakah semua materi sudah selesai
-            $allCompleted = true;
-            foreach ($course->material as $m) {
-                // Cek submaterial completion (hanya yang tidak hidden)
-                foreach ($m->submaterial as $sub) {
-                    $progress = progress::where('user_id', Auth::id())
-                        ->where('submaterial_id', $sub->id)
-                        ->where('status', 'completed')
-                        ->exists();
+        //             if (! $progress) {
+        //                 $allCompleted = false;
+        //                 break 2;
+        //             }
+        //         }
 
-                    if (! $progress) {
-                        $allCompleted = false;
-                        break 2;
-                    }
-                }
+        //         // Cek quiz completion jika ada quiz
+        //         if ($m->quiz) {
+        //             $quizAttempt = quiz_attempt::where('user_id', Auth::id())
+        //                 ->where('quiz_id', $m->quiz->id)
+        //                 ->where('status', 'completed')
+        //                 ->where('score', '>=', 70)
+        //                 ->exists();
 
-                // Cek quiz completion jika ada quiz
-                if ($m->quiz) {
-                    $quizAttempt = quiz_attempt::where('user_id', Auth::id())
-                        ->where('quiz_id', $m->quiz->id)
-                        ->where('status', 'completed')
-                        ->where('score', '>=', 70)
-                        ->exists();
+        //             if (! $quizAttempt) {
+        //                 $allCompleted = false;
+        //                 break;
+        //             }
+        //         }
+        //     }
 
-                    if (! $quizAttempt) {
-                        $allCompleted = false;
-                        break;
-                    }
-                }
-            }
+        //     if ($allCompleted) {
+        //         // Cek status sertifikat
+        //         $certificate = certificate::where('user_id', Auth::id())
+        //             ->where('course_id', $course->id)
+        //             ->first();
 
-            if ($allCompleted) {
-                // Cek status sertifikat
-                $certificate = certificate::where('user_id', Auth::id())
-                    ->where('course_id', $course->id)
-                    ->first();
-
-                $certificateStatus = [
-                    'completed' => true,
-                    'certificate' => $certificate,
-                ];
-            } else {
-                $certificateStatus = [
-                    'completed' => false,
-                    'certificate' => null,
-                ];
-            }
-        }
+        //         $certificateStatus = [
+        //             'completed' => true,
+        //             'certificate' => $certificate,
+        //         ];
+        //     } else {
+        //         $certificateStatus = [
+        //             'completed' => false,
+        //             'certificate' => null,
+        //         ];
+        //     }
+        // }
 
         return view('course.show', [
             'courseData' => $course,
@@ -364,7 +364,7 @@ class CourseController extends Controller
             'firstMaterial' => $firstMaterial,
             'firstSubmaterial' => $firstSubmaterial,
             'previewSubmaterial' => $previewSubmaterial,
-            'certificateStatus' => $certificateStatus,
+            // 'certificateStatus' => $certificateStatus,
         ]);
     }
 
@@ -373,7 +373,7 @@ class CourseController extends Controller
      */
     public function edit($id)
     {
-        $course = course::with('material.submaterial', 'material.quiz.questions.options')->findOrFail($id);
+        $course = course::with('material.submaterial', 'material.quiz.questions.options', 'finalTask')->findOrFail($id);
 
         // Check if user has permission to edit this course
         if (auth()->user()->role->id == 2 && $course->teacher_id != auth()->id()) {
@@ -384,11 +384,13 @@ class CourseController extends Controller
             // Admin view
             $category = category::all();
             $teachers = User::whereHas('role', fn ($q) => $q->where('name', 'dosen'))->get();
+            $reviewers = User::whereHas('role', fn ($q) => $q->where('name', 'dosen'))->get();
 
             return view('admin.course.edit', [
                 'course' => $course,
                 'categories' => $category,
                 'teachers' => $teachers,
+                'reviewers' => $reviewers,
             ]);
         } else {
             // Dosen view
@@ -425,6 +427,8 @@ class CourseController extends Controller
             'end_date' => 'nullable|required_if:isLimitedCourse,1|date|after:start_date',
             'maxEnrollment' => 'nullable|required_if:isLimitedCourse,1|integer|min:1',
             'public' => 'boolean',
+
+            'instruksi' => 'nullable|string',
             'materials' => 'required|array|min:1',
             'materials.*.id' => 'nullable|integer|exists:materials,id',
             'materials.*.nama_materi' => 'required|string|max:255',
@@ -444,8 +448,9 @@ class CourseController extends Controller
             'materials.*.submaterials.*.hidden' => 'nullable|boolean',
         ];
 
-        if (auth()->user()->role->id == 1) {
+         if (auth()->user()->role->id == 1) {
             $rules['teacher_id'] = 'required|exists:users,id';
+            $rules['reviewer_id'] = 'required|exists:users,id';
         }
 
         if ($request->has('is_paid')) {
@@ -464,19 +469,35 @@ class CourseController extends Controller
                 'slugs' => Str::slug($validated['nama_course']),
                 'description' => $validated['description'],
                 'is_paid' => $validated['is_paid'] ?? false,
-                'price' => $validated['price'],
+                'price' => $validated['price'] ?? null,
                 'isLimitedCourse' => $validated['isLimitedCourse'] ?? false,
                 'start_date' => $validated['start_date'] ?? null,
                 'end_date' => $validated['end_date'] ?? null,
                 'maxEnrollment' => $validated['maxEnrollment'] ?? null,
                 'public' => $validated['public'] ?? false,
+
             ];
 
             if (auth()->user()->role->id == 1 && isset($validated['teacher_id'])) {
                 $courseData['teacher_id'] = $validated['teacher_id'];
             }
+            if (auth()->user()->role->id == 1 && isset($validated['reviewer_id'])) {
+                $courseData['reviewer_id'] = $validated['reviewer_id'];
+            }
+
 
             $course->update($courseData);
+
+            // Handle final task
+            if ($request->has('instruksi') && !empty($request->instruksi)) {
+                final_task::updateOrCreate(
+                    ['course_id' => $course->id],
+                    ['instruksi' => $request->instruksi]
+                );
+            } else {
+                // Delete final task if exists and instruksi is empty
+                final_task::where('course_id', $course->id)->delete();
+            }
 
             // 2. Handle Untuk Bagian Image pada Course
             if ($request->hasFile('image_link')) {
@@ -879,7 +900,7 @@ class CourseController extends Controller
 
     public function mulai($slug, $material = null, $submaterial = null)
     {
-        $course = course::with(['material.submaterial', 'material.quiz.questions.options'])
+        $course = course::with(['material.submaterial', 'material.quiz.questions.options','finalTask'])
             ->where('slugs', $slug)
             ->firstOrFail();
 
@@ -976,34 +997,35 @@ class CourseController extends Controller
             }
         }
 
-        // Jika semua materi selesai, generate sertifikat
-        if ($allCompleted) {
-            $existingCertificate = certificate::where('user_id', Auth::id())
-                ->where('course_id', $course->id)
-                ->first();
 
-            if (! $existingCertificate) {
-                // Generate sertifikat
-                $certificateNumber = 'CERT-'.Str::upper(Str::random(8));
-                $certificate = certificate::create([
-                    'user_id' => Auth::id(),
-                    'course_id' => $course->id,
-                    'certificate_number' => $certificateNumber,
-                    'issued_date' => now(),
-                ]);
+        // // Jika semua materi selesai, generate sertifikat
+        // if ($allCompleted) {
+        //     $existingCertificate = certificate::where('user_id', Auth::id())
+        //         ->where('course_id', $course->id)
+        //         ->first();
 
-                // Generate PDF di background
-                try {
-                    // Coba dispatch ke queue
-                    GenerateCertificateJob::dispatchSync(Auth::user(), $course, $certificate);
-                    \Log::warning('Queue Success, generating certificate synchronously');
-                } catch (\Exception $e) {
-                    // Fallback: generate langsung jika queue gagal
-                    \Log::warning('Queue failed, generating certificate synchronously');
-                    (new GenerateCertificateJob(Auth::user(), $course, $certificate))->handle();
-                }
-            }
-        }
+        //     if (! $existingCertificate) {
+        //         // Generate sertifikat
+        //         $certificateNumber = 'CERT-'.Str::upper(Str::random(8));
+        //         $certificate = certificate::create([
+        //             'user_id' => Auth::id(),
+        //             'course_id' => $course->id,
+        //             'certificate_number' => $certificateNumber,
+        //             'issued_date' => now(),
+        //         ]);
+
+        //         // Generate PDF di background
+        //         try {
+        //             // Coba dispatch ke queue
+        //             GenerateCertificateJob::dispatchSync(Auth::user(), $course, $certificate);
+        //             \Log::warning('Queue Success, generating certificate synchronously');
+        //         } catch (\Exception $e) {
+        //             // Fallback: generate langsung jika queue gagal
+        //             \Log::warning('Queue failed, generating certificate synchronously');
+        //             (new GenerateCertificateJob(Auth::user(), $course, $certificate))->handle();
+        //         }
+        //     }
+        // }
 
         return view('course.view', compact('course', 'materi', 'submateri'));
     }

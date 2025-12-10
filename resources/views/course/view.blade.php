@@ -2,6 +2,38 @@
 
 @section('content')
 <div class="mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <nav class="flex mb-6" aria-label="Breadcrumb">
+        <ol class="inline-flex items-center space-x-1 md:space-x-3">
+            <li class="inline-flex items-center">
+                <a href="{{ route('course.my') }}" class="text-gray-600 hover:text-blue-600">
+                    Kursus Saya
+                </a>
+            </li>
+            <li aria-current="page">
+                <div class="flex items-center">
+                    <svg class="w-4 h-4 text-gray-400 mx-2" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd"
+                            d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
+                            clip-rule="evenodd"></path>
+                        </svg>
+                            <a href="{{ route('course.show', $course->slugs) }}" class="text-gray-600 hover:text-blue-600">
+                                {{ $course->nama_course }}
+                            </a>
+                        </div>
+            </li>
+            <li aria-current="page">
+                <div class="flex items-center">
+                    <svg class="w-4 h-4 text-gray-400 mx-2" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd"
+                            d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
+                            clip-rule="evenodd">
+                        </path>
+                    </svg>
+                    <p class="text-gray-600">Materi</p>
+                </div>
+            </li>
+        </ol>
+    </nav>
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <!-- Main Content -->
         <main class="lg:col-span-2">
@@ -182,8 +214,91 @@
                         </div>
                     </div>
                     @endforeach
-
                 </div>
+
+                <!-- Final Task Button -->
+                @php
+                // Hitung progress course secara manual
+                $totalItems = 0;
+                $completedItems = 0;
+
+                foreach($course->material as $material) {
+                    // Hitung submaterial
+                    $submaterialCount = $material->submaterial->count();
+                    $totalItems += $submaterialCount;
+
+                    $completedSubmaterials = App\Models\progress::where('user_id', auth()->id())
+                        ->whereIn('submaterial_id', $material->submaterial->pluck('id'))
+                        ->where('status', 'completed')
+                        ->count();
+                    $completedItems += $completedSubmaterials;
+
+                    // Hitung quiz jika ada
+                    if($material->quiz) {
+                        $totalItems++;
+                        if($material->quiz->isCompleted(auth()->id())) {
+                            $completedItems++;
+                        }
+                    }
+                }
+
+                $courseProgress = $totalItems > 0 ? ($completedItems / $totalItems) * 100 : 0;
+                $canAccessFinalTask = $courseProgress >= 100;
+                $hasFinalTask = isset($course->finalTask) && $course->finalTask;
+                @endphp
+
+                @if($hasFinalTask)
+                <div class="mt-6">
+                    <div class="bg-gradient-to-r from-[#009999] to-teal-600 rounded-xl shadow-lg overflow-hidden">
+                        <div class="p-6">
+                            <div class="flex items-center gap-3 mb-4">
+                                <div class="bg-white/20 p-3 rounded-lg">
+                                    <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                    </svg>
+                                </div>
+                                <div>
+                                    <h3 class="text-white font-bold text-lg">Final Task</h3>
+                                    <p class="text-white/80 text-sm">Tugas Akhir Course</p>
+                                </div>
+                            </div>
+
+                            @if($canAccessFinalTask)
+                                <a href="{{ route('course.final_task', $course->slugs) }}"
+                                   class="block w-full bg-white text-[#009999] font-semibold py-3 px-4 rounded-lg hover:bg-gray-50 transition-all text-center shadow-md hover:shadow-lg transform hover:-translate-y-0.5">
+                                    <div class="flex items-center justify-center gap-2">
+                                        <span>Kerjakan Final Task</span>
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                                        </svg>
+                                    </div>
+                                </a>
+                            @else
+                                <div class="bg-white/10 backdrop-blur-sm rounded-lg p-4 border border-white/20">
+                                    <div class="flex items-center gap-2 mb-2">
+                                        <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                                        </svg>
+                                        <span class="text-white font-medium">Terkunci</span>
+                                    </div>
+                                    <p class="text-white/90 text-sm mb-3">Selesaikan semua materi dan quiz terlebih dahulu</p>
+                                    <div class="flex items-center justify-between text-sm text-white/80 mb-2">
+                                        <span>Progress Course</span>
+                                        <span class="font-semibold">{{ number_format($courseProgress, 0) }}%</span>
+                                    </div>
+                                    <div class="w-full bg-white/20 rounded-full h-2">
+                                        <div class="bg-white h-2 rounded-full transition-all duration-300"
+                                            style="width: {{ $courseProgress }}%"></div>
+                                    </div>
+                                </div>
+                            @endif
+                        </div>
+                    </div>
+                </div>
+                @endif
+
             </div>
         </aside>
     </div>

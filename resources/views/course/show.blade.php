@@ -2,6 +2,29 @@
 
 @section('content')
 <div class="min-h-screen bg-gray-100">
+    <div class="mx-auto px-4 sm:px-6 lg:px-4 py-8">
+        <nav class="flex" aria-label="Breadcrumb">
+        <ol class="inline-flex items-center space-x-1 md:space-x-3">
+            <li class="inline-flex items-center">
+                <a href="{{ route('course.my') }}" class="text-gray-600 hover:text-blue-600">
+                    Kursus Saya
+                </a>
+            </li>
+            <li aria-current="page">
+                <div class="flex items-center">
+                    <svg class="w-4 h-4 text-gray-400 mx-2" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd"
+                            d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
+                            clip-rule="evenodd"></path>
+                        </svg>
+                            <a href="{{ route('course.show', $courseData->slugs) }}" class="text-gray-600 hover:text-blue-600">
+                                {{ $courseData->nama_course }}
+                            </a>
+                        </div>
+            </li>
+        </ol>
+    </nav>
+    </div>
     <div class="flex">
         <!-- Sidebar -->
         <!-- Main Content Area -->
@@ -239,114 +262,7 @@
                             </div>
                         @endif
 
-                        @if($isEnrolled && $certificateStatus)
-                            <!-- Certificate Section -->
-                            <div class="mt-4 p-6 border-2 {{ $certificateStatus['completed'] ? 'border-green-200 bg-green-50' : 'border-gray-200 bg-gray-50' }} rounded-xl">
-                                <div class="flex items-center justify-between">
-                                    <div>
-                                        <h3 class="text-lg font-semibold {{ $certificateStatus['completed'] ? 'text-green-700' : 'text-gray-700' }}">
-                                            Course Certificate
-                                        </h3>
-                                        <p class="text-sm {{ $certificateStatus['completed'] ? 'text-green-600' : 'text-gray-500' }}">
-                                            @if($certificateStatus['completed'])
-                                                Selamat! Anda telah memenuhi semua persyaratan.
-                                            @else
-                                                Selesaikan semua materi dan kuis untuk mendapatkan sertifikat Anda.
-                                            @endif
-                                        </p>
-                                    </div>
 
-                                    @if($certificateStatus['completed'])
-                                        @if($certificateStatus['certificate'])
-                                            @if($certificateStatus['certificate']->pdf_path)
-                                                <a href="{{ route('certificate.download', $certificateStatus['certificate']->id) }}" class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
-                                                    <svg class="-ml-1 mr-2 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                                                    </svg>
-                                                    Download Certificate
-                                                </a>
-                                            @else
-                                                <button class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200">
-                                                    <svg class="animate-spin -ml-1 mr-2 h-5 w-5 text-gray-700" fill="none" viewBox="0 0 24 24">
-                                                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                                                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                                                    </svg>
-                                                    Generating Certificate...
-                                                </button>
-                                            @endif
-                                        @else
-                                            <form action="{{ route('certificate.generate', ['course' => $courseData->id, 'user' => Auth::id()]) }}" method="POST" class="inline-block">
-                                                @csrf
-                                                <button type="submit" class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
-                                                    <svg class="-ml-1 mr-2 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                                    </svg>
-                                                    Generate Certificate
-                                                </button>
-                                            </form>
-                                        @endif
-                                    @else
-                                        <button disabled class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-gray-500 bg-gray-100 cursor-not-allowed">
-                                            <svg class="-ml-1 mr-2 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-                                            </svg>
-                                            Certificate Locked
-                                        </button>
-                                    @endif
-                                </div>
-
-                                @if(!$certificateStatus['completed'])
-                                    <!-- Progress Indicator -->
-                                    <div class="mt-4 space-y-2">
-                                        <div class="text-xs text-gray-500">Course Completion Requirements:</div>
-                                        <ul class="text-sm space-y-1">
-                                            @foreach($courseData->material as $material)
-                                                <li class="flex items-center space-x-2">
-                                                    @php
-                                                        $materialCompleted = true;
-                                                        foreach($material->submaterial as $sub) {
-                                                            $progress = App\Models\progress::where('user_id', Auth::id())
-                                                                ->where('submaterial_id', $sub->id)
-                                                                ->where('status', 'completed')
-                                                                ->exists();
-                                                            if(!$progress) {
-                                                                $materialCompleted = false;
-                                                                break;
-                                                            }
-                                                        }
-
-                                                        if($material->quiz) {
-                                                            $quizCompleted = App\Models\quiz_attempt::where('user_id', Auth::id())
-                                                                ->where('quiz_id', $material->quiz->id)
-                                                                ->where('status', 'completed')
-                                                                ->where('score', '>=', 70)
-                                                                ->exists();
-                                                            $materialCompleted = $materialCompleted && $quizCompleted;
-                                                        }
-                                                    @endphp
-
-                                                    @if($materialCompleted)
-                                                        <svg class="h-4 w-4 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-                                                        </svg>
-                                                    @else
-                                                        <svg class="h-4 w-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                                                        </svg>
-                                                    @endif
-                                                    <span class="{{ $materialCompleted ? 'text-green-600' : 'text-gray-500' }}">
-                                                        {{ $material->nama_materi }}
-                                                        @if($material->quiz)
-                                                            (Termasuk quiz)
-                                                        @endif
-                                                    </span>
-                                                </li>
-                                            @endforeach
-                                        </ul>
-                                    </div>
-                                @endif
-                            </div>
-                        @endif
 
                         <!-- Course Period Info -->
                         <div class="mt-4 bg-blue-50 border-l-4 border-blue-400 p-4 rounded-lg">

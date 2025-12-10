@@ -8,7 +8,7 @@ use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\progress;
 use App\Models\Role;;
-use App\Models\Category;
+use App\Models\category;
 use App\Models\Instansi;
 use App\Models\Jurusan;
 
@@ -111,10 +111,10 @@ class profileController extends Controller
     public function edit()
     {
         $user = auth()->user();
-        $role = Role::all();      
+        $role = Role::all();
         $instansi = Instansi::all();
         $jurusan = Jurusan::all();
-        $category = Category::all();   // kalau dipakai
+        $category = category::all();   // kalau dipakai
 
         return view('profile.edit', compact('user', 'role', 'category', 'instansi','jurusan'));
     }
@@ -173,7 +173,7 @@ class profileController extends Controller
             ]);
 
             $instansi = Instansi::create($validated);
-            
+
             return response()->json([
                 'success' => true,
                 'message' => 'Instansi berhasil ditambahkan!',
@@ -205,7 +205,7 @@ class profileController extends Controller
 
         try {
             $jurusan = Jurusan::create($validated);
-            
+
             return response()->json([
                 'success' => true,
                 'message' => 'Jurusan berhasil ditambahkan!',

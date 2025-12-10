@@ -36,57 +36,94 @@
                     <div class="col-span-2">
                         <label for="category_id" class="block text-sm font-medium text-gray-700 mb-2">Kategori *</label>
                         <select name="category_id" id="category_id" required
-                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
                             @foreach ($categories as $category)
                                 <option value="{{ $category->id }}" {{ $course->category_id == $category->id ? 'selected' : '' }}>
                                     {{ $category->category }}
                                 </option>
                             @endforeach
                         </select>
+                        @error('category_id')
+                            <p class="text-red-300 text-sm mt-1">{{ $message }}</p>
+                        @enderror
                     </div>
 
-                    <!-- Teacher -->
-                    <div class="col-span-2">
-                        <label for="teacher_id" class="block text-sm font-medium text-gray-700 mb-2">Pengajar *</label>
-                        <select name="teacher_id" id="teacher_id" required
-                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
-                            @foreach ($teachers as $teacher)
-                                <option value="{{ $teacher->id }}" {{ $course->teacher_id == $teacher->id ? 'selected' : '' }}>
-                                    {{ $teacher->name }}
-                                </option>
-                            @endforeach
-                        </select>
-                    </div>
-
-                    <!-- Course Name -->
+                    <!-- Nama Course -->
                     <div class="col-span-2">
                         <label for="nama_course" class="block text-sm font-medium text-gray-700 mb-2">Nama Course *</label>
                         <input type="text" name="nama_course" id="nama_course" required
                             value="{{ old('nama_course', $course->nama_course) }}"
-                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                        @error('nama_course')
+                            <p class="text-red-300 text-sm mt-1">{{ $message }}</p>
+                        @enderror
                     </div>
 
                     <!-- Description -->
                     <div class="col-span-2">
                         <label for="description" class="block text-sm font-medium text-gray-700 mb-2">Deskripsi *</label>
                         <textarea name="description" id="description" rows="4" required
-                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">{{ old('description', $course->description) }}</textarea>
+                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">{{ old('description', $course->description) }}</textarea>
+                        <div class="flex justify-between items-center mt-1">
+                            <div>
+                                @error('description')
+                                    <p class="text-red-300 text-sm">{{ $message }}</p>
+                                @enderror
+                            </div>
+                            <p id="wordCount" class="text-sm text-gray-600">0 / 100 kata</p>
+                        </div>
                     </div>
 
                     <!-- Image -->
                     <div class="col-span-2">
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Gambar Course</label>
+                        <label for="image_link" class="block text-sm font-medium text-gray-700 mb-2">Gambar Course</label>
                         @if($course->image_link)
                             <img src="{{ asset('storage/' . $course->image_link) }}" alt="Course Image"
                                  class="w-40 h-28 object-cover rounded-md mb-2">
                         @endif
-                        <input type="file" name="image_link" accept="image/*"
-                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                        <input type="file" name="image_link" id="image_link" accept="image/*"
+                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                        @error('image_link')
+                            <p class="text-red-300 text-sm mt-1">{{ $message }}</p>
+                        @enderror
                     </div>
 
-                     <div class="col-span-2">
+                    <!-- Teacher -->
+                    <div class="col-span-2">
+                        <label for="teacher_id" class="block text-sm font-medium text-gray-700 mb-2">Teacher *</label>
+                        <select name="teacher_id" id="teacher_id" required
+                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                            @foreach ($teachers as $teacher)
+                                <option value="{{ $teacher->id }}" {{ $course->teacher_id == $teacher->id ? 'selected' : '' }}>
+                                    {{ $teacher->name }}
+                                </option>
+                            @endforeach
+                        </select>
+                        @error('teacher_id')
+                            <p class="text-red-300 text-sm mt-1">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    <!-- Reviewer -->
+                    <div class="col-span-2">
+                        <label for="reviewer_id" class="block text-sm font-medium text-gray-700 mb-2">Reviewer Tugas Akhir *</label>
+                        <select name="reviewer_id" id="reviewer_id" required
+                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                            @foreach ($reviewers as $reviewer)
+                                <option value="{{ $reviewer->id }}" {{ $course->reviewer_id == $reviewer->id ? 'selected' : '' }}>
+                                    {{ $reviewer->name }}
+                                </option>
+                            @endforeach
+                        </select>
+                        @error('reviewer_id')
+                            <p class="text-red-300 text-sm mt-1">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    <!-- Is Paid Course -->
+                    <div class="col-span-2">
                         <label class="flex items-center cursor-pointer">
-                            <input type="checkbox" name="is_paid" id="is_paid" value="1" {{ $course->is_paid? 'checked' : '' }}
+                            <input type="checkbox" name="is_paid" id="is_paid" value="1" {{ $course->is_paid ? 'checked' : '' }}
                                 class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
                             <span class="ml-2 text-sm font-medium text-gray-700">Course Berbayar</span>
                         </label>
@@ -99,10 +136,11 @@
                             class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                             placeholder="Contoh: 150000" value="{{ $course->price }}">
                         @error('price')
-                        <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                            <p class="text-red-300 text-sm mt-1">{{ $message }}</p>
                         @enderror
                     </div>
-                    <!-- Limited Course -->
+
+                    <!-- Is Limited Course -->
                     <div class="col-span-2">
                         <label class="flex items-center cursor-pointer">
                             <input type="checkbox" name="isLimitedCourse" id="isLimitedCourse" value="1"
@@ -112,25 +150,26 @@
                         </label>
                     </div>
 
-                    <!-- Limited Fields -->
+                    <!-- Limited Course Fields -->
                     <div id="limitedFields" class="col-span-2 grid grid-cols-1 md:grid-cols-3 gap-4 {{ $course->isLimitedCourse ? '' : 'hidden' }}">
                         <div>
                             <label for="start_date" class="block text-sm font-medium text-gray-700 mb-2">Tanggal Mulai</label>
                             <input type="date" name="start_date" id="start_date"
                                    value="{{ old('start_date', $course->start_date) }}"
-                                   class="w-full px-4 py-2 border border-gray-300 rounded-lg">
+                                   class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
                         </div>
                         <div>
                             <label for="end_date" class="block text-sm font-medium text-gray-700 mb-2">Tanggal Selesai</label>
                             <input type="date" name="end_date" id="end_date"
                                    value="{{ old('end_date', $course->end_date) }}"
-                                   class="w-full px-4 py-2 border border-gray-300 rounded-lg">
+                                   class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
                         </div>
                         <div>
                             <label for="maxEnrollment" class="block text-sm font-medium text-gray-700 mb-2">Max Peserta</label>
                             <input type="number" name="maxEnrollment" id="maxEnrollment" min="1"
                                    value="{{ old('maxEnrollment', $course->maxEnrollment) }}"
-                                   class="w-full px-4 py-2 border border-gray-300 rounded-lg">
+                                   class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                   placeholder="50">
                         </div>
                     </div>
 
@@ -143,15 +182,53 @@
                             <span class="ml-2 text-sm font-medium text-gray-700">Publikasikan Course</span>
                         </label>
                     </div>
+
+                    <!-- Final Task Section -->
+                    <div class="col-span-2">
+                        <div class="mt-5 p-4 rounded-lg border border-gray-300 bg-gray-50">
+                            <div class="flex items-center justify-between mb-4">
+                                <h2 class="text-xl font-semibold text-gray-800">Tugas Akhir</h2>
+                                <label class="inline-flex items-center cursor-pointer">
+                                    <input type="checkbox" id="hasFinalTask"
+                                        {{ $course->finalTask ? 'checked' : '' }}
+                                        class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
+                                    <span class="ml-2 text-sm text-gray-700">Tambahkan Tugas Akhir</span>
+                                </label>
+                            </div>
+
+                            <div id="finalTaskSection" class="{{ $course->finalTask ? '' : 'hidden' }}">
+                                <div class="bg-white border border-gray-200 rounded-lg p-4">
+                                    <label for="instruksi" class="block text-sm font-medium text-gray-700 mb-2">
+                                        Instruksi Tugas Akhir *
+                                    </label>
+                                    <textarea name="instruksi" id="instruksi" rows="6"
+                                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                        placeholder="Jelaskan instruksi untuk tugas akhir course ini...&#10;&#10;Contoh:&#10;1. Buat aplikasi web menggunakan Laravel&#10;2. Implementasikan fitur CRUD&#10;3. Submit link GitHub repository">{{ old('instruksi', $course->finalTask->instruksi ?? '') }}</textarea>
+                                    @error('instruksi')
+                                        <p class="text-red-300 text-sm mt-1">{{ $message }}</p>
+                                    @enderror
+                                    <p class="text-sm text-gray-500 mt-2">
+                                        <svg class="inline w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd"
+                                                d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
+                                                clip-rule="evenodd" />
+                                        </svg>
+                                        Instruksi ini akan ditampilkan kepada peserta sebagai panduan untuk mengerjakan tugas akhir.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                 </div>
             </div>
 
             <!-- Materials Section -->
-            <div class="mb-8">
-                <div class="flex justify-between items-center mb-4 border-b pb-2">
+            <div class="mb-8 p-2 pt-6 rounded-lg border border-gray-300">
+                <div class="flex justify-between items-center mb-4 pb-2">
                     <h2 class="text-xl font-semibold text-gray-800">Materi Course</h2>
                     <button type="button" id="addMaterial"
-                        class="text-white hover:bg-[#0f5757] font-medium bg-[#009999] rounded-[10px] border border-gray-300 px-4 py-2 shadow-lg transition">
+                        class="text-white hover:bg-[#0f5757] font-medium bg-[#009999] max-w-lg rounded-[10px] border border-gray-300 p-2 shadow-xs transition">
                         + Tambah Materi
                     </button>
                 </div>
@@ -386,6 +463,21 @@ document.getElementById('is_paid').addEventListener('change', function() {
         priceInput.value = '';
     }
 });
+
+document.getElementById('hasFinalTask').addEventListener('change', function() {
+    const finalTaskSection = document.getElementById('finalTaskSection');
+    const instruksiField = document.getElementById('instruksi');
+
+    if (this.checked) {
+        finalTaskSection.classList.remove('hidden');
+        instruksiField.required = true;
+    } else {
+        finalTaskSection.classList.add('hidden');
+        instruksiField.required = false;
+        instruksiField.value = '';
+    }
+});
+
 // Toggle limited course fields
 document.getElementById('isLimitedCourse').addEventListener('change', function() {
     const limitedFields = document.getElementById('limitedFields');
@@ -836,6 +928,37 @@ document.getElementById('courseForm').addEventListener('submit', function(e) {
     });
 
     if (quizError) return false;
+});
+
+// Word count functionality
+document.addEventListener('DOMContentLoaded', function () {
+    const descriptionField = document.getElementById('description');
+    const wordCountDisplay = document.getElementById('wordCount');
+    const maxWords = 100;
+
+    function countWords(text) {
+        return text.trim().split(/\s+/).filter(word => word.length > 0).length;
+    }
+
+    function updateWordCount() {
+        if (descriptionField) {
+            const words = countWords(descriptionField.value);
+            wordCountDisplay.textContent = `${words} / ${maxWords} kata`;
+
+            if (words > maxWords) {
+                wordCountDisplay.classList.add('text-red-600', 'font-semibold');
+            } else {
+                wordCountDisplay.classList.remove('text-red-600', 'font-semibold');
+            }
+        }
+    }
+
+    // Update word count saat mengetik
+    if (descriptionField) {
+        descriptionField.addEventListener('input', updateWordCount);
+        // Initial update
+        updateWordCount();
+    }
 });
 </script>
 @endpush
