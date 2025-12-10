@@ -23,6 +23,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use SweetAlert2\Laravel\Swal;
+use App\Models\final_task_submission;
 
 class CourseController extends Controller
 {
@@ -226,7 +227,7 @@ class CourseController extends Controller
     public function show($slug)
     {
         $course = course::where('slugs', $slug)
-            ->with(['material.submaterial'])
+            ->with(['material.submaterial', 'finalTask'])
             ->first();
         if(!$course){
             abort(404, "Course tidak di temukan");
@@ -303,6 +304,18 @@ class CourseController extends Controller
             'title' => $previewSubmaterial?->title,
             'type' => $previewSubmaterial?->type,
         ]);
+
+        // Get final task submission if exists
+        $finalTaskSubmission = null;
+        $courseProgress = 0;
+        if ($course->finalTask && Auth::check()) {
+            $finalTaskSubmission = final_task_submission::where('final_task_id', $course->finalTask->id)
+                ->where('user_id', Auth::id())
+                ->first();
+            // Calculate course progress
+            $courseProgress = progress::getCourseProgress(Auth::id(), $course->id);
+        }
+
         // Fungsi Show Certificate Kalo kedepannya di pakai
         // $certificateStatus = null;
         // if ($isEnrolled) {
@@ -364,6 +377,8 @@ class CourseController extends Controller
             'firstMaterial' => $firstMaterial,
             'firstSubmaterial' => $firstSubmaterial,
             'previewSubmaterial' => $previewSubmaterial,
+            'finalTaskSubmission' => $finalTaskSubmission,
+            'courseProgress' => $courseProgress,
             // 'certificateStatus' => $certificateStatus,
         ]);
     }

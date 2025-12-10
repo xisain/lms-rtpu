@@ -262,7 +262,68 @@
                             </div>
                         @endif
 
+                        <!-- Final Task Section (if exists) -->
+                        @if($courseData->finalTask && $isEnrolled)
+                        <div class="mt-4 bg-green-50 border-l-4 border-green-400 p-4 rounded-lg">
+                            <div class="flex items-start justify-between">
+                                <div class="flex-1">
+                                    <div class="flex items-center gap-2 mb-2">
+                                        <p class="text-sm font-semibold text-green-800">
+                                            Tugas Akhir
+                                        </p>
+                                    </div>
+                                    <p class="text-sm text-green-700 mb-3">
+                                        Selesaikan dan kumpulkan tugas akhir course untuk menyelesaikan pembelajaran.
+                                    </p>
 
+                                    @if($finalTaskSubmission)
+                                        <!-- Submission Status -->
+                                        <div class="flex items-center gap-3">
+                                            @php
+                                                $statusConfig = [
+                                                    'submitted' => ['bg' => 'bg-yellow-100', 'text' => 'text-yellow-800', 'label' => 'Menunggu Review'],
+                                                    'approved' => ['bg' => 'bg-green-100', 'text' => 'text-green-800', 'label' => 'Disetujui'],
+                                                    'rejected' => ['bg' => 'bg-red-100', 'text' => 'text-red-800', 'label' => 'Ditolak'],
+                                                    'resubmmit' => ['bg' => 'bg-orange-100', 'text' => 'text-orange-800', 'label' => 'Perlu Diubah'],
+                                                ];
+                                                $status = $statusConfig[$finalTaskSubmission->status] ?? $statusConfig['submitted'];
+                                            @endphp
+                                            <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold {{ $status['bg'] }} {{ $status['text'] }}">
+                                                {{ $status['label'] }}
+                                            </span>
+                                            <span class="text-xs text-green-600">
+                                                Dikirim {{ $finalTaskSubmission->created_at->diffForHumans() }}
+                                            </span>
+                                        </div>
+                                    @else
+                                        @if($courseProgress >= 100)
+                                            <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-blue-100 text-blue-800">
+                                                Siap Dikerjakan ✓
+                                            </span>
+                                        @else
+                                            <div class="flex items-center gap-2">
+                                                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-gray-100 text-gray-800">
+                                                    Belum Bisa Dikerjakan
+                                                </span>
+                                                <span class="text-xs text-gray-600">
+                                                    Selesaikan {{ 100 - round($courseProgress) }}% materi terlebih dahulu
+                                                </span>
+                                            </div>
+                                        @endif
+                                    @endif
+                                </div>
+                                @if($courseProgress >= 100 || $finalTaskSubmission)
+                                    <a href="{{ route('course.final_task', $courseData->slugs) }}" class="ml-4 bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded-lg transition duration-200 shadow-md whitespace-nowrap text-sm">
+                                        {{ $finalTaskSubmission ? 'Lihat' : 'Kerjakan' }}
+                                    </a>
+                                @else
+                                    <button disabled class="ml-4 bg-gray-400 text-gray-600 font-semibold py-2 px-4 rounded-lg cursor-not-allowed shadow-md whitespace-nowrap text-sm opacity-50">
+                                        Kerjakan
+                                    </button>
+                                @endif
+                            </div>
+                        </div>
+                        @endif
 
                         <!-- Course Period Info -->
                         <div class="mt-4 bg-blue-50 border-l-4 border-blue-400 p-4 rounded-lg">
