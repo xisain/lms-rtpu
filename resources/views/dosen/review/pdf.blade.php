@@ -259,8 +259,8 @@
                 <tr class="data-row-1">
                     <td class="no-wrap">{{ $index + 1 }}</td>
                     <td class="name-column wrap">{{ $task->user->name }}</td>
-                    <td class="wrap">{{ $task->user->institusi ?? '-' }}</td>
-                    <td class="wrap">{{ $task->user->program_studi ?? '-' }}</td>
+                    <td class="wrap">{{ $task->user->instansi->nama ?? '-' }}</td>
+                    <td class="wrap">{{ $task->user->jurusan->nama ?? '-' }}</td>
                     <td>
                         @if($task->status === 'submitted')
                             <span class="status-badge status-submitted">Submit</span>

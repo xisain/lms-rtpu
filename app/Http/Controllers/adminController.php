@@ -8,6 +8,7 @@ use App\Models\course;
 use App\Models\category;
 use App\Models\enrollment;
 use Illuminate\Support\Carbon;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 
 class adminController extends Controller
@@ -73,4 +74,14 @@ class adminController extends Controller
             'userNeedActivate'
         ));
     }
+    public function exportCoursePDF($slugs){
+    $course = Course::where('slugs',$slugs)
+        ->with('material','material.submaterial','material.quiz','material.quiz.questions',
+               'enrollment', 'enrollment.user.progress', 'enrollment.user.progress.submaterial',
+               'finalTask', 'finalTask.submission.review')
+        ->first();
+
+    $pdf = PDF::loadView('admin.course.pdf', compact('course'))->setPaper('a4','landscape');
+    return $pdf->download('course-'.$slugs.'.pdf');
+}
 }

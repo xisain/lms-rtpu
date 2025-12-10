@@ -12,4 +12,10 @@ class final_task extends Model
     public function course(){
         return $this->belongsTo(Course::class);
     }
+    public function submission(){
+        return $this->hasMany((final_task_submission::class));
+    }
+    public function review() {
+        return $this->hasMany((final_task_review::class));
+    }
 }

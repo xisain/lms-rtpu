@@ -140,6 +140,7 @@ Route::middleware('auth')->group(function () {
             Route::get('/edit/{id}', [CourseController::class, 'edit'])->name('course.edit');
             Route::delete('/{id}', [CourseController::class, 'destroy'])->name('course.destroy');
             Route::get('/{id}/manage-course', [CourseController::class, 'manageCourse'])->name('course.manage');
+            Route::get('{slugs}/pdf',[adminController::class,'exportCoursePDF'])->name('admin.course.exportPDF');
         });
         Route::prefix('plan')->group(function () {
             Route::get('/', [SubscriptionController::class, 'index'])->name('admin.plan.index');
@@ -191,6 +192,7 @@ Route::get('/', function () {
     return view('index');
 })->name('home');
 
+Route::get('/pdf-test/{slugs}/',[adminController::class,'exportCoursePDF'])->name('admin.course.exportPDF');
 // Route::get('test', function () {
 //     Mail::to('husenabs232bogor@gmail.com')->send(new tolakAccount(
 //     "Xisain",

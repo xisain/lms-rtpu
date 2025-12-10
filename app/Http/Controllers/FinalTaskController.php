@@ -44,7 +44,7 @@ class FinalTaskController extends Controller
         $taskId = final_task::where('course_id', $course->id)->first()->id;
 
         $taskList = final_task_submission::where('final_task_id', $taskId)
-            ->with(['user', 'review'])
+            ->with(['user', 'review', 'user.instansi','user.jurusan'])
             ->get();
 
         $reviewItems = $this->getReviewItems();

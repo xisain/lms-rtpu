@@ -54,6 +54,12 @@ class User extends Authenticatable
     public function enrollment(){
         return $this->hasMany(enrollment::class);
     }
+    public function jurusan(){
+        return $this->belongsTo(Jurusan::class);
+    }
+    public function instansi(){
+        return $this->belongsTo(Instansi::class);
+    }
     public function role() {
         return $this->belongsTo(role::class, 'roles_id');
     }

@@ -35,14 +35,26 @@
                                 </p>
                             </div>
 
-                            <!-- Tombol Edit -->
-                            <a href="{{ route('course.edit', $course->id) }}"
-                               class="inline-flex items-center gap-2 px-3 py-2 text-sm font-medium text-white bg-[#009999] hover:bg-[#007777] rounded-md shadow">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232a2.5 2.5 0 113.536 3.536L7.5 20H4v-3.5l11.232-11.268z" />
-                                </svg>
-                                Edit
-                            </a>
+    <!-- Grup tombol -->
+                            <div class="flex items-center gap-2">
+                                <a href="{{ route('admin.course.exportPDF', $course->slugs) }}"
+                                class="inline-flex items-center gap-2 px-3 py-2 text-sm font-medium text-white bg-red-400 hover:bg-red-500 rounded-md shadow">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                                        <polyline points="14 2 14 8 20 8"/>
+                                        <text x="7" y="16" font-size="5" fill="currentColor" font-weight="bold">PDF</text>
+                                    </svg>
+                                    Export To PDF
+                                </a>
+
+                                <a href="{{ route('course.edit', $course->id) }}"
+                                class="inline-flex items-center gap-2 px-3 py-2 text-sm font-medium text-white bg-[#009999] hover:bg-[#007777] rounded-md shadow">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232a2.5 2.5 0 113.536 3.536L7.5 20H4v-3.5l11.232-11.268z" />
+                                    </svg>
+                                    Edit
+                                </a>
+                            </div>
                         </div>
 
                         <div class="border-t pt-3">

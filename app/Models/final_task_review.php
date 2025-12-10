@@ -14,7 +14,7 @@ class final_task_review extends Model
         'cpl_prodi',
         'distribusi_mata_kuliah_dan_highlight',
         'cpl_prodi_yang_dibebankan_pada_mata_kuliah',
-        'matriks_kajian_silang_pengetahuan_terhadap_kk_mata_kuliah_yang_diampu',
+        'matriks_kajian',
         'tujuan_belajar',
         'peta_kompentensi',
         'perhitungan_sks',
@@ -38,5 +38,5 @@ class final_task_review extends Model
     {
         return $this->belongsTo(final_task_submission::class, 'final_task_submission_id');
     }
-   
+
 }
