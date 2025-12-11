@@ -22,6 +22,7 @@ class course extends Model
         'is_paid',
         'teacher_id',
         'reviewer_id',
+        'whatsapp_group',
     ];
 
     public function category()

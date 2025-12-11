@@ -120,6 +120,18 @@
                         @enderror
                     </div>
 
+                    <!-- Whatsapp Group -->
+                    <div class="col-span-2">
+                        <label for="whatsapp_group" class="block text-sm font-medium text-gray-700 mb-2">Link Group Whatsapp <span class="text-sm">(Opsional)</span></label>
+                        <input type="text" name="whatsapp_group" id="whatsapp_group"
+                            value="{{ old('whatsapp_group', $course->whatsapp_group) }}"
+                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                            placeholder="https://chat.whatsapp.com/...">
+                        @error('whatsapp_group')
+                            <p class="text-red-300 text-sm mt-1">{{ $message }}</p>
+                        @enderror
+                    </div>
+
                     <!-- Is Paid Course -->
                     <div class="col-span-2">
                         <label class="flex items-center cursor-pointer">

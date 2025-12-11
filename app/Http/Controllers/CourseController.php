@@ -8,6 +8,7 @@ use App\Models\certificate;
 use App\Models\course;
 use App\Models\enrollment;
 use App\Models\final_task;
+use App\Models\final_task_submission;
 use App\Models\material;
 use App\Models\progress;
 use App\Models\quiz;
@@ -23,7 +24,6 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use SweetAlert2\Laravel\Swal;
-use App\Models\final_task_submission;
 
 class CourseController extends Controller
 {
@@ -55,10 +55,11 @@ class CourseController extends Controller
         $reviewer = User::with('role')->whereHas('role', function ($q) {
             $q->where('id', 2);
         })->get();
+
         return view('admin.course.create', [
             'categories' => $category,
             'teachers' => $teacher,
-            'reviewers' => $reviewer
+            'reviewers' => $reviewer,
         ]);
     }
 
@@ -81,7 +82,8 @@ class CourseController extends Controller
             'maxEnrollment' => 'nullable|required_if:isLimitedCourse,1|integer|min:1',
             'public' => 'boolean',
             'teacher_id' => 'required|exists:users,id',
-            'reviewer_id'=> 'required|exists:users,id',
+            'reviewer_id' => 'required|exists:users,id',
+            'whatsapp_group' => 'nullable|string|max:255',
             // Validasi materials
             'materials' => 'required|array|min:1',
             'materials.*.nama_materi' => 'required|string|max:255',
@@ -123,14 +125,15 @@ class CourseController extends Controller
             'public' => $validated['public'] ?? false,
             'image_link' => $imagePath,
             'teacher_id' => $validated['teacher_id'],
-            'reviewer_id'=> $validated['reviewer_id'],
+            'reviewer_id' => $validated['reviewer_id'],
             'is_paid' => $validated['is_paid'] ?? false,
             'price' => $validated['price'] ?? null,
+            'whatsapp_group' => $validated['whatsapp_group'] ?? null,
         ]);
-        if($request->has('instruksi')){
+        if ($request->filled('instruksi')) {
             final_task::create([
-                'course_id'=> $course->id,
-                'instruksi'=> $request->instruksi
+                'course_id' => $course->id,
+                'instruksi' => $request->instruksi,
             ]);
         }
 
@@ -229,8 +232,8 @@ class CourseController extends Controller
         $course = course::where('slugs', $slug)
             ->with(['material.submaterial', 'finalTask'])
             ->first();
-        if(!$course){
-            abort(404, "Course tidak di temukan");
+        if (! $course) {
+            abort(404, 'Course tidak di temukan');
         }
         $courseEnroll = $course->maxSlotEnrollment();
         $courseStudent = $course->countEnrollment();
@@ -442,6 +445,7 @@ class CourseController extends Controller
             'end_date' => 'nullable|required_if:isLimitedCourse,1|date|after:start_date',
             'maxEnrollment' => 'nullable|required_if:isLimitedCourse,1|integer|min:1',
             'public' => 'boolean',
+            'whatsapp_group' => 'nullable|string|max:255',
 
             'instruksi' => 'nullable|string',
             'materials' => 'required|array|min:1',
@@ -463,7 +467,7 @@ class CourseController extends Controller
             'materials.*.submaterials.*.hidden' => 'nullable|boolean',
         ];
 
-         if (auth()->user()->role->id == 1) {
+        if (auth()->user()->role->id == 1) {
             $rules['teacher_id'] = 'required|exists:users,id';
             $rules['reviewer_id'] = 'required|exists:users,id';
         }
@@ -490,6 +494,7 @@ class CourseController extends Controller
                 'end_date' => $validated['end_date'] ?? null,
                 'maxEnrollment' => $validated['maxEnrollment'] ?? null,
                 'public' => $validated['public'] ?? false,
+                'whatsapp_group' => $validated['whatsapp_group'] ?? null,
 
             ];
 
@@ -500,11 +505,10 @@ class CourseController extends Controller
                 $courseData['reviewer_id'] = $validated['reviewer_id'];
             }
 
-
             $course->update($courseData);
 
             // Handle final task
-            if ($request->has('instruksi') && !empty($request->instruksi)) {
+            if ($request->has('instruksi') && ! empty($request->instruksi)) {
                 final_task::updateOrCreate(
                     ['course_id' => $course->id],
                     ['instruksi' => $request->instruksi]
@@ -915,7 +919,7 @@ class CourseController extends Controller
 
     public function mulai($slug, $material = null, $submaterial = null)
     {
-        $course = course::with(['material.submaterial', 'material.quiz.questions.options','finalTask'])
+        $course = course::with(['material.submaterial', 'material.quiz.questions.options', 'finalTask'])
             ->where('slugs', $slug)
             ->firstOrFail();
 
@@ -1011,7 +1015,6 @@ class CourseController extends Controller
                 }
             }
         }
-
 
         // // Jika semua materi selesai, generate sertifikat
         // if ($allCompleted) {

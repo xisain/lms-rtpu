@@ -49,7 +49,7 @@ class EnrollmentController extends Controller
 
         Swal::success([
             'title' => 'Berhasil!',
-            'text' => 'Kamu berhasil mendaftar ke course "' . $course->nama_course . '"',
+            'text' => 'Kamu berhasil mendaftar ke course "' . $course->nama_course . '", Silahkan Join Group Whatsapp Agar Memudahkan ada jika ada pertanyaan ataupun kendala',
         ]);
 
         return back();
