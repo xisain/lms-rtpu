@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\enrollCourse;
 use App\Models\course;
 use App\Models\CoursePurchase;
 use App\Models\enrollment;
@@ -11,6 +12,8 @@ use App\Models\subscription;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use App\Models\User;
+use Illuminate\Support\Facades\Mail;
 
 class SubscriptionController extends Controller
 {
@@ -271,6 +274,9 @@ class SubscriptionController extends Controller
                         'user_id' => $purchase->user_id,
                         'course_id' => $purchase->course_id,
                     ]);
+                    $user = User::find($purchase->user_id);
+                    $course = Course::findOrFail($purchase->course_id);
+                    Mail::to($user->email)->send(new enrollCourse($course, $user->name));
                 }
             } else {
                 $purchase->notes = $request->notes;
