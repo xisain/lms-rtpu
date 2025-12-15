@@ -6,6 +6,7 @@ use App\Jobs\GenerateCertificateJob;
 use App\Models\category;
 use App\Models\certificate;
 use App\Models\course;
+use App\Models\CoursePurchase;
 use App\Models\enrollment;
 use App\Models\final_task;
 use App\Models\final_task_submission;
@@ -266,6 +267,12 @@ class CourseController extends Controller
                 ->exists();
         }
 
+        // Check if user has pending purchase
+        $pendingPurchase = null;
+        if (Auth::check() && !$isEnrolled) {
+            $pendingPurchase = $course->pendingCourseBuy(Auth::id());
+        }
+
         Log::info('Status enrollment:', ['isEnrolled' => $isEnrolled]);
 
         $firstMaterial = $course->material->first();
@@ -382,6 +389,7 @@ class CourseController extends Controller
             'previewSubmaterial' => $previewSubmaterial,
             'finalTaskSubmission' => $finalTaskSubmission,
             'courseProgress' => $courseProgress,
+            'pendingPurchase' => $pendingPurchase,
             // 'certificateStatus' => $certificateStatus,
         ]);
     }

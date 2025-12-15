@@ -82,4 +82,12 @@ class course extends Model
     {
         return $this->enrollment()->count();
     }
+
+    public function pendingCourseBuy($userId): ?CoursePurchase
+    {
+        return $this->purchases()
+            ->where('user_id', $userId)
+            ->where('status', 'waiting_approval')
+            ->first();
+    }
 }

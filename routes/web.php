@@ -44,6 +44,10 @@ Route::middleware('auth')->group(function () {
         Route::post('/', [SubscriptionController::class, 'purchases'])->name('plan.purchases');
 
     });
+    Route::prefix('course-purchase')->group(function () {
+        Route::get('{slug}/checkout', [CoursePurchaseController::class, 'checkout'])->name('course.purchase.checkout');
+        Route::post('/', [CoursePurchaseController::class, 'purchase'])->name('course.purchase');
+    });
     Route::prefix('profile')->group(function () {
         Route::get('/', [profileController::class, 'show'])->name('profile');
         Route::prefix('transaction')->group(function () {
