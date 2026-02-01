@@ -20,6 +20,7 @@ class DatabaseSeeder extends Seeder
         // payment::factory(3)->create();
 
         $this->call([
+            InstansiSeeder::class,
             RoleSeeder::class,
             CategorySeeders::class,
             userSeeder::class,
@@ -28,7 +29,6 @@ class DatabaseSeeder extends Seeder
             SubMaterialSeeders::class,
             quizSeeder::class,
             JurusanSeeder::class,
-            InstansiSeeder::class,
             planSeeders::class,
             paymentSeeders::class,
         ]);

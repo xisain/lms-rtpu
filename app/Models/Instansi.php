@@ -18,9 +18,11 @@ class Instansi extends Model
         'telepon'
     ];
 
-    // Jika relasi ke users
     public function users()
     {
         return $this->hasMany(User::class, 'instansi_id');
+    }
+    public function category() {
+        return $this->hasMany(category::class);
     }
 }
