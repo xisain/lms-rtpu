@@ -7,6 +7,7 @@ use App\Mail\WelcomeMail;
 use App\Models\category;
 use App\Models\course;
 use App\Models\enrollment;
+use App\Models\Instansi;
 use App\Models\role;
 use App\Models\subscription;
 use App\Models\User;
@@ -115,15 +116,19 @@ class UserController extends Controller
     {
 
         $course = Course::get();
+        $instansi = Instansi::get();
 
-        return view('admin.users.create', ['course' => $course]);
+        return view('admin.users.create', ['course' => $course, 'instansi'=>$instansi]);
     }
 
     public function storeBulkUser(Request $request)
     {
+        // dd($request->request);
         $request->validate([
+            'instansi_id'=> 'required|exists:instansi,id',
             'course_id' => 'required|exists:courses,id',
             'csv_file' => 'required|file|mimes:csv,txt|max:2048',
+            'default_password' => 'required|string',
         ]);
         $course = course::find($request->course_id);
         try {
@@ -193,7 +198,7 @@ class UserController extends Controller
                     continue;
                 }
 
-                $password = ! empty($data['password']) ? trim($data['password']) : 'passwordlms123';
+                $password = !empty($data['password']) ? trim($data['password']) : $request->default_password;
                 try {
 
                     $user = User::create([
@@ -202,6 +207,7 @@ class UserController extends Controller
                         'password' => Hash::make($password),
                         'roles_id' => 3,
                         'category_id' => 1,
+                        'instansi_id'=>$request->instansi_id,
                         'isActive' => true,
                     ]);
 
@@ -319,9 +325,9 @@ class UserController extends Controller
             fputcsv($file, ['email', 'name', 'password']);
 
             // Sample data
-            fputcsv($file, ['user1@example.com', 'John Doe', 'password123']);
+            fputcsv($file, ['user1@example.com', 'John Doe', '' ]);
             fputcsv($file, ['user2@example.com', 'Jane Smith', '']);
-            fputcsv($file, ['user3@example.com', 'Bob Johnson', 'mypassword']);
+            fputcsv($file, ['user3@example.com', 'Bob Johnson', '']);
 
             fclose($file);
         };

@@ -27,22 +27,51 @@
 
             <form action="{{ route('admin.user.bulk.store') }}" method="POST" enctype="multipart/form-data">
                 @csrf
+                {{-- Ambil Instansi dlu lalu cek apakah ada categori dengan instansi id terkait lalu munculkan course dalam kategori terkait --}}
+                <div class="mb-6">
+                    <label for="instansi_id" class="block text-sm font-medium text-gray-700 mb-2">Instansi<span class="text-red-500">*</span></label>
+                    <select name="instansi_id" id="instansi_id" required
+                        class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#009999] focus:border-transparent transition">
+                        <option value="">-- Instansi --</option>
+                        @foreach($instansi as $i)
+                            <option value="{{ $i->id }}" {{ old('instansi_id') == $i->id ? 'selected' : '' }}>
+                                {{ $i->nama }}
+                            </option>
+                        @endforeach
+                    </select>
+                    <p class="mt-2 text-sm text-gray-500 text-body">
+                        Jika Instansi tidak tersedia harap buat terlebih dahulu <a href="/admin/instansi/create/" class="font-medium  text-blue-600 text-fg-brand underline hover:no-underline">disini</a>
+                    </p>
 
-                <!-- Pilih Plan -->
+                </div>
+                {{-- Isi Course --}}
                 <div class="mb-6">
                     <label for="course_id" class="block text-sm font-medium text-gray-700 mb-2">
                         Pilih Course <span class="text-red-500">*</span>
                     </label>
-                    <select name="course_id" id="course_id" required
-                        class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#009999] focus:border-transparent transition">
-                        <option value="">-- Pilih Plan --</option>
-                        @foreach($course as $c)
-                            <option value="{{ $c->id }}" {{ old('course_id') == $c->id ? 'selected' : '' }}>
-                                {{ $c->nama_course }}
-                            </option>
-                        @endforeach
+                    <select name="course_id" id="course_id" class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#009999] focus:border-transparent transition disabled:bg-gray-400 disabled:cursor-not-allowed"required>
+                        <option value="">-</option>
                     </select>
+                    <p class="mt-2 text-sm text-gray-500 text-body">
+                        Jika Course Tidak Tersedia Harap buat <a href="/admin/category/create/" class="font-medium  text-blue-600 text-fg-brand underline hover:no-underline">Kategori</a> dengan Instansi Terkait Lalu buat Course dengan Kategori dengan Instansi
+                    </p>
                 </div>
+                {{-- default password --}}
+                <div class="mb-6">
+                    <label for="default_password" class="block text-sm font-medium text-gray-700 mb-2">
+                        Default Password <span class="text-red-500">*</span>
+                    </label>
+                    <input type="text"
+                        name="default_password"
+                        id="default_password"
+
+                        required
+                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#009999] focus:border-transparent transition">
+                    <p class="mt-2 text-sm text-gray-500">
+                        Password ini akan digunakan jika kolom password di CSV kosong
+                    </p>
+                </div>
+
 
                 <!-- Upload CSV -->
                 <div class="mb-6">
@@ -124,4 +153,41 @@
         </div>
     </div>
 </div>
+@push('scripts')
+    <script>
+document.getElementById('instansi_id').addEventListener('change', function () {
+    const instansiId = this.value;
+    const courseSelect = document.getElementById('course_id');
+
+    courseSelect.innerHTML = '<option value="" class="disabled:bg-gray-200">Loading...</option>';
+
+    if (!instansiId) {
+        courseSelect.innerHTML = '<option value="" disabled>-- Pilih Course --</option>';
+        return;
+    }
+
+    fetch(`/course/by-instansi/${instansiId}`)
+        .then(res => {
+            if (!res.ok) throw new Error('Unauthorized');
+            return res.json();
+        })
+        .then(data => {
+            courseSelect.innerHTML = '<option value="">-- Pilih Course --</option>';
+
+            if (data.length === 0) {
+                courseSelect.innerHTML += '<option value="">Tidak ada course</option>';
+            }
+
+            data.forEach(course => {
+                courseSelect.innerHTML += `
+                    <option value="${course.id}">${course.nama_course}</option>
+                `;
+            });
+        })
+        .catch(() => {
+            courseSelect.innerHTML = '<option value="">Tidak tersedia</option>';
+        });
+});
+</script>
+@endpush
 @endsection

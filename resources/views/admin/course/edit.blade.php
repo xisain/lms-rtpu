@@ -106,7 +106,7 @@
 
                     <!-- Reviewer -->
                     <div class="col-span-2">
-                        <label for="reviewer_id" class="block text-sm font-medium text-gray-700 mb-2">Reviewer Tugas Akhir *</label>
+                        <label for="reviewer_id" class="block text-sm font-medium text-gray-700 mb-2">Reviewer Laporan Akhir *</label>
                         <select name="reviewer_id" id="reviewer_id" required
                             class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
                             @foreach ($reviewers as $reviewer)
@@ -199,23 +199,23 @@
                     <div class="col-span-2">
                         <div class="mt-5 p-4 rounded-lg border border-gray-300 bg-gray-50">
                             <div class="flex items-center justify-between mb-4">
-                                <h2 class="text-xl font-semibold text-gray-800">Tugas Akhir</h2>
+                                <h2 class="text-xl font-semibold text-gray-800">Laporan Akhir</h2>
                                 <label class="inline-flex items-center cursor-pointer">
                                     <input type="checkbox" id="hasFinalTask"
                                         {{ $course->finalTask ? 'checked' : '' }}
                                         class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
-                                    <span class="ml-2 text-sm text-gray-700">Tambahkan Tugas Akhir</span>
+                                    <span class="ml-2 text-sm text-gray-700">Tambahkan Laporan Akhir</span>
                                 </label>
                             </div>
 
                             <div id="finalTaskSection" class="{{ $course->finalTask ? '' : 'hidden' }}">
                                 <div class="bg-white border border-gray-200 rounded-lg p-4">
                                     <label for="instruksi" class="block text-sm font-medium text-gray-700 mb-2">
-                                        Instruksi Tugas Akhir *
+                                        Instruksi Laporan Akhir *
                                     </label>
                                     <textarea name="instruksi" id="instruksi" rows="6"
                                         class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                        placeholder="Jelaskan instruksi untuk tugas akhir course ini...&#10;&#10;Contoh:&#10;1. Buat aplikasi web menggunakan Laravel&#10;2. Implementasikan fitur CRUD&#10;3. Submit link GitHub repository">{{ old('instruksi', $course->finalTask->instruksi ?? '') }}</textarea>
+                                        placeholder="Jelaskan instruksi untuk Laporan Akhir course ini...&#10;&#10;Contoh:&#10;1. Buat aplikasi web menggunakan Laravel&#10;2. Implementasikan fitur CRUD&#10;3. Submit link GitHub repository">{{ old('instruksi', $course->finalTask->instruksi ?? '') }}</textarea>
                                     @error('instruksi')
                                         <p class="text-red-300 text-sm mt-1">{{ $message }}</p>
                                     @enderror
@@ -225,7 +225,7 @@
                                                 d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
                                                 clip-rule="evenodd" />
                                         </svg>
-                                        Instruksi ini akan ditampilkan kepada peserta sebagai panduan untuk mengerjakan tugas akhir.
+                                        Instruksi ini akan ditampilkan kepada peserta sebagai panduan untuk mengerjakan Laporan Akhir.
                                     </p>
                                 </div>
                             </div>

@@ -2,33 +2,36 @@
 
 @section('content')
 <div class="min-h-screen bg-gray-100">
-    <div class="mx-auto px-4 sm:px-6 lg:px-4 py-8">
-        <nav class="flex" aria-label="Breadcrumb">
-        <ol class="inline-flex items-center space-x-1 md:space-x-3">
-            <li class="inline-flex items-center">
-                <a href="{{ route('course.my') }}" class="text-gray-600 hover:text-blue-600">
-                    Kursus Saya
-                </a>
-            </li>
-            <li aria-current="page">
-                <div class="flex items-center">
-                    <svg class="w-4 h-4 text-gray-400 mx-2" fill="currentColor" viewBox="0 0 20 20">
-                        <path fill-rule="evenodd"
-                            d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
-                            clip-rule="evenodd"></path>
-                        </svg>
-                            <a href="{{ route('course.show', $courseData->slugs) }}" class="text-gray-600 hover:text-blue-600">
-                                {{ $courseData->nama_course }}
-                            </a>
-                        </div>
-            </li>
-        </ol>
-    </nav>
-    </div>
+
     <div class="flex">
+
         <!-- Sidebar -->
+
         <!-- Main Content Area -->
         <div class="flex-1 p-8">
+            <div class="mx-auto px-4 sm:px-6 lg:px-4 py-8">
+                <nav class="flex-1 px-7" aria-label="Breadcrumb">
+                    <ol class="inline-flex items-center space-x-1 md:space-x-3">
+                        <li class="inline-flex items-center">
+                            <a href="{{ route('course.my') }}" class="text-gray-600 hover:text-blue-600">
+                            Kursus Saya
+                            </a>
+                        </li>
+                        <li aria-current="page">
+                            <div class="flex items-center">
+                                <svg class="w-4 h-4 text-gray-400 mx-2" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd"
+                                        d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
+                                        clip-rule="evenodd"></path>
+                                </svg>
+                                    <a href="{{ route('course.show', $courseData->slugs) }}" class="text-gray-600 hover:text-blue-600">
+                                        {{ $courseData->nama_course }}
+                                    </a>
+                            </div>
+                        </li>
+                    </ol>
+                </nav>
+            </div>
             <div class="flex gap-8 items-stretch">
                 <!-- Course Card -->
                 <div class="w-full md:max-w-sm lg:max-w-md flex-shrink-0 mx-auto md:mx-0">

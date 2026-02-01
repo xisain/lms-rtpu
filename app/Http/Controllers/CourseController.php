@@ -238,6 +238,7 @@ class CourseController extends Controller
         $courseEnroll = $course->maxSlotEnrollment();
         $courseStudent = $course->countEnrollment();
         $courseExpire = $course->expireCourse();
+        $category = $course->category;
         // Course bukan public dan bukan admin
         if (! $course->public && auth()->user()->role->id != 1) {
             Swal::error([
@@ -254,6 +255,29 @@ class CourseController extends Controller
             ]);
 
             return redirect()->route('course.index');
+        }
+        if ($category->is_private) {
+
+            // belum login
+            if (!Auth::check()) {
+                Swal::error([
+                    'title' => 'Akses Ditolak',
+                    'text' => 'Silakan login untuk mengakses kelas ini',
+                ]);
+                return redirect()->route('course.index');
+            }
+
+            // bukan admin & instansi tidak sama
+            if (
+                auth()->user()->role->id != 1 &&
+                auth()->user()->instansi_id !== $category->instansi_id
+            ) {
+                Swal::error([
+                    'title' => 'Akses Ditolak',
+                    'text' => 'Anda tidak memiliki akses ke kelas ini',
+                ]);
+                return redirect()->route('course.index');
+            }
         }
 
         Log::info('Course ditemukan:', ['id' => $course->id, 'slug' => $slug]);
@@ -1172,4 +1196,22 @@ class CourseController extends Controller
             return redirect()->back()->with('error', 'Terjadi kesalahan saat menyimpan jawaban quiz.');
         }
     }
+    public function getByInstansi($instansiId)
+{
+    $user = auth()->user();
+
+    // keamanan tambahan
+    if ($user->role->id != 1 && $user->instansi_id != $instansiId) {
+        return response()->json([], 403);
+    }
+
+    $courses = Course::where('public', true)
+        ->whereHas('category', function ($q) use ($instansiId) {
+            $q->where('instansi_id', $instansiId);
+        })
+        ->select('id', 'nama_course')
+        ->get();
+
+    return response()->json($courses);
+}
 }
