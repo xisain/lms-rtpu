@@ -99,7 +99,7 @@
                     @csrf
                     <input type="hidden" name="final_task_id" value="{{ $submission->final_task_id }}">
                     <input type="hidden" name="final_task_submission_id" value="{{ $submission->id }}">
-
+                    @if($course->category->type === "pekerti")
                     <div class="space-y-6">
                         <div class="flex items-center gap-3 mb-6">
                             <div class="w-1 h-8 bg-[#009999] rounded-full"></div>
@@ -322,7 +322,7 @@
                                 </div>
                             </label>
                         </div>
-
+                        @endif
                         {{-- Status Dropdown --}}
                         <div
                             class="mt-8 p-6 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg border-2 border-blue-200">
@@ -344,20 +344,86 @@
                                 atau ditolak</p>
                         </div>
 
-                        {{-- Catatan --}}
-                        <div class="mt-6 p-6 bg-gray-50 rounded-lg border border-gray-200">
-                            <label for="catatan" class="flex items-center gap-2 text-sm font-semibold text-gray-800 mb-3">
+                        {{-- Nilai Field --}}
+                        <div class="mt-6 p-6 bg-purple-50 rounded-lg border-2 border-purple-200">
+                            <label for="nilai" class="flex items-center gap-2 text-sm font-semibold text-gray-800 mb-3">
                                 <svg class="w-5 h-5 text-[#009999]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z">
-                                    </path>
+                                        d="M13 10V3L4 14h7v7l9-11h-7z"></path>
                                 </svg>
-                                Catatan untuk Peserta (Opsional)
+                                Nilai Final Task (0-100) <span class="text-red-500">*</span>
                             </label>
-                            <textarea name="catatan" id="catatan" rows="5"
-                                class="w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-[#009999] focus:border-[#009999] transition-all"
-                                placeholder="Berikan catatan, saran, atau feedback untuk peserta..."></textarea>
+                            <input type="number" name="nilai" id="nilai" min="0" max="100" step="0.01"
+                                class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-[#009999] focus:border-[#009999] transition-all"
+                                placeholder="Masukkan nilai dari 0 hingga 100"
+                                value="{{ old('nilai', $submission->review?->nilai ?? '') }}">
+                            @error('nilai')
+                                <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
+                            @enderror
+                            <p class="text-xs text-gray-600 mt-2">Masukkan nilai numerik yang akan diberikan untuk laporan akhir ini</p>
                         </div>
+
+                        {{-- Conditional Section: Catatan for Pelatihan or Rubrik for Pekerti --}}
+                        @if($course->category->type === 'pelatihan')
+                            {{-- For Pelatihan: Show Catatan --}}
+                            <div class="mt-6 p-6 bg-orange-50 rounded-lg border-2 border-orange-200">
+                                <label for="catatan" class="flex items-center gap-2 text-sm font-semibold text-gray-800 mb-3">
+                                    <svg class="w-5 h-5 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z">
+                                        </path>
+                                    </svg>
+                                    Catatan untuk Peserta - Program Pelatihan
+                                </label>
+                                <textarea name="catatan" id="catatan" rows="5"
+                                    class="w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-all"
+                                    placeholder="Berikan catatan, saran, atau feedback untuk peserta pelatihan...">{{ old('catatan', $submission->review?->catatan ?? '') }}</textarea>
+                                <p class="text-xs text-gray-600 mt-2">Catatan tambahan untuk peserta program pelatihan</p>
+                            </div>
+                        @elseif($course->category->type === 'pekerti')
+                            {{-- For Pekerti: Show Rubrik Info --}}
+                            <div class="mt-6 p-6 bg-green-50 rounded-lg border-2 border-green-200">
+                                <label for="catatan" class="flex items-center gap-2 text-sm font-semibold text-gray-800 mb-3">
+                                    <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z">
+                                        </path>
+                                    </svg>
+                                    Catatan Rubrik Penilaian - Program PEKERTI
+                                </label>
+                                <textarea name="catatan" id="catatan" rows="5"
+                                    class="w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-all"
+                                    placeholder="Berikan catatan berdasarkan rubrik penilaian untuk program PEKERTI...">{{ old('catatan', $submission->review?->catatan ?? '') }}</textarea>
+                                <p class="text-xs text-gray-600 mt-2">
+                                    <strong>Tipe Program:</strong> PEKERTI - Masukkan catatan berdasarkan rubrik penilaian yang telah ditetapkan
+                                </p>
+                                <div class="mt-3 p-3 bg-white rounded border border-green-300">
+                                    <p class="text-sm font-semibold text-green-800 mb-2">Kriteria Penilaian Rubrik:</p>
+                                    <ul class="text-sm text-gray-700 space-y-1 list-disc list-inside">
+                                        <li>Kesesuaian dengan Learning Outcome</li>
+                                        <li>Kualitas Metodologi Pengajaran</li>
+                                        <li>Evaluasi dan Penilaian</li>
+                                        <li>Ketercapaian Tujuan Pembelajaran</li>
+                                        <li>Komprehensivitas Materi</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        @else
+                            {{-- Default Catatan --}}
+                            <div class="mt-6 p-6 bg-gray-50 rounded-lg border border-gray-200">
+                                <label for="catatan" class="flex items-center gap-2 text-sm font-semibold text-gray-800 mb-3">
+                                    <svg class="w-5 h-5 text-[#009999]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z">
+                                        </path>
+                                    </svg>
+                                    Catatan untuk Peserta (Opsional)
+                                </label>
+                                <textarea name="catatan" id="catatan" rows="5"
+                                    class="w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-[#009999] focus:border-[#009999] transition-all"
+                                    placeholder="Berikan catatan, saran, atau feedback untuk peserta...">{{ old('catatan', $submission->review?->catatan ?? '') }}</textarea>
+                            </div>
+                        @endif
 
                         {{-- Tombol Submit --}}
                         <div class="flex justify-end gap-3 mt-8 pt-6 border-t border-gray-200">

@@ -6,8 +6,8 @@ use App\Models\course;
 use App\Models\final_task;
 use App\Models\final_task_review;
 use App\Models\final_task_submission;
-use Illuminate\Http\Request;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Http\Request;
 
 class FinalTaskController extends Controller
 {
@@ -34,7 +34,7 @@ class FinalTaskController extends Controller
             ->setOption('enable-local-file-access', true); // Akses file lokal
 
         // Download PDF
-        return $pdf->download('review-tugas-akhir-' . $course->slugs . '-' . date('Y-m-d') . '.pdf');
+        return $pdf->download('review-tugas-akhir-'.$course->slugs.'-'.date('Y-m-d').'.pdf');
     }
 
     // Atau jika ingin preview dulu:
@@ -44,7 +44,7 @@ class FinalTaskController extends Controller
         $taskId = final_task::where('course_id', $course->id)->first()->id;
 
         $taskList = final_task_submission::where('final_task_id', $taskId)
-            ->with(['user', 'review', 'user.instansi','user.jurusan'])
+            ->with(['user', 'review', 'user.instansi', 'user.jurusan'])
             ->get();
 
         $reviewItems = $this->getReviewItems();
@@ -60,8 +60,9 @@ class FinalTaskController extends Controller
             ->setOption('enable-local-file-access', true); // Akses file lokal
 
         // Tampilkan di browser
-        return $pdf->stream('review-tugas-akhir-' . $course->slugs . '-' . date('Y-m-d') . '.pdf');
+        return $pdf->stream('review-tugas-akhir-'.$course->slugs.'-'.date('Y-m-d').'.pdf');
     }
+
     public function index()
     {
         $reviewer_id = auth()->user()->id;
@@ -83,8 +84,8 @@ class FinalTaskController extends Controller
 
     public function reviewTask($slugs, $idSubmission)
     {
-        $course = Course::where('slugs', $slugs)->first();
-        $submission = final_task_submission::with('user')->find($idSubmission);
+        $course = Course::where('slugs', $slugs)->with('category')->first();
+        $submission = final_task_submission::with('user', 'review')->find($idSubmission);
 
         return view('dosen.review.review', compact('submission', 'course'));
     }
@@ -119,9 +120,10 @@ class FinalTaskController extends Controller
             'materi_microteaching' => 'nullable|boolean',
             'penilaian_microteaching' => 'nullable|boolean',
 
-            // Status untuk submission dan catatan untuk review
+            // Status untuk submission, catatan untuk review, dan nilai
             'status' => 'required|in:approved,rejected',
             'catatan' => 'nullable|string|max:1000',
+            'nilai' => 'nullable|numeric|min:0|max:100',
         ], [
             // Custom error messages
             'final_task_id.required' => 'ID Tugas Akhir tidak ditemukan.',
@@ -131,6 +133,9 @@ class FinalTaskController extends Controller
             'status.required' => 'Status review wajib dipilih.',
             'status.in' => 'Status harus approved atau rejected.',
             'catatan.max' => 'Catatan maksimal 1000 karakter.',
+            'nilai.numeric' => 'Nilai harus berupa angka.',
+            'nilai.min' => 'Nilai minimal 0.',
+            'nilai.max' => 'Nilai maksimal 100.',
         ]);
         $checkboxFields = [
             'kurikulum_permen_39_2025',
@@ -182,7 +187,7 @@ class FinalTaskController extends Controller
 
     public function viewTask($slug)
     {
-        $course = Course::where('slugs', $slug)->with('material.submaterial')->firstOrFail();
+        $course = Course::where('slugs', $slug)->with('material.submaterial', 'category')->firstOrFail();
         $finalTask = final_task::where('course_id', $course->id)->firstOrFail();
         $submission = final_task_submission::where('final_task_id', $finalTask->id)
             ->where('user_id', auth()->id())
@@ -244,7 +249,7 @@ class FinalTaskController extends Controller
         ]);
 
         $submission = final_task_submission::findOrFail($request->submission_id);
-        $review = final_task_review::where('final_task_submission_id',$submission->id)->first();
+        $review = final_task_review::where('final_task_submission_id', $submission->id)->first();
         $review->delete();
         // Pastikan submission milik user yang login
         if ($submission->user_id !== auth()->id()) {

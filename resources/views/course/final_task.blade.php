@@ -188,6 +188,38 @@
                                 <div class="border-t pt-6 mt-6">
                                     <h4 class="font-semibold text-gray-800 mb-4">Umpan Balik Review</h4>
 
+                                    <!-- Score/Nilai Badge -->
+                                    @if($submission->review->nilai !== null)
+                                        <div class="bg-gradient-to-r from-purple-50 to-indigo-50 p-4 rounded-lg mb-6 border-2 border-purple-200">
+                                            <div class="flex items-center justify-between">
+                                                <div>
+                                                    <p class="text-sm font-medium text-gray-600">Nilai Laporan Akhir</p>
+                                                    <p class="text-3xl font-bold text-purple-600 mt-1">{{ number_format($submission->review->nilai, 2) }}</p>
+                                                </div>
+                                                <div class="text-right">
+                                                    @php
+                                                        $nilai = $submission->review->nilai;
+                                                        if ($nilai >= 85) {
+                                                            $grade = 'A (Sangat Baik)';
+                                                            $color = 'text-green-600';
+                                                        } elseif ($nilai >= 75) {
+                                                            $grade = 'B (Baik)';
+                                                            $color = 'text-blue-600';
+                                                        } elseif ($nilai >= 65) {
+                                                            $grade = 'C (Cukup)';
+                                                            $color = 'text-yellow-600';
+                                                        } else {
+                                                            $grade = 'D (Kurang)';
+                                                            $color = 'text-red-600';
+                                                        }
+                                                    @endphp
+                                                    <p class="text-sm text-gray-600">Grade</p>
+                                                    <p class="text-xl font-bold {{ $color }} mt-1">{{ $grade }}</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    @endif
+                                    @if($course->category->type === 'pekerti')
                                     <!-- Review Checklist -->
                                     <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mb-4">
                                         @foreach($reviewItems as $key => $label)
@@ -209,13 +241,26 @@
                                             </div>
                                         @endforeach
                                     </div>
+                                    @endif
 
                                     <!-- Reviewer Notes -->
                                     @if($submission->review->catatan)
-                                        <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded">
-                                            <p class="text-sm font-semibold text-yellow-800 mb-2">Catatan Reviewer:</p>
-                                            <p class="text-sm text-yellow-700">{{ $submission->review->catatan }}</p>
-                                        </div>
+                                        @if($course->category->type === 'pelatihan')
+                                            <div class="bg-orange-50 border-l-4 border-orange-400 p-4 rounded">
+                                                <p class="text-sm font-semibold text-orange-800 mb-2">📝 Catatan Program Pelatihan:</p>
+                                                <p class="text-sm text-orange-700">{{ $submission->review->catatan }}</p>
+                                            </div>
+                                        @elseif($course->category->type === 'pekerti')
+                                            <div class="bg-green-50 border-l-4 border-green-400 p-4 rounded">
+                                                <p class="text-sm font-semibold text-green-800 mb-2">📊 Penilaian Rubrik PEKERTI:</p>
+                                                <p class="text-sm text-green-700">{{ $submission->review->catatan }}</p>
+                                            </div>
+                                        @else
+                                            <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded">
+                                                <p class="text-sm font-semibold text-yellow-800 mb-2">Catatan Reviewer:</p>
+                                                <p class="text-sm text-yellow-700">{{ $submission->review->catatan }}</p>
+                                            </div>
+                                        @endif
                                     @endif
                                 </div>
                             @endif

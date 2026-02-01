@@ -11,6 +11,7 @@ class CategoryController extends Controller
     public function index()
     {
         $categories = category::latest()->paginate(10);
+
         return view('admin.category.index', compact('categories'));
     }
 
@@ -24,6 +25,9 @@ class CategoryController extends Controller
         $validated = $request->validate([
             'category' => 'required|string|max:255',
             'description' => 'nullable|string',
+            'type' => 'nullable|in:pekerti,pelatihan',
+            'instansi_id' => 'nullable|exists:instansi,id',
+            'is_private' => 'nullable|boolean',
         ]);
 
         category::create($validated);
@@ -37,11 +41,14 @@ class CategoryController extends Controller
         return view('admin.category.edit', compact('category'));
     }
 
-    public function update($id,Request $request)
+    public function update($id, Request $request)
     {
         $validated = $request->validate([
             'category' => 'required|string|max:255',
             'description' => 'nullable|string',
+            'type' => 'nullable|in:pekerti,pelatihan',
+            'instansi_id' => 'nullable|exists:instansi,id',
+            'is_private' => 'nullable|boolean',
         ]);
 
         $category = category::findOrFail($id);
@@ -56,8 +63,8 @@ class CategoryController extends Controller
 
         $category = category::findOrFail($id);
         Swal::success([
-            "title"=> 'Berhasil',
-            'text' => 'Kategori "'. $category->category . '" Berhasil di hapus'
+            'title' => 'Berhasil',
+            'text' => 'Kategori "'.$category->category.'" Berhasil di hapus',
         ]);
         $category->delete();
 

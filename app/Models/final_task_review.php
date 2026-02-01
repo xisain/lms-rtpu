@@ -28,15 +28,17 @@ class final_task_review extends Model
         'rps_microteaching',
         'materi_microteaching',
         'penilaian_microteaching',
-        'catatan'
+        'catatan',
+        'nilai',
     ];
 
-    public function finalTask() {
+    public function finalTask()
+    {
         return $this->belongsTo(final_task::class);
     }
+
     public function submission()
     {
         return $this->belongsTo(final_task_submission::class, 'final_task_submission_id');
     }
-
 }

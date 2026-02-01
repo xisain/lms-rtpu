@@ -46,6 +46,58 @@
                         @enderror
                     </div>
 
+                    <!-- Type -->
+                    <div>
+                        <label for="type" class="block text-sm font-medium text-gray-700 mb-2">
+                            Type
+                        </label>
+                        <select class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200 @error('type') border-red-500 @enderror"
+                                id="type"
+                                name="type">
+                            <option value="">Select Type</option>
+                            <option value="pekerti" {{ old('type', $category->type) == 'pekerti' ? 'selected' : '' }}>Pekerti</option>
+                            <option value="pelatihan" {{ old('type', $category->type) == 'pelatihan' ? 'selected' : '' }}>Pelatihan</option>
+                        </select>
+                        @error('type')
+                            <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    <!-- Instansi -->
+                    <div>
+                        <label for="instansi_id" class="block text-sm font-medium text-gray-700 mb-2">
+                            Instansi
+                        </label>
+                        <select class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200 @error('instansi_id') border-red-500 @enderror"
+                                id="instansi_id"
+                                name="instansi_id">
+                            <option value="">Select Instansi</option>
+                            @foreach(\App\Models\Instansi::all() as $instansi)
+                                <option value="{{ $instansi->id }}" {{ old('instansi_id', $category->instansi_id) == $instansi->id ? 'selected' : '' }}>
+                                    {{ $instansi->nama }}
+                                </option>
+                            @endforeach
+                        </select>
+                        @error('instansi_id')
+                            <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    <!-- Is Private -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">
+                            <input type="checkbox"
+                                   name="is_private"
+                                   value="1"
+                                   class="rounded border-gray-300 text-teal-600 shadow-sm focus:border-teal-500 focus:ring-teal-500"
+                                   {{ old('is_private', $category->is_private) ? 'checked' : '' }}>
+                            <span class="ml-2">Private Category</span>
+                        </label>
+                        @error('is_private')
+                            <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
+                        @enderror
+                    </div>
+
                     <!-- Buttons -->
                     <div class="flex justify-between items-center pt-4 border-t border-gray-200">
                         <a href="{{ route('admin.category.index') }}"
