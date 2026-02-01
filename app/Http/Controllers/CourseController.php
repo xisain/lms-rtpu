@@ -747,7 +747,19 @@ class CourseController extends Controller
 
     public function showCourse(Request $request)
     {
-        $query = course::where('public', true);
+        $userInstansiId = auth()->user()->instansi_id ?? null;
+
+        $query = Course::where('public', true)
+            ->whereHas('category', function ($q) use ($userInstansiId) {
+                if ($userInstansiId) {
+                    $q->where(function ($sub) use ($userInstansiId) {
+                        $sub->whereNull('instansi_id')
+                            ->orWhere('instansi_id', $userInstansiId);
+                    });
+                } else {
+                    $q->whereNull('instansi_id');
+                }
+            });
 
         // Apply filters if present
         if ($request->filled('search')) {
@@ -770,7 +782,7 @@ class CourseController extends Controller
         }
 
         $course = $query->get();
-        $categories = category::all();
+        $categories = category::where('is_private','false')->get();
 
         return view('course.index', [
             'course' => $course,
