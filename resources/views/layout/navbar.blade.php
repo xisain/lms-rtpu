@@ -94,8 +94,12 @@
                 <!-- Auth: menu kiri -->
                 <div class="hidden lg:flex items-center space-x-3">
                     <a href="{{ route('home') }}" class="text-base font-medium text-gray-700 hover:text-[#0f5757]">Home</a>
-                    <a href="{{ route('course.index') }}" class="text-base font-medium text-gray-700 hover:text-[#0f5757]">Dashboard</a>
-
+                    <a href="{{ route('course.index') }}" class="text-base font-medium text-gray-700 hover:text-[#0f5757]">
+                        <i class="fa-solid fa-compass mr-1"></i>Cari Course
+                    </a>
+                    <a href="{{ route('course.my') }}" class="text-base font-medium text-gray-700 hover:text-[#0f5757]">
+                        <i class="fa-solid fa-bookmark mr-1"></i>Course Saya
+                    </a>
 
                     <!-- Dropdown Kelas -->
                     <div class="relative" x-data="{ openDropdown: false }">
@@ -120,7 +124,7 @@
                             x-transition:leave="transition ease-in duration-150 transform"
                             x-transition:leave-start="opacity-100 translate-y-0"
                             x-transition:leave-end="opacity-0 -translate-y-2" @click.away="openDropdown = false"
-                            class="absolute left-0 mt-6 w-48 bg-white rounded-lg shadow-xl">
+                            class="absolute left-0 mt-6 w-48 bg-white rounded-lg shadow-xl z-10">
                             @php
                             $enrollments = auth()->user()->enrollment()->with('course')->get();
                             @endphp
@@ -138,7 +142,7 @@
                             @endif
                         </div>
                     </div>
-                    </div>
+                </div>
                 @endauth
 
         <!-- User/Login section kanan -->
@@ -188,53 +192,125 @@
         </div>
 
         <!-- Menu Mobile (Dropdown) -->
-     <div x-show="open"
-     x-transition:enter="transition ease-out duration-300 transform"
-     x-transition:enter-start="opacity-0 -translate-y-3"
-     x-transition:enter-end="opacity-100 translate-y-0"
-     x-transition:leave="transition ease-in duration-200 transform"
-     x-transition:leave-start="opacity-100 translate-y-0"
-     x-transition:leave-end="opacity-0 -translate-y-3"
-     @click.away="open = false"
-     class="lg:hidden bg-white border-t border-gray-200 shadow-lg">
+        <div x-show="open"
+             x-transition:enter="transition ease-out duration-300 transform"
+             x-transition:enter-start="opacity-0 -translate-y-3"
+             x-transition:enter-end="opacity-100 translate-y-0"
+             x-transition:leave="transition ease-in duration-200 transform"
+             x-transition:leave-start="opacity-100 translate-y-0"
+             x-transition:leave-end="opacity-0 -translate-y-3"
+             @click.away="open = false"
+             class="lg:hidden absolute top-16 left-0 right-0 bg-white border-b border-gray-200 shadow-lg z-40">
 
-    <div class="px-4 py-3 space-y-1">
-        <!-- Home Link -->
-        <a href="{{ route('home') }}"
-           class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-[#0f5757] hover:bg-gray-50 transition-colors duration-150">
-            Home
-        </a>
+            <div class="px-4 py-3 space-y-2">
+                @guest
+                <!-- Guest Menu -->
+                <a href="{{ route('home') }}"
+                   class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-[#0f5757] hover:bg-gray-50 transition-colors duration-150">
+                    Home
+                </a>
+                <a href="{{ route('list.kelas') }}"
+                   class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-[#0f5757] hover:bg-gray-50 transition-colors duration-150">
+                    Course
+                </a>
+                <div class="border-t border-gray-200 pt-3 mt-3">
+                    <a href="{{ route('login') }}"
+                       class="flex items-center px-3 py-2 rounded-md text-base font-medium text-white bg-[#009999] hover:bg-[#0f5757] transition-colors duration-150">
+                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"/>
+                        </svg>
+                        Login
+                    </a>
+                </div>
+                @endguest
 
-        <!-- Dashboard Link -->
-        <a href="{{ route('course.index') }}"
-           class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-[#0f5757] hover:bg-gray-50 transition-colors duration-150">
-            Dashboard
-        </a>
-
-        <!-- Kelas Ku Dropdown Section -->
-
-        <!-- Auth Section -->
-        <div class="border-t border-gray-200 pt-3 mt-3">
-            @auth
+                @auth
+                <!-- Auth Menu -->
+                <a href="{{ route('home') }}"
+                   class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-[#0f5757] hover:bg-gray-50 transition-colors duration-150">
+                    Home
+                </a>
                 <a href="{{ route('course.index') }}"
-                   class="flex items-center px-3 py-2 rounded-md text-base font-medium text-white bg-[#0f5757] hover:bg-[#0d4848] transition-colors duration-150">
-                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
-                    </svg>
-                    Dashboard
+                   class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-[#0f5757] hover:bg-gray-50 transition-colors duration-150">
+                    <i class="fa-solid fa-compass mr-2"></i>Cari Course
                 </a>
-            @else
-                <a href="{{ route('login') }}"
-                   class="flex items-center px-3 py-2 rounded-md text-base font-medium text-white bg-[#0f5757] hover:bg-[#0d4848] transition-colors duration-150">
-                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"/>
-                    </svg>
-                    Login
+                <a href="{{ route('course.my') }}"
+                   class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-[#0f5757] hover:bg-gray-50 transition-colors duration-150">
+                    <i class="fa-solid fa-bookmark mr-2"></i>Course Saya
                 </a>
-            @endauth
+
+                <!-- My Course Dropdown Mobile -->
+                <div x-data="{ courseDropdown: false }" class="border-t border-gray-200 pt-2 mt-2">
+                    <button @click="courseDropdown = !courseDropdown"
+                            class="w-full flex items-center justify-between px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-[#0f5757] hover:bg-gray-50 transition-colors duration-150">
+                        <span><i class="fa-solid fa-graduation-cap mr-2"></i>My Courses</span>
+                        <svg class="w-4 h-4 transform transition-transform duration-300"
+                             :class="courseDropdown ? 'rotate-180' : 'rotate-0'"
+                             fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 10.94l3.71-3.71a.75.75 0 011.06 1.06l-4.24 4.25a.75.75 0 01-1.06 0L5.21 8.27a.75.75 0 01.02-1.06z" clip-rule="evenodd" />
+                        </svg>
+                    </button>
+                    <div x-show="courseDropdown" class="pl-4 space-y-1 mt-1">
+                        @php
+                        $enrollments = auth()->user()->enrollment()->with('course')->limit(5)->get();
+                        @endphp
+                        @if($enrollments->count() > 0)
+                        @foreach($enrollments as $enrollment)
+                        <a href="{{ route('course.show', $enrollment->course->slugs) }}"
+                           class="block px-3 py-2 text-sm text-gray-600 hover:text-[#0f5757] hover:bg-gray-50 rounded transition-colors duration-150">
+                            {{ Str::limit($enrollment->course->nama_course, 30) }}
+                        </a>
+                        @endforeach
+                        <a href="{{ route('course.my') }}" class="block px-3 py-2 text-sm font-bold text-[#009999] hover:text-[#0f5757]">
+                            Lihat Semua →
+                        </a>
+                        @else
+                        <p class="px-3 py-2 text-sm text-gray-500">Belum ada course</p>
+                        @endif
+                    </div>
+                </div>
+
+                <!-- User Profile Mobile -->
+                <div class="border-t border-gray-200 pt-3 mt-3">
+                    <div x-data="{ userDropdown: false }">
+                        <button @click="userDropdown = !userDropdown"
+                                class="w-full flex items-center justify-between px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-[#0f5757] hover:bg-gray-50 transition-colors duration-150">
+                            <span><i class="fa-solid fa-user mr-2"></i>{{ auth()->user()->name }}</span>
+                            <svg class="w-4 h-4 transform transition-transform duration-300"
+                                 :class="userDropdown ? 'rotate-180' : 'rotate-0'"
+                                 fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 10.94l3.71-3.71a.75.75 0 011.06 1.06l-4.24 4.25a.75.75 0 01-1.06 0L5.21 8.27a.75.75 0 01.02-1.06z" clip-rule="evenodd" />
+                            </svg>
+                        </button>
+                        <div x-show="userDropdown" class="pl-4 space-y-1 mt-1">
+                            @if(auth()->user()->role->name == "admin")
+                            <a href="{{ route('admin.home') }}"
+                               class="block px-3 py-2 text-sm text-gray-600 hover:text-[#0f5757] hover:bg-gray-50 rounded transition-colors duration-150">
+                                Admin Dashboard
+                            </a>
+                            @elseif(auth()->user()->role->name == "dosen")
+                            <a href="{{ route('dosen.home') }}"
+                               class="block px-3 py-2 text-sm text-gray-600 hover:text-[#0f5757] hover:bg-gray-50 rounded transition-colors duration-150">
+                                Dosen Dashboard
+                            </a>
+                            @endif
+                            <a href="{{ route('profile') }}"
+                               class="block px-3 py-2 text-sm text-gray-600 hover:text-[#0f5757] hover:bg-gray-50 rounded transition-colors duration-150">
+                                Profile
+                            </a>
+                            <form method="POST" action="{{ route('logout') }}" class="mt-2">
+                                @csrf
+                                <button type="submit"
+                                        class="w-full text-left px-3 py-2 text-sm text-white bg-[#009999] hover:bg-[#0f5757] rounded transition-colors duration-150">
+                                    Logout
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                @endauth
+            </div>
         </div>
-    </div>
-</div>
     </nav>
 
     <div class="min-h-screen">

@@ -6,7 +6,6 @@ use App\Jobs\GenerateCertificateJob;
 use App\Models\category;
 use App\Models\certificate;
 use App\Models\course;
-use App\Models\CoursePurchase;
 use App\Models\enrollment;
 use App\Models\final_task;
 use App\Models\final_task_submission;
@@ -269,7 +268,7 @@ class CourseController extends Controller
 
         // Check if user has pending purchase
         $pendingPurchase = null;
-        if (Auth::check() && !$isEnrolled) {
+        if (Auth::check() && ! $isEnrolled) {
             $pendingPurchase = $course->pendingCourseBuy(Auth::id());
         }
 
@@ -447,7 +446,7 @@ class CourseController extends Controller
             'description' => 'required|string',
             'image_link' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
             'is_paid' => 'boolean',
-            'price' => 'nullable|required_if:is_paid,1|integer|min:5000',
+            'price' => 'nullable|required_if:is_paid,1|numeric|min:5000',
             'isLimitedCourse' => 'boolean',
             'start_date' => 'nullable|required_if:isLimitedCourse,1|date',
             'end_date' => 'nullable|required_if:isLimitedCourse,1|date|after:start_date',
@@ -496,7 +495,7 @@ class CourseController extends Controller
                 'slugs' => Str::slug($validated['nama_course']),
                 'description' => $validated['description'],
                 'is_paid' => $validated['is_paid'] ?? false,
-                'price' => $validated['price'] ?? null,
+                'price' => isset($validated['price']) ? (int) $validated['price'] : null,
                 'isLimitedCourse' => $validated['isLimitedCourse'] ?? false,
                 'start_date' => $validated['start_date'] ?? null,
                 'end_date' => $validated['end_date'] ?? null,
@@ -820,6 +819,40 @@ class CourseController extends Controller
             ->whereHas('enrollment', function ($q) use ($userId) {
                 $q->where('user_id', $userId);
             });
+
+        // Search filter
+        if ($request->filled('search')) {
+            $query->where(function ($q) use ($request) {
+                $q->where('nama_course', 'like', '%'.$request->search.'%')
+                    ->orWhere('description', 'like', '%'.$request->search.'%');
+            });
+        }
+
+        // Category filter
+        if ($request->filled('category')) {
+            $query->where('category_id', $request->category);
+        }
+
+        // Date range filter
+        if ($request->filled('start_date')) {
+            $query->whereDate('start_date', '>=', $request->start_date);
+        }
+
+        if ($request->filled('end_date')) {
+            $query->whereDate('end_date', '<=', $request->end_date);
+        }
+
+        $course = $query->get();
+
+        // Return partial view for AJAX request
+        return view('course.partials.course-cards', compact('course'));
+    }
+
+    public function availableFilterCourse(Request $request)
+    {
+        $userId = auth()->id();
+        // Build the query with filters - menampilkan semua course public
+        $query = Course::where('public', true);
 
         // Search filter
         if ($request->filled('search')) {

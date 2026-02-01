@@ -25,10 +25,7 @@
                         <div>
                             <h1 class="text-2xl font-bold text-gray-900">{{ $user->name }}</h1>
                             <p class="text-gray-600">{{ $user->email }}</p>
-                            <span
-                                class="inline-block mt-2 px-3 py-1 bg-green-100 text-green-800 text-sm font-medium rounded-full">
-                                Premium Member
-                            </span>
+                           
                         </div>
                     </div>
 
@@ -280,7 +277,7 @@
         function toggleAccordion(section) {
             const content = document.getElementById(section + '-content');
             const icon = document.getElementById(section + '-icon');
-            
+
             if (content.classList.contains('hidden')) {
                 content.classList.remove('hidden');
                     icon.classList.add('rotate-180');

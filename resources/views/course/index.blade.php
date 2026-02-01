@@ -78,13 +78,7 @@
     </div>
 
     <h2 class="text-2xl font-semibold mb-6 text-gray-800">
-        @if (request()->routeIs('course.my'))
-        My Course
-        @else
         Daftar Course
-        @endif
-
-
     </h2>
 
     {{-- Loading State --}}
@@ -112,7 +106,6 @@ function courseFilter() {
         loading: false,
 
         init() {
-
             const urlParams = new URLSearchParams(window.location.search);
             this.search = urlParams.get('search') || '';
             this.category = urlParams.get('category') || '';
@@ -129,12 +122,25 @@ function courseFilter() {
             if (this.startDate) params.append('start_date', this.startDate);
             if (this.endDate) params.append('end_date', this.endDate);
 
+            // Determine the correct filter route based on current route
+            const currentRoute = '{{ request()->route()->getName() }}';
+            let filterRoute = '';
+            let redirectRoute = '';
+
+            if (currentRoute === 'course.my') {
+                filterRoute = '{{ route("course.filter.my") }}';
+                redirectRoute = '{{ route("course.my") }}';
+            } else {
+                filterRoute = '{{ route("course.filter.available") }}';
+                redirectRoute = '{{ route("course.index") }}';
+            }
+
             // Update URL tanpa reload
-            const newUrl = params.toString() ? `${window.location.pathname}?${params}` : window.location.pathname;
+            const newUrl = params.toString() ? `${redirectRoute}?${params}` : redirectRoute;
             window.history.pushState({}, '', newUrl);
 
             try {
-                const url = `{{ route('course.filter.my') }}?${params}`;
+                const url = `${filterRoute}?${params}`;
                 console.log('Fetching:', url); // Debug
 
                 const response = await fetch(url, {

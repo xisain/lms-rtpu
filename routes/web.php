@@ -14,9 +14,7 @@ use App\Http\Controllers\SubscriptionController;
 use App\Http\Controllers\UserController;
 use App\Http\Middleware\dosenMiddleware;
 use App\Mail\tolakAccount;
-use App\Models\subscription;
 use App\Models\Jurusan;
-use App\Models\Intansi;
 
 // Unguarded Route
 Route::get('certificate/{certificate}/download', [CertificateController::class, 'download'])->name('certificate.download');
@@ -69,8 +67,8 @@ Route::middleware('auth')->group(function () {
         Route::prefix('my')->group(function () {
             Route::get('/filter', [CourseController::class, 'myfilterCourse'])->name('course.filter.my');
             Route::get('/', [CourseController::class, 'myCourse'])->name('course.my');
-
         });
+        Route::get('/available/filter', [CourseController::class, 'availableFilterCourse'])->name('course.filter.available');
         Route::get('/', [CourseController::class, 'showCourse'])->name('course.index');
 
         Route::get('{slug}', [CourseController::class, 'show'])->name('course.show');
@@ -103,7 +101,6 @@ Route::middleware('auth')->group(function () {
             Route::put('/{jurusan}', [App\Http\Controllers\JurusanController::class, 'update'])->name('admin.jurusan.update');
             Route::delete('/{jurusan}', [App\Http\Controllers\JurusanController::class, 'destroy'])->name('admin.jurusan.destroy');
         });
-
 
         Route::prefix('instansi')->group(function () {
             Route::get('/', [App\Http\Controllers\InstansiController::class, 'index'])->name('admin.instansi.index');
@@ -144,7 +141,7 @@ Route::middleware('auth')->group(function () {
             Route::get('/edit/{id}', [CourseController::class, 'edit'])->name('course.edit');
             Route::delete('/{id}', [CourseController::class, 'destroy'])->name('course.destroy');
             Route::get('/{id}/manage-course', [CourseController::class, 'manageCourse'])->name('course.manage');
-            Route::get('{slugs}/pdf',[adminController::class,'exportCoursePDF'])->name('admin.course.exportPDF');
+            Route::get('{slugs}/pdf', [adminController::class, 'exportCoursePDF'])->name('admin.course.exportPDF');
         });
         Route::prefix('plan')->group(function () {
             Route::get('/', [SubscriptionController::class, 'index'])->name('admin.plan.index');
@@ -196,7 +193,7 @@ Route::get('/', function () {
     return view('index');
 })->name('home');
 
-Route::get('/pdf-test/{slugs}/',[adminController::class,'exportCoursePDF'])->name('admin.course.exportPDF');
+Route::get('/pdf-test/{slugs}/', [adminController::class, 'exportCoursePDF'])->name('admin.course.exportPDF');
 // Route::get('test', function () {
 //     Mail::to('husenabs232bogor@gmail.com')->send(new tolakAccount(
 //     "Xisain",

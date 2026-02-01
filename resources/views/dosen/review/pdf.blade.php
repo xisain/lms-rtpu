@@ -302,7 +302,29 @@
                         <td class="catatan-column wrap">{{ $task->review->catatan ?? '-' }}</td>
                     @else
                         <!-- Total: 2 (Kurikulum) + 19 (Komponen) + 1 (Catatan) = 22 kolom -->
-                        <td colspan="22" class="belum-review">Belum direview</td>
+                        {{-- <td colspan="21" class="belum-review">Belum direview</td> --}}
+                        <td>-</td>
+                        <td>-</td>
+                        <td>-</td>
+                        <td>-</td>
+                        <td>-</td>
+                        <td>-</td>
+                        <td>-</td>
+                        <td>-</td>
+                        <td>-</td>
+                        <td>-</td>
+                        <td>-</td>
+                        <td>-</td>
+                        <td>-</td>
+                        <td>-</td>
+                        <td>-</td>
+                        <td>-</td>
+                        <td>-</td>
+                        <td>-</td>
+                        <td>-</td>
+                        <td>-</td>
+
+
                     @endif
                 </tr>
 

@@ -2,22 +2,20 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\tolakAccount;
+use App\Mail\WelcomeMail;
 use App\Models\category;
+use App\Models\course;
 use App\Models\enrollment;
-use App\Models\plan;
 use App\Models\role;
 use App\Models\subscription;
 use App\Models\User;
-use App\Models\course;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Str;
-use SweetAlert2\Laravel\Swal;
-use App\Mail\WelcomeMail;
 use Illuminate\Support\Facades\Mail;
-use App\Mail\tolakAccount;
+use SweetAlert2\Laravel\Swal;
 
 class UserController extends Controller
 {
@@ -28,7 +26,8 @@ class UserController extends Controller
     {
         $users = User::with('role')->orderBy('id', 'asc')->get();
         $userNeedActivate = User::where('isActive', false)->count();
-        return view('admin.users.index', compact('users','userNeedActivate'));
+
+        return view('admin.users.index', compact('users', 'userNeedActivate'));
     }
 
     /**
@@ -116,6 +115,7 @@ class UserController extends Controller
     {
 
         $course = Course::get();
+
         return view('admin.users.create', ['course' => $course]);
     }
 
@@ -192,10 +192,10 @@ class UserController extends Controller
 
                     continue;
                 }
-                // Generate password if empty
-                $password = ! empty($data['password']) ? trim($data['password']) : Str::random(12);
+
+                $password = ! empty($data['password']) ? trim($data['password']) : 'passwordlms123';
                 try {
-                    // Create user with basic information
+
                     $user = User::create([
                         'name' => $name,
                         'email' => $email,
@@ -205,7 +205,6 @@ class UserController extends Controller
                         'isActive' => true,
                     ]);
 
-                    // Debuging To Log
                     if ($user && $user->id) {
                         \Log::debug("User created successfully at line $actualLineNumber", [
                             'user_id' => $user->id,
@@ -223,8 +222,8 @@ class UserController extends Controller
                         continue;
                     }
                     $enrolled = enrollment::create([
-                        "course_id"=> $request->course_id,
-                        "user_id"=> $user->id,
+                        'course_id' => $request->course_id,
+                        'user_id' => $user->id,
                     ]);
 
                     // $subscription = subscription::create([
@@ -329,24 +328,32 @@ class UserController extends Controller
 
         return response()->stream($callback, 200, $headers);
     }
-    public function activate() {
-     $users = User::where('isActive','false')->get();
-     return view('admin.users.activate',compact('users'));
+
+    public function activate()
+    {
+        $users = User::where('isActive', 'false')->get();
+
+        return view('admin.users.activate', compact('users'));
     }
-    public function approved(Request $request, $id){
+
+    public function approved(Request $request, $id)
+    {
         $user = User::find($id);
-        if(!$user){
-            return redirect()->back()->with('error','error');
+        if (! $user) {
+            return redirect()->back()->with('error', 'error');
         } else {
             $user->isActive = true;
             $user->save();
-            return redirect()->back()->with('success','Pembuatan akun Di Setujui');
+
+            return redirect()->back()->with('success', 'Pembuatan akun Di Setujui');
         }
     }
-    public function rejected(Request $request, $id){
+
+    public function rejected(Request $request, $id)
+    {
         $user = User::find($id);
-        if(!$user){
-            return redirect()->back()->with('error','error');
+        if (! $user) {
+            return redirect()->back()->with('error', 'error');
         } else {
             Mail::to($user->email)->send(new tolakAccount(
                 $user->name,
@@ -354,7 +361,8 @@ class UserController extends Controller
             ));
             $user->isActive = false;
             $user->delete();
-            return redirect()->back()->with('success','Pembuatan akun di Tolak, akun akan di hapus');
+
+            return redirect()->back()->with('success', 'Pembuatan akun di Tolak, akun akan di hapus');
         }
     }
 }
