@@ -23,6 +23,9 @@ Untuk keamanan akun Anda, silakan buat password dengan mengklik tombol di bawah 
 @component('mail::button', ['url' => $resetUrl, 'color' => 'success'])
 Buat Password
 @endcomponent
+@component('mail::button', ['url'=>$linkWhatsapp])
+Gabung Grup Whatsapp
+@endcomponent
 
 Link ini akan kedaluwarsa dalam 60 menit. Jika Anda tidak membuat akun ini, abaikan email ini.
 

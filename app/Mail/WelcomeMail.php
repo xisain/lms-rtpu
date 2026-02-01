@@ -19,6 +19,7 @@ class WelcomeMail extends Mailable
     public $user;
     public $resetUrl;
     public $course;
+    public $linkWhatsapp;
 
     /**
      * Create a new message instance.
@@ -39,6 +40,7 @@ class WelcomeMail extends Mailable
             'token' => $token,
             'email' => $user->email,
         ], false));
+        $this->linkWhatsapp = $course->whatsapp_group;
     }
 
     /**
