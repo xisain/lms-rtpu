@@ -1,61 +1,389 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# 📚 Learning Management System - RTPU PNJ
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Sistem Manajemen Pembelajaran (LMS) terintegrasi untuk Program Pelatihan dan PEKERTI di Politeknik Negeri Jakarta (PNJ). Platform ini dirancang untuk mendukung pembelajaran online yang interaktif dengan fitur manajemen kursus, penilaian, dan tracking progres peserta.
 
-## About Laravel
+<img src="https://github.com/xisain/lms-rtpu/blob/testing-sain/public/images/rtpu.png" alt="RTPU PNJ Logo" width="200"/>
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+---
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## 🎯 Tentang Project
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+**LMS RTPU** adalah platform pembelajaran digital yang komprehensif yang memfasilitasi:
+- 📖 **Manajemen Kursus**: Kelola materi pembelajaran dengan struktur berjenjang (Materi → Sub Materi)
+- 👥 **Manajemen Peserta**: Pendaftaran, enrollment, dan tracking progres pembelajaran
+- 📝 **Sistem Penilaian**: Quiz, tugas akhir, dan sistem rubrik penilaian
+- 💳 **Manajemen Pembayaran**: Integrasi sistem pembayaran untuk kursus berbayar
+- 🎓 **Sertifikat Digital**: Otomatis generate sertifikat untuk peserta yang lulus
+- 📊 **Dashboard Analytics**: Laporan dan visualisasi data pembelajaran
 
-## Learning Laravel
+---
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+## 🚀 Tech Stack
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+| Komponen | Teknologi |
+|----------|-----------|
+| **Backend** | Laravel Framework v12 |
+| **Frontend** | Blade Template + Tailwind CSS v4 |
+| **Database** | MySQL 8.0+ |
+| **Build Tool** | Vite |
+| **Authentication** | Laravel Sanctum |
+| **PDF Generation** | DomPDF |
+| **Queue** | Laravel Queue |
+| **Testing** | PHPUnit v11 |
+| **Code Formatter** | Laravel Pint |
+| **PHP Version** | 8.4.14 |
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+---
 
-## Laravel Sponsors
+## 📋 Fitur Utama
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+### 🎓 Untuk Peserta
+- ✅ Daftar dan enroll ke kursus
+- ✅ Akses materi pembelajaran berjenjang
+- ✅ Tracking progress pembelajaran realtime
+- ✅ Mengerjakan quiz dan kuis interaktif
+- ✅ Submit tugas akhir dengan Google Drive integration
+- ✅ Menerima feedback dan nilai dari reviewer
+- ✅ Download sertifikat digital
+- ✅ Lihat history pembayaran dan subscription
 
-### Premium Partners
+### 👨‍🏫 Untuk Instruktur/Dosen
+- ✅ Buat dan kelola kursus
+- ✅ Upload materi pembelajaran (text, video, file)
+- ✅ Buat quiz dengan berbagai tipe pertanyaan
+- ✅ Review dan nilai tugas akhir peserta
+- ✅ Export laporan dalam format PDF
+- ✅ Cek statistik pembelajaran peserta
+- ✅ Kelola enroll dan pembayaran peserta
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+### 🔍 Fitur Review Final Task (Terbaru)
+- 🎯 **Conditional Review**: Tampilkan catatan untuk **Pelatihan** atau rubrik untuk **PEKERTI**
+- 📊 **Scoring**: Input nilai 0-100 dengan grading otomatis (A/B/C/D)
+- ✅ **Checklist Komponen**: 19 komponen penilaian testruktur
+- 📝 **Catatan Reviewer**: Feedback detail untuk setiap submission
+- 🎨 **Status Tracking**: Approved, Rejected, atau Pending
 
-## Contributing
+### 💼 Untuk Admin
+- ✅ Manajemen user (peserta, instruktur, reviewer)
+- ✅ Manajemen kategori kursus
+- ✅ Monitoring seluruh aktivitas platform
+- ✅ Generate laporan keseluruhan
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+---
 
-## Code of Conduct
+## 📊 Struktur Database Utama
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+```
+├── users
+│   ├── name, email, password
+│   ├── role (peserta, instruktur, reviewer, admin)
+│   └── relationships: profiles, enrollments, courses...
+│
+├── courses
+│   ├── nama_course, description, price
+│   ├── category_id, teacher_id, reviewer_id
+│   ├── image_link, start_date, end_date
+│   └── relationships: materials, enrollments, final_task...
+│
+├── categories
+│   ├── category (nama kategori)
+│   ├── type (enum: 'pelatihan', 'pekerti')
+│   └── description
+│
+├── materials (Materi Pembelajaran)
+│   ├── course_id, title, description
+│   ├── content (text/html)
+│   ├── order (untuk sorting)
+│   └── relationships: submaterials, progress
+│
+├── submaterials (Sub Materi)
+│   ├── material_id, title, content
+│   ├── video_link (optional)
+│   └── relationships: progress
+│
+├── quizzes & quiz_questions
+│   ├── Quiz dengan berbagai tipe pertanyaan
+│   ├── quiz_options untuk pilihan jawaban
+│   └── quiz_attempts untuk tracking jawaban peserta
+│
+├── final_tasks & final_task_submissions
+│   ├── final_task_submissions (submit peserta)
+│   ├── final_task_reviews (penilaian dari reviewer)
+│   ├── nilai (score 0-100)
+│   └── catatan (feedback untuk peserta)
+│
+├── enrollments
+│   ├── Tracking enroll peserta ke course
+│   ├── Manage akses dan status
+│   └── relationships: user, course
+│
+└── payments & subscriptions
+    ├── Tracking pembayaran
+    ├── Subscription management
+    └── Invoice dan receipt
+```
 
-## Security Vulnerabilities
+---
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+## 🔧 Instalasi & Setup
 
-## License
+### Prerequisites
+- PHP 8.4+
+- Composer
+- Node.js 18+
+- MySQL 8.0+
+- Git
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+### Step-by-Step Installation
+
+1. **Clone Repository**
+   ```bash
+   git clone https://github.com/xisain/lms-rtpu.git
+   cd lms-rtpu
+   ```
+
+2. **Setup Environment**
+   ```bash
+   cp .env.example .env
+   php artisan key:generate
+   ```
+
+3. **Install Dependencies**
+   ```bash
+   composer install
+   npm install
+   ```
+
+4. **Database Setup**
+   ```bash
+   php artisan migrate
+   php artisan db:seed # (Optional untuk sample data)
+   ```
+
+5. **Build Frontend Assets**
+   ```bash
+   npm run build
+   ```
+
+6. **Jalankan Server**
+   ```bash
+   php artisan serve
+   ```
+
+Server akan berjalan di `http://localhost:8000`
+
+### Dengan Docker (Laravel Sail)
+```bash
+composer run dev  # Jalankan server + queue + frontend bundler sekaligus
+```
+
+---
+
+## 📝 Konfigurasi
+
+### Environment Variables
+```env
+APP_NAME=LMS-RTPU
+APP_ENV=local
+APP_DEBUG=true
+APP_URL=http://localhost:8000
+
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=lms_rtpu
+DB_USERNAME=root
+DB_PASSWORD=
+
+MAIL_MAILER=smtp
+MAIL_HOST=smtp.mailtrap.io
+# ... konfigurasi email lainnya
+```
+
+---
+
+## 🏗️ Struktur Project
+
+```
+lms-rtpu/
+├── app/
+│   ├── Console/Commands/         # Artisan commands
+│   ├── Http/
+│   │   ├── Controllers/          # Main application logic
+│   │   ├── Middleware/           # HTTP middleware
+│   │   ├── Requests/             # Form request validation
+│   │   └── Resources/            # API resource transformation
+│   ├── Jobs/                     # Queued jobs
+│   ├── Mail/                     # Mail classes
+│   ├── Models/                   # Eloquent models
+│   ├── Providers/                # Service providers
+│   └── Traits/                   # Reusable traits
+│
+├── bootstrap/
+│   ├── app.php                   # App bootstrapping
+│   └── providers.php             # Service providers config
+│
+├── config/                       # Configuration files
+├── database/
+│   ├── migrations/               # Schema migrations
+│   ├── factories/                # Model factories
+│   └── seeders/                  # Database seeders
+│
+├── public/
+│   ├── storage/                  # File uploads
+│   ├── images/                   # Static images
+│   └── index.php                 # App entry point
+│
+├── resources/
+│   ├── css/                      # Tailwind CSS files
+│   ├── js/                       # JavaScript files
+│   └── views/                    # Blade templates
+│
+├── routes/
+│   ├── web.php                   # Web routes
+│   ├── api.php                   # API routes
+│   └── console.php               # Console commands
+│
+├── storage/                      # Cache, logs, uploads
+├── tests/                        # PHPUnit tests
+├── vendor/                       # Composer dependencies
+│
+├── .env.example                  # Example environment
+├── composer.json                 # PHP dependencies
+├── package.json                  # Node dependencies
+├── vite.config.js                # Vite configuration
+├── phpunit.xml                   # PHPUnit configuration
+├── tailwind.config.js            # Tailwind configuration
+└── README.md                     # Documentation
+```
+
+---
+
+## 🚀 Available Commands
+
+### Development
+```bash
+# Development server (server + queue + vite)
+composer run dev
+
+# Frontend only
+npm run dev
+
+# Build for production
+npm run build
+
+# Code formatting (Laravel Pint)
+vendor/bin/pint --dirty
+
+# Database
+php artisan migrate                 # Run migrations
+php artisan migrate:rollback       # Revert last migration
+php artisan db:seed                # Run seeders
+php artisan tinker                 # Interactive shell
+
+# Queue
+php artisan queue:listen           # Listen untuk jobs
+
+# Testing
+php artisan test                   # Run all tests
+php artisan test --filter=name     # Run specific test
+```
+
+---
+
+
+
+## 🔐 Authentication & Authorization
+
+Project menggunakan **Laravel Sanctum** untuk API authentication dan Laravel's built-in authorization dengan **Gates & Policies**.
+
+### User Roles
+- **Admin**: Akses penuh ke seluruh sistem
+- **Instruktur/Dosen**: Kelola kursus dan nilai peserta
+- **Reviewer**: Review dan nilai tugas akhir
+- **Peserta**: Akses kursus dan submit tugas
+
+---
+
+
+
+## 🎨 UI/UX Features
+
+- **Responsive Design**: Mobile-first approach dengan Tailwind CSS v4
+- **Dark Mode Support**: Toggle dark/light theme
+- **Interactive Dashboard**: Real-time progress tracking
+- **Sweet Alert**: User-friendly notifications
+- **Smooth Animations**: Transition dan hover effects
+
+---
+
+## 📊 Recent Updates
+
+### Fitur Final Task Review (v2.0)
+- ✨ Conditional rendering berdasarkan tipe kategori (Pelatihan/PEKERTI)
+- 📝 Catatan khusus untuk program pelatihan
+- 📊 Rubrik penilaian dengan kriteria untuk PEKERTI
+- 🎯 Scoring system dengan grading otomatis (A-D)
+- ✅ 19 komponen penilaian checklist
+
+---
+
+## 🐛 Debugging & Troubleshooting
+
+### Debugging Tools
+- **Laravel Debugbar**: Development toolbar
+- **Laravel Pail**: Real-time log viewer
+- **Tinker**: Interactive shell
+- **PhpUnit**: Automated testing
+
+### Common Issues
+
+1. **Vite Manifest Error**
+   ```bash
+   npm run build  # atau npm run dev
+   ```
+
+2. **Database Connection Error**
+   - Cek `.env` database configuration
+   - Pastikan MySQL running: `php artisan migrate`
+
+3. **File Upload Issues**
+   - Cek permission: `chmod -R 775 storage/ bootstrap/cache/`
+   - Cek disk configuration di `config/filesystems.php`
+
+---
+
+## 🤝 Contributing
+
+Kontribusi sangat diterima! Silakan:
+
+1. Fork repository
+2. Buat feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit changes (`git commit -m 'Add AmazingFeature'`)
+4. Push ke branch (`git push origin feature/AmazingFeature`)
+5. Open Pull Request
+
+---
+
+## 📄 License
+
+Project ini dilisensikan di bawah MIT License - lihat file `LICENSE` untuk detail.
+
+---
+
+## 👥 Tim Pengembang
+
+- **Fullstack**: [@xisain](https://github.com/xisain)
+
+---
+
+## 📞 Support & Contact
+
+- 📧 Email: rtpu@pnj.ac.id
+- 🌐 Website: https://rtpu.pnj.ac.id
+- 📱 WhatsApp: [Group Link]
+
+---
+
+
+**Made with ❤️ for RTPU PNJ**
