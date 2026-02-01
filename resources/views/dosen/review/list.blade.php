@@ -7,7 +7,7 @@
             <div class="bg-white rounded-lg shadow-md overflow-hidden">
                 <!-- Header -->
                 <div class="bg-[#009999] px-6 py-4 flex justify-between items-center">
-                    <h4 class="text-xl font-bold text-white">Review Tugas Akhir "{{ $course->nama_course }}"</h4>
+                    <h4 class="text-xl font-bold text-white">Review Laporan Akhir "{{ $course->nama_course }}"</h4>
                     <div class="flex gap-2">
                         <!-- Tombol Export PDF -->
                         <a href="{{ route('dosen.course.final_task.export.pdf', $course->slugs) }}"

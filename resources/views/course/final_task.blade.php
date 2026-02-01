@@ -1,6 +1,6 @@
 @extends('layout.navbar')
 
-@section('title', 'Tugas Akhir - ' . $course->nama_course)
+@section('title', 'Laporan Akhir - ' . $course->nama_course)
 
 @section('content')
     <div class="min-h-screen bg-gray-100 py-8">
@@ -33,7 +33,7 @@
                                     d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
                                     clip-rule="evenodd"></path>
                             </svg>
-                            <span class="text-gray-500">Tugas Akhir</span>
+                            <span class="text-gray-500">Laporan Akhir</span>
                         </div>
                     </li>
                 </ol>
@@ -91,7 +91,7 @@
                                 </svg>
                             </div>
                             <div>
-                                <h1 class="text-3xl font-bold text-gray-800">Tugas Akhir</h1>
+                                <h1 class="text-3xl font-bold text-gray-800">Laporan Akhir</h1>
                                 <p class="text-gray-500 text-sm mt-1">Selesaikan pengumpulan proyek akhir Anda</p>
                             </div>
                         </div>
@@ -285,7 +285,7 @@
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                 d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path>
                                         </svg>
-                                        Kirim Tugas Akhir
+                                        Kirim Laporan Akhir
                                     </button>
                                 </div>
                             </form>

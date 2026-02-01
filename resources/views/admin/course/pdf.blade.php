@@ -369,7 +369,7 @@
         <div class="page-break"></div>
 
         <!-- Final Task Table -->
-        <div class="section-title">Tugas Akhir</div>
+        <div class="section-title">Laporan Akhir</div>
         <table>
             <tr>
                 <th style="width: 20%;">Instruksi</th>

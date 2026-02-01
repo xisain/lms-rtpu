@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta charset="utf-8">
-    <title>Review Tugas Akhir - {{ $course->nama_course }}</title>
+    <title>Review Laporan Akhir - {{ $course->nama_course }}</title>
     <style>
         * {
             margin: 0;
@@ -205,7 +205,7 @@
 </head>
 <body>
     <div class="header">
-        <h2>REVIEW TUGAS AKHIR</h2>
+        <h2>REVIEW LAPORAN AKHIR</h2>
         <p><strong>Mata Kuliah: {{ $course->nama_course }}</strong></p>
         <p>Tanggal Export: {{ \Carbon\Carbon::now()->locale('id')->format('d F Y, H:i') }} WIB</p>
     </div>

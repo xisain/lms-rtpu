@@ -9,7 +9,7 @@
         <div class="max-w-10xl mx-auto">
             <div class="bg-white rounded-lg shadow-md overflow-hidden">
                 <div class="bg-[#009999] px-6 py-4 flex justify-between items-center">
-                    <h4 class="text-xl font-bold text-white">Review Tugas Akhir Peserta</h4>
+                    <h4 class="text-xl font-bold text-white">Review Laporan Akhir Peserta</h4>
                 </div>
                 <div class="overflow-x-auto p-4">
                     <table class="min-w-full divide-y divide-gray-200" id="finalTaskTable">

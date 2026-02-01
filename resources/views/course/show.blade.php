@@ -284,11 +284,11 @@
                                 <div class="flex-1">
                                     <div class="flex items-center gap-2 mb-2">
                                         <p class="text-sm font-semibold text-green-800">
-                                            Tugas Akhir
+                                            Laporan Akhir
                                         </p>
                                     </div>
                                     <p class="text-sm text-green-700 mb-3">
-                                        Selesaikan dan kumpulkan tugas akhir course untuk menyelesaikan pembelajaran.
+                                        Selesaikan dan kumpulkan laporan akhir course untuk menyelesaikan pembelajaran.
                                     </p>
 
                                     @if($finalTaskSubmission)

@@ -1,13 +1,13 @@
 @extends('layout.sidebar')
 @section('title')
-    Review Tugas Akhir
+    Review Laporan Akhir
 @endsection
 @section('content')
     <div class="mx-auto py-2">
         <div class="max-w-10xl mx-auto">
             <div class="bg-white rounded-lg shadow-md overflow-hidden">
                 <div class="bg-[#009999] px-6 py-4 flex justify-between items-center">
-                    <h4 class="text-xl font-bold text-white">Review Tugas Akhir</h4>
+                    <h4 class="text-xl font-bold text-white">Review Laporan Akhir</h4>
                 </div>
 
                 {{-- Card Submission --}}
@@ -340,7 +340,7 @@
                                 </option>
                                 <option value="rejected" class="text-red-600 font-semibold">✗ Rejected (Ditolak)</option>
                             </select>
-                            <p class="text-xs text-gray-600 mt-2">Pilih status untuk menentukan apakah tugas akhir disetujui
+                            <p class="text-xs text-gray-600 mt-2">Pilih status untuk menentukan apakah laporan akhir disetujui
                                 atau ditolak</p>
                         </div>
 

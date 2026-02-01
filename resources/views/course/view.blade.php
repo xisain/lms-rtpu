@@ -260,7 +260,7 @@
                                 </div>
                                 <div>
                                     <h3 class="text-white font-bold text-lg">Final Task</h3>
-                                    <p class="text-white/80 text-sm">Tugas Akhir Course</p>
+                                    <p class="text-white/80 text-sm">Laporan Akhir Course</p>
                                 </div>
                             </div>
 
