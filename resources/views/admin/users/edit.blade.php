@@ -93,6 +93,40 @@
             </div>
 
             <div>
+                <label class="block text-sm font-medium mb-1">Instansi</label>
+                <select name="instansi_id"
+                        class="w-full border border-gray-300 rounded-lg p-2 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <option value="">-- Pilih Instansi --</option>
+                    @foreach($instansi as $i)
+                        <option value="{{ $i->id }}"
+                            {{ old('instansi_id', $user->instansi_id) == $i->id ? 'selected' : '' }}>
+                            {{ $i->nama }}
+                        </option>
+                    @endforeach
+                </select>
+                @error('instansi_id')
+                    <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                @enderror
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium mb-1">Jurusan</label>
+                <select name="jurusan_id"
+                        class="w-full border border-gray-300 rounded-lg p-2 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <option value="">-- Pilih Jurusan --</option>
+                    @foreach($jurusan as $j)
+                        <option value="{{ $j->id }}"
+                            {{ old('jurusan_id', $user->jurusan_id) == $j->id ? 'selected' : '' }}>
+                            {{ $j->nama }}
+                        </option>
+                    @endforeach
+                </select>
+                @error('jurusan_id')
+                    <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                @enderror
+            </div>
+
+            <div>
                 <label class="inline-flex items-center">
                     <input type="checkbox" name="isActive" value="1"
                            class="mr-2 accent-blue-600 focus:ring-2 focus:ring-blue-500"

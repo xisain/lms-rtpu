@@ -24,7 +24,8 @@
                     <input type="text" name="nama" id="nama"
                         class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#009999] focus:border-[#009999] @error('nama') border-red-500 @enderror"
                         value="{{ old('nama') }}"
-                        placeholder="Contoh: BCA, Mandiri, GoPay">
+                        placeholder="Contoh: BCA, Mandiri, GoPay"
+                        required>
                     @error('nama')
                         <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
                     @enderror
@@ -38,7 +39,8 @@
                     <input type="text" name="account_name" id="account_name"
                         class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#009999] focus:border-[#009999] @error('account_name') border-red-500 @enderror"
                         value="{{ old('account_name') }}"
-                        placeholder="Contoh: John Doe">
+                        placeholder="Contoh: John Doe"
+                        required>
                     @error('account_name')
                         <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
                     @enderror
@@ -52,7 +54,8 @@
                     <input type="text" name="account_number" id="account_number"
                         class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#009999] focus:border-[#009999] @error('account_number') border-red-500 @enderror"
                         value="{{ old('account_number') }}"
-                        placeholder="Contoh: 1234567890">
+                        placeholder="Contoh: 1234567890"
+                        required>
                     @error('account_number')
                         <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
                     @enderror

@@ -70,7 +70,7 @@ Route::middleware('auth')->group(function () {
         });
         Route::get('/available/filter', [CourseController::class, 'availableFilterCourse'])->name('course.filter.available');
         Route::get('/', [CourseController::class, 'showCourse'])->name('course.index');
-        Route::get('/by-instansi/{instansi}', [CourseController::class, 'getByInstansi']);
+        Route::get('/by-instansi/{instansi}', [CourseController::class, 'getByInstansi'])->name('course.byInstansi');
 
         Route::get('{slug}', [CourseController::class, 'show'])->name('course.show');
         Route::get('{slug}/final-task/', [FinalTaskController::class, 'viewTask'])->name('course.final_task');

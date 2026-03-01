@@ -62,8 +62,10 @@ class UserController extends Controller
     {
         $role = role::all();
         $category = category::all();
+        $instansi = Instansi::all();
+        $jurusan = \App\Models\Jurusan::all();
 
-        return view('admin.users.edit', compact('user', 'role', 'category'));
+        return view('admin.users.edit', compact('user', 'role', 'category', 'instansi', 'jurusan'));
     }
 
     /**
@@ -77,6 +79,8 @@ class UserController extends Controller
             'password' => 'nullable|string|min:6|confirmed',
             'roles_id' => 'required|exists:roles,id',
             'category_id' => 'required|exists:categories,id',
+            'instansi_id' => 'nullable|exists:instansi,id',
+            'jurusan_id' => 'nullable|exists:jurusan,id',
             'isActive' => 'boolean',
         ]);
 

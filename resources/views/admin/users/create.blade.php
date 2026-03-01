@@ -154,19 +154,25 @@
     </div>
 </div>
 @push('scripts')
-    <script>
-document.getElementById('instansi_id').addEventListener('change', function () {
-    const instansiId = this.value;
-    const courseSelect = document.getElementById('course_id');
+  <script>
+    const byInstansiUrl = "{{ route('course.byInstansi', ':id') }}";
 
-    courseSelect.innerHTML = '<option value="" class="disabled:bg-gray-200">Loading...</option>';
+    document.getElementById('instansi_id').addEventListener('change', function () {
+        const instansiId = this.value;
+        const courseSelect = document.getElementById('course_id');
 
-    if (!instansiId) {
-        courseSelect.innerHTML = '<option value="" disabled>-- Pilih Course --</option>';
-        return;
-    }
+        courseSelect.innerHTML = '<option value="">Loading...</option>';
 
-    fetch(`/course/by-instansi/${instansiId}`)
+        if (!instansiId) {
+            courseSelect.innerHTML = '<option value="" disabled>-- Pilih Course --</option>';
+            return;
+        }
+
+        fetch(byInstansiUrl.replace(':id', instansiId), {
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
         .then(res => {
             if (!res.ok) throw new Error('Unauthorized');
             return res.json();
@@ -187,7 +193,7 @@ document.getElementById('instansi_id').addEventListener('change', function () {
         .catch(() => {
             courseSelect.innerHTML = '<option value="">Tidak tersedia</option>';
         });
-});
+    });
 </script>
 @endpush
 @endsection

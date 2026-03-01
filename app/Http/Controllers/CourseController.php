@@ -73,7 +73,7 @@ class CourseController extends Controller
             'category_id' => 'required|exists:categories,id',
             'nama_course' => 'required|string|max:255',
             'description' => 'required|string',
-            'image_link' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+            'image_link' => 'required|image|mimes:jpg,jpeg,png,webp|max:2048',
             'isLimitedCourse' => 'boolean',
             'is_paid' => 'boolean',
             'price' => 'nullable|required_if:is_paid,1|integer|min:5000',

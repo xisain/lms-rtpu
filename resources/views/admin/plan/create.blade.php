@@ -22,7 +22,8 @@
                         </label>
                         <input type="text" name="name" id="name" placeholder="Masukan Nama Plan"
                             class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-[#009999] focus:border-transparent transition duration-200 @error('name') border-red-500 @enderror"
-                            value="{{ old('name') }}">
+                            value="{{ old('name') }}"
+                            required>
                         @error('name')
                             <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
                         @enderror
@@ -34,7 +35,8 @@
                             Deskripsi <span class="text-red-500">*</span>
                         </label>
                         <textarea name="description" id="description" rows="4" placeholder="Masukan deskripsi plan"
-                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-[#009999] focus:border-transparent transition duration-200 @error('description') border-red-500 @enderror">{{ old('description') }}</textarea>
+                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-[#009999] focus:border-transparent transition duration-200 @error('description') border-red-500 @enderror"
+                            required>{{ old('description') }}</textarea>
                         @error('description')
                             <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
                         @enderror
@@ -53,7 +55,8 @@
                             </span>
                             <input type="text" id="price_display" placeholder="Masukan Harga Plan"
                                 class="w-full px-4 py-2 rounded-r-lg focus:ring-0 focus:border-transparent"
-                                value="{{ old('price') }}">
+                                value="{{ old('price') }}"
+                                required>
                             <input type="hidden" name="price" id="price" value="{{ old('price') }}">
                         </div>
                         <p class="text-xs text-gray-500 mt-1">Ketik angka saja, contoh: 150000</p>
@@ -70,7 +73,8 @@
                         <input type="number" name="duration_in_days" id="duration_in_days"
                             placeholder="Contoh: 30 untuk 30 hari"
                             class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-[#009999] focus:border-transparent transition duration-200 @error('duration_in_days') border-red-500 @enderror"
-                            value="{{ old('duration_in_days') }}">
+                            value="{{ old('duration_in_days') }}"
+                            required>
                         @error('duration_in_days')
                             <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
                         @enderror
@@ -95,7 +99,7 @@
                         <label for="course" class="block text-sm font-medium text-gray-700 mb-2">
                             Course <span class="text-red-500">*</span>
                         </label>
-                        <select name="course[]" id="course" multiple class="w-full">
+                        <select name="course[]" id="course" multiple class="w-full" required>
                             @forelse ($course as $c)
                                 <option value="{{ $c->id }}" {{ (collect(old('course'))->contains($c->id)) ? 'selected' : '' }}>
                                     {{ $c->nama_course }}
