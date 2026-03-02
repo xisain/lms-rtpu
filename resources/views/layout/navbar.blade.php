@@ -93,7 +93,7 @@
                 @auth
                 <!-- Auth: menu kiri -->
                 <div class="hidden lg:flex items-center space-x-3">
-                    <a href="{{ route('home') }}" class="text-base font-medium text-gray-700 hover:text-[#0f5757]">Home</a>
+                    <a href="{{ route('home') }}" class="text-base font-medium text-gray-700 hover:text-[#0f5757]"><i class="fa-solid fa-house"></i> Home</a>
                     <a href="{{ route('course.index') }}" class="text-base font-medium text-gray-700 hover:text-[#0f5757]">
                         <i class="fa-solid fa-compass mr-1"></i>Cari Course
                     </a>
@@ -107,7 +107,7 @@
                             @click="openDropdown = !openDropdown"
                             class="relative flex items-center text-base font-medium text-gray-700 hover:text-[#0f5757]
                                 focus:outline-none focus:ring-0 rounded-md px-1 py-1 transition-all duration-300">
-                            My Course
+                            <i class="fa-solid fa-chalkboard-user" style="margin-right:5px;"></i>My Course
                             <svg
                                 class="w-4 h-4 ml-1 mt-1 transform transition-transform duration-300"
                                 :class="openDropdown ? 'rotate-180 text-[#0f5757]' : 'rotate-0'"
@@ -228,7 +228,7 @@
                 <!-- Auth Menu -->
                 <a href="{{ route('home') }}"
                    class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-[#0f5757] hover:bg-gray-50 transition-colors duration-150">
-                    Home
+                    <i class="fa-solid fa-house"></i>Home
                 </a>
                 <a href="{{ route('course.index') }}"
                    class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-[#0f5757] hover:bg-gray-50 transition-colors duration-150">
