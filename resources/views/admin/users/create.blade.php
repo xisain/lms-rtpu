@@ -155,8 +155,7 @@
 </div>
 @push('scripts')
   <script>
-    const byInstansiUrl = "{{ route('course.byInstansi', ':id') }}";
-
+    const byInstansiUrl = "{{ url('/course/by-instansi/:id') }}";
     document.getElementById('instansi_id').addEventListener('change', function () {
         const instansiId = this.value;
         const courseSelect = document.getElementById('course_id');
